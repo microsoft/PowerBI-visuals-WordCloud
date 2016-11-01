@@ -1,0 +1,32 @@
+{
+  "name": "powerbi-visuals-wordcloud",
+  "version": "1.2.6",
+  "description": "This custom visual implements a D3 force layout diagram with curved path. The thickness of the path also represents the weight of the relationship between the nodes.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microsoft/PowerBI-visuals-WordCloud.git"
+  },
+  "keywords": [
+    "powerbi-visuals"
+  ],
+  "scripts": {
+    "postinstall": "typings install && pbiviz update 1.2.0",
+    "typings": "node node_modules/typings/dist/bin.js i",
+    "pbiviz": "node node_modules/powerbi-visuals-tools/bin/pbiviz.js",
+    "lint": "node node_modules/tslint/bin/tslint \"src/**/*.ts\""
+  },
+  "author": {
+    "name": "Microsoft",
+    "email": "pbicvsupport@microsoft.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Microsoft/PowerBI-visuals-WordCloud/issues"
+  },
+  "homepage": "https://github.com/Microsoft/PowerBI-visuals-WordCloud#readme",
+  "devDependencies": {
+    "powerbi-visuals-tools": "1.2.1",
+    "tslint": "3.15.1",
+    "typings": "1.5.0"
+  }
+}
