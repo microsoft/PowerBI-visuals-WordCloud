@@ -124,21 +124,15 @@ module powerbi.extensibility.visual {
         rightBorder: IPoint;
     }
 
-    export interface WordCloudConstructorOptions {
-        svg?: d3.Selection<any>;
-        // animator?: IGenericAnimator;
-        margin?: IMargin;
-    }
-
     class ValueSelectionManager<T> {
         private selectedValuesValue: T[] = [];
-        private hostServices: IVisualHost;
+        private visualHost: IVisualHost;
         private getSelectionIds: (value: T | T[]) => ISelectionId[];
         private selectionManager: ISelectionManager;
 
-        public constructor(hostServices: IVisualHost, getSelectionIds: (value: T) => ISelectionId[]) {
-            this.hostServices = hostServices;
-            // this.selectionManager = new SelectionManager({ hostServices: hostServices }); // TODO: check it
+        public constructor(visualHost: IVisualHost, getSelectionIds: (value: T) => ISelectionId[]) {
+            this.visualHost = visualHost;
+            this.selectionManager = visualHost.createSelectionManager();
 
             this.getSelectionIds = (value) => _.isArray(value)
                 ? <ISelectionId[]>_.flatten((<T[]>value).map(x => getSelectionIds(x)))
@@ -163,7 +157,7 @@ module powerbi.extensibility.visual {
 
         public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): JQueryDeferred<ISelectionId[]> {
             var values = <T[]>(_.isArray(value) ? value : [value]);
-            if ((this.hostServices as any).shouldRetainSelection()) { // TODO: check it.
+            if ((this.visualHost as any).shouldRetainSelection()) { // TODO: check it.
                 return this.sendSelectionToHost(this.getSelectionIds(values));
             } else {
                 this.selectInternal(values, multiSelect);
@@ -331,99 +325,8 @@ module powerbi.extensibility.visual {
 
         public static parse(dataView: DataView) {
             var settings = new this();
-            /*if (!dataView || !dataView.metadata || !dataView.metadata.objects) {
-                return settings;
-            }
-
-            var properties = this.getProperties(capabilities);
-            for (var objectKey in capabilities.objects) {
-                for (var propKey in capabilities.objects[objectKey].properties) {
-                    if (!settings[objectKey] || !_.has(settings[objectKey], propKey)) {
-                        continue;
-                    }
-
-                    var type = capabilities.objects[objectKey].properties[propKey].type;
-                    var getValueFn = this.getValueFnByType(type);
-                    settings[objectKey][propKey] = getValueFn(
-                        dataView.metadata.objects,
-                        properties[objectKey][propKey],
-                        settings[objectKey][propKey]);
-                }
-            }*/
-
             return settings;
         }
-
-        // public static getProperties(capabilities: VisualCapabilities):
-        //     { [i: string]: { [i: string]: DataViewObjectPropertyIdentifier } } & {
-        //         general: { formatString: DataViewObjectPropertyIdentifier },
-        //         dataPoint: { fill: DataViewObjectPropertyIdentifier }
-        //     } {
-        //     var objects = _.merge({
-        //         general: { properties: { formatString: {} } }
-        //     }, capabilities.objects);
-        //     var properties = <any>{};
-        //     for (var objectKey in objects) {
-        //         properties[objectKey] = {};
-        //         for (var propKey in objects[objectKey].properties) {
-        //             properties[objectKey][propKey] = <DataViewObjectPropertyIdentifier>{
-        //                 objectName: objectKey,
-        //                 propertyName: propKey
-        //             };
-        //         }
-        //     }
-
-        //     return properties;
-        // }
-
-        // public static createEnumTypeFromEnum(type: any): IEnumType {
-        //     var even: any = false;
-        //     return createEnumType(Object.keys(type)
-        //         .filter((key, i) => ((!!(i % 2)) === even && type[key] === key
-        //             && !void (even = !even)) || (!!(i % 2)) !== even)
-        //         .map(x => <IEnumMember>{ value: x, displayName: x }));
-        // }
-
-        // private static getValueFnByType(type: DataViewObjectPropertyTypeDescriptor) {
-        //     switch (_.keys(type)[0]) {
-        //         case "fill":
-        //             return DataViewObjects.getFillColor;
-        //         default:
-        //             return DataViewObjects.getValue;
-        //     }
-        // }
-
-        // public static enumerateObjectInstances(
-        //     settings = new this(),
-        //     options: EnumerateVisualObjectInstancesOptions,
-        //     capabilities: VisualCapabilities): ObjectEnumerationBuilder {
-
-        //     var enumeration = new ObjectEnumerationBuilder();
-        //     var object = settings && settings[options.objectName];
-        //     if (!object) {
-        //         return enumeration;
-        //     }
-
-        //     var instance = <VisualObjectInstance>{
-        //         objectName: options.objectName,
-        //         selector: null,
-        //         properties: {}
-        //     };
-
-        //     for (var key in object) {
-        //         if (_.has(object, key)) {
-        //             instance.properties[key] = object[key];
-        //         }
-        //     }
-
-        //     enumeration.pushInstance(instance);
-        //     return enumeration;
-        // }
-
-        // public originalSettings: WordCloudSettings;
-        // public createOriginalSettings(): void {
-        //     this.originalSettings = _.cloneDeep(this);
-        // }
 
         //Default Settings
         public general = {
@@ -558,7 +461,12 @@ module powerbi.extensibility.visual {
             left: 10
         };
 
-        public static converter(dataView: DataView, colors: IColorPalette, previousData: WordCloudData): WordCloudData {
+        public static converter(
+            dataView: DataView,
+            colors: IColorPalette,
+            visualHost: IVisualHost,
+            previousData: WordCloudData): WordCloudData {
+
             var categorical = WordCloudColumns.getCategoricalColumns(dataView),
                 catValues: WordCloudColumns<any[]>,
                 properties,
@@ -619,8 +527,8 @@ module powerbi.extensibility.visual {
                             : wordCloudUtils.getRandomColor();
                     }
 
-                    /*selectionIdBuilder = new SelectionIdBuilder()
-                        .withCategory(dataView.categorical.categories[0], index);*/ // TODO: check it
+                    selectionIdBuilder = visualHost.createSelectionIdBuilder()
+                        .withCategory(dataView.categorical.categories[0], index);
 
                     if (queryName) {
                         selectionIdBuilder.withMeasure(queryName);
@@ -867,13 +775,12 @@ module powerbi.extensibility.visual {
             height: 2048
         };
 
-        private colors: IColorPalette;
+        private colorPalette: IColorPalette;
         private root: Selection<any>;
-        private svg: Selection<any>;
         private main: Selection<any>;
         private wordsContainerSelection: Selection<any>;
-        private wordsGroupUpdateSelection: UpdateSelection<any>;
-        private wordsTextUpdateSelection: UpdateSelection<any>;
+        private wordsGroupUpdateSelection: UpdateSelection<WordCloudDataPoint>;
+        private wordsTextUpdateSelection: UpdateSelection<WordCloudDataPoint>;
 
         /**
          * Public for testability.
@@ -884,40 +791,27 @@ module powerbi.extensibility.visual {
 
         private layout: VisualLayout;
 
-        private hostService: IVisualHost;
+        private visualHost: IVisualHost;
         private selectionManager: ValueSelectionManager<string>;
 
         private visualUpdateOptions: VisualUpdateOptions;
 
-        private isUpdating: boolean;
+        private isUpdating: boolean = false;
         private incomingUpdateOptions: VisualUpdateOptions;
 
         private oldIdentityKeys: string[];
 
-        constructor(options?: WordCloudConstructorOptions) {
-            if (options) {
-                this.svg = options.svg || this.svg;
-                this.layout = new VisualLayout(null, options.margin || WordCloud.DefaultMargin);
-
-                // if (options.animator) {
-                //     // this.animator = options.animator;
-                // }
-            }
-
-            this.isUpdating = false;
+        constructor(options: VisualConstructorOptions) {
+            this.init(options);
         }
 
         public init(options: VisualConstructorOptions): void {
-            if (this.svg) {
-                this.root = this.svg;
-            } else {
-                // this.root = d3.select(options.element.get(0)).append("svg"); // TODO: check it
-            }
+            this.root = d3.select(options.element).append("svg");
 
-            // this.colors = options.style.colorPalette.dataColors; // TODO: Check it
-            this.hostService = options.host;
+            this.colorPalette = options.host.colorPalette;
+            this.visualHost = options.host;
 
-            this.selectionManager = new ValueSelectionManager<string>(this.hostService, w => {
+            this.selectionManager = new ValueSelectionManager<string>(this.visualHost, w => {
                 var dataPoints = this.data && this.data.dataPoints && this.data.dataPoints.filter(x => x.text === w);
 
                 return dataPoints && dataPoints[0] && dataPoints[0].selectionIds;
@@ -937,7 +831,7 @@ module powerbi.extensibility.visual {
 
             this.wordsContainerSelection = this.main
                 .append("g")
-                .classed(WordCloud.Words["class"], true);
+                .classed(WordCloud.Words.class, true);
 
             this.canvas = document.createElement("canvas");
         }
@@ -968,13 +862,14 @@ module powerbi.extensibility.visual {
                     return;
                 }
 
-                /*this.durationAnimations = getAnimationDuration(
-                    this.animator,
-                    visualUpdateOptions.suppressAnimations);*/ // TODO: check it
-
                 this.updateSize();
 
-                var data = WordCloud.converter(dataView, this.colors, this.data);
+                var data = WordCloud.converter(
+                    dataView,
+                    this.colorPalette,
+                    this.visualHost,
+                    this.data);
+
                 if (!data) {
                     this.clear();
                     return;
@@ -986,7 +881,7 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private clear() {
+        private clear(): void {
             this.main
                 .select(WordCloud.Words.selector)
                 .selectAll(WordCloud.WordGroup.selector)
