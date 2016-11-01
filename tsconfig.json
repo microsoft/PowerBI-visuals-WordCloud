@@ -8,7 +8,20 @@
     "out": "./.tmp/build/visual.js"
   },
   "files": [
+    "typings/index.d.ts",
     ".api/v1.2.0/PowerBI-visuals.d.ts",
+    "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/shapes/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/imargin/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/colorhelper/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/svgutil/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/rect/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/point/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/displayunitsystemtype/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/displayunitsystem/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.d.ts",
     "src/visual.ts"
   ]
 }
