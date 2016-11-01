@@ -22,6 +22,12 @@
     "node_modules/@powerbi-visuals-utils/displayunitsystemtype/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/displayunitsystem/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.d.ts",
+    "src/dataInterfaces.ts",
+    "src/settings.ts",
+    "src/layout.ts",
+    "src/valueSelectionManager.ts",
+    "src/columns.ts",
+    "src/utils.ts",
     "src/visual.ts"
   ]
 }
