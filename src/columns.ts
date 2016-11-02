@@ -31,63 +31,63 @@ module powerbi.extensibility.visual {
     import DataViewValueColumns = powerbi.DataViewValueColumns;
     import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
+    import DataViewCategorical = powerbi.DataViewCategorical;
+    import PrimitiveValue = powerbi.PrimitiveValue;
     import DataViewValueColumn = powerbi.DataViewValueColumn;
 
     export class WordCloudColumns<T> {
-        public static getColumnSources(dataView: DataView) {
-            return this.getColumnSourcesT<DataViewMetadataColumn>(dataView);
+        public static getCategoricalValues(dataView: DataView): WordCloudColumns<DataViewCategoricalColumn[]> {
+            let categorical: DataViewCategorical = dataView && dataView.categorical,
+                categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
+                values: DataViewValueColumns = categorical && categorical.values || [] as DataViewValueColumns,
+                series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
+
+            return categorical && _.mapValues((new this<DataViewCategoricalColumn[]>() as any), (n: any, key: string) => {
+                return (_.toArray(categories) as DataViewCategoricalColumn[])
+                    .concat(_.toArray(values))
+                    .filter((column: DataViewCategoricalColumn) => column.source.roles && column.source.roles[key])
+                    .map((column: DataViewCategoricalColumn) => column.values)[0]
+                    || values.source
+                    && values.source.roles
+                    && values.source.roles[key]
+                    && series;
+            });
         }
 
-        public static getTableValues(dataView: DataView) {
-            var table = dataView && dataView.table;
-            var columns = this.getColumnSourcesT<any[]>(dataView);
-            return columns && table && _.mapValues(
-                columns, (n: DataViewMetadataColumn, i) => n && table.rows.map(row => row[n.index]));
-        }
-
-        public static getTableRows(dataView: DataView) {
-            var table = dataView && dataView.table;
-            var columns = this.getColumnSourcesT<any[]>(dataView);
-            return columns && table && table.rows.map(row =>
-                _.mapValues(columns, (n: DataViewMetadataColumn, i) => n && row[n.index]));
-        }
-
-        public static getCategoricalValues(dataView: DataView) {
-            var categorical = dataView && dataView.categorical;
-            var categories = categorical && categorical.categories || [];
-            var values = categorical && categorical.values || <DataViewValueColumns>[];
-            var series = categorical && values.source && this.getSeriesValues(dataView);
-            return categorical && _.mapValues(new this<any[]>(), (n, i) =>
-                (<DataViewCategoricalColumn[]>_.toArray(categories)).concat(_.toArray(values))
-                    .filter(x => x.source.roles && x.source.roles[i]).map(x => x.values)[0]
-                || values.source && values.source.roles && values.source.roles[i] && series);
-        }
-
-        public static getSeriesValues(dataView: DataView) {
-            return dataView && dataView.categorical && dataView.categorical.values
-                && dataView.categorical.values.map(x => {
-                    return (x.source.groupName !== undefined)
-                        ? x.source.groupName
-                        : x.source.queryName;
+        public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
+            return dataView
+                && dataView.categorical
+                && dataView.categorical.values
+                && dataView.categorical.values.map((column: DataViewCategoricalColumn) => {
+                    return column.source.groupName !== undefined
+                        ? column.source.groupName
+                        : column.source.queryName;
                 });
         }
 
-        public static getCategoricalColumns(dataView: DataView) {
-            var categorical = dataView && dataView.categorical;
-            var categories = categorical && categorical.categories || [];
-            var values = categorical && categorical.values || <DataViewValueColumns>[];
-            return categorical && _.mapValues(
-                new this<DataViewCategoryColumn & DataViewValueColumn[] & DataViewValueColumns>(),
-                (n, i) => categories.filter(x => x.source.roles && x.source.roles[i])[0]
-                    || values.source && values.source.roles && values.source.roles[i] && values
-                    || values.filter(x => x.source.roles && x.source.roles[i]));
+        public static getCategoricalColumns(dataView: DataView): WordCloudColumns<DataViewCategoricalColumn> {
+            let categorical: DataViewCategorical = dataView && dataView.categorical,
+                categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
+                values: DataViewValueColumns = categorical && categorical.values || [] as DataViewValueColumns;
+
+            return categorical && _.mapValues(new this<DataViewCategoryColumn>() as any, (n: any, key: string) => {
+                return categories.filter((column: DataViewCategoryColumn) => column.source.roles && column.source.roles[key])[0]
+                    || values.source
+                    && values.source.roles
+                    && values.source.roles[key]
+                    && values
+                    || values.filter((column: DataViewValueColumn) => column.source.roles && column.source.roles[key]);
+            });
         }
 
-        private static getColumnSourcesT<T>(dataView: DataView) {
-            var columns = dataView && dataView.metadata && dataView.metadata.columns;
+        private static getColumnSourcesT<T>(dataView: DataView): WordCloudColumns<T> {
+            let columns: DataViewMetadataColumn[] = dataView
+                && dataView.metadata
+                && dataView.metadata.columns;
 
-            return columns && _.mapValues(
-                new this<T>(), (n, i) => columns.filter(x => x.roles && x.roles[i])[0]);
+            return columns && _.mapValues(new this<T>() as any, (n: any, key: string) => {
+                return columns.filter((column: DataViewMetadataColumn) => column.roles && column.roles[key])[0];
+            });
         }
 
         //Data Roles

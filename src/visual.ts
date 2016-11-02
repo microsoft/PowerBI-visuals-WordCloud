@@ -87,11 +87,6 @@ module powerbi.extensibility.visual {
 
         private static Radians: number = Math.PI / 180;
 
-        private static MinAngle: number = -180;
-        private static MaxAngle: number = 180;
-
-        private static MaxNumberOfWords: number = 2500;
-
         private static MinOpacity: number = 0.2;
         private static MaxOpacity: number = 1;
 
@@ -123,17 +118,84 @@ module powerbi.extensibility.visual {
             left: 10
         };
 
+        private static MinViewport: IViewport = {
+            width: 0,
+            height: 0
+        };
+
         private static DataPointFillProperty: DataViewObjectPropertyIdentifier = {
             objectName: "dataPoint",
             propertyName: "fill"
         };
+
+        /**
+         * Names of these consts aren't good, but I have no idea how to call them better.
+         * TODO: Please rename them if you know any better names.
+         */
+        private static TheFirstLineHeight: string = "5px"; // Note: This construction fixes bug #6343.
+        private static TheSecondLineHeight: string = "10px"; // Note: This construction fixes bug #6343.
+        private static TheThirdLineHeight: string = "14px"; // Note: This construction fixes bug #6343.
+        private static TheFourthLineHeight: string = "15px"; // Note: This construction fixes bug #6343.
+
+        private static DefaultTextFontSize: string = "1px";
+
+        private static MinFakeSize: number = 1;
+
+        private static DefaultStrokeStyle: string = "red";
+        private static DefaultTextAlign: string = "center";
+
+        private static DefaultCanvasSize: number = 1;
+
+        private static ArchimedeanFactor: number = 0.1;
+
+        private static WidthOffset: number = 5;
+        private static PositionOffset: number = 1;
+        private static IndexOffset: number = 2;
+        private static LxOffset: number = 4;
+
+        private static ScalePositionOffset: number = 5;
+
+        private static ByteMask: number = 31;
+        private static TheFirstByteMask: number = 32;
+        private static SxMask: number = 127;
+
+        private static LineWidthFactor: number = 2;
+
+        private static AdditionalDataPointSize: number = 1;
+        private static AdditionalTextWidth: number = 2;
+        private static AdditionalRandomValue: number = 0.5;
+
+        private static MinCount: number = 1;
+
+        private static DefaultDT: number = 1;
+        private static DefaultX: number = 0;
+        private static DefaultY: number = 0;
+        private static DefaultPadding: number = 1;
+        private static DefaultWidth: number = 0;
+        private static DefaultHeight: number = 0;
+        private static DefaultXOff: number = 0;
+        private static DefaultYOff: number = 0;
+        private static DefaultX0: number = 0;
+        private static DefaultY0: number = 0;
+        private static DefaultX1: number = 0;
+        private static DefaultY1: number = 0;
+
+        private static XOffsetPosition: number = 0.5;
+        private static YOffsetPosition: number = 0.75;
+        private static HeightOffsetPosition: number = 0.85;
+        private static TextFillcolor: string = "rgba(63, 191, 191, 0.0)";
+
+        private static MinFontSize: number = 0;
+        private static DefaultAngle: number = 0;
 
         private get settings(): WordCloudSettings {
             return this.data && this.data.settings;
         }
 
         private data: WordCloudData;
-        private durationAnimations: number = 150;
+        private colorPalette: IColorPalette;
+        private durationAnimations: number = 50;
+
         private specialViewport: IViewport;
 
         private fakeViewport: IViewport = {
@@ -146,7 +208,6 @@ module powerbi.extensibility.visual {
             height: 2048
         };
 
-        private colorPalette: IColorPalette;
         private root: Selection<any>;
         private main: Selection<any>;
         private wordsContainerSelection: Selection<any>;
@@ -178,7 +239,7 @@ module powerbi.extensibility.visual {
             visualHost: IVisualHost,
             previousData: WordCloudData): WordCloudData {
 
-            var categorical = WordCloudColumns.getCategoricalColumns(dataView),
+            let categorical: WordCloudColumns<DataViewCategoricalColumn>,
                 catValues: WordCloudColumns<any[]>,
                 settings: WordCloudSettings,
                 colorHelper: ColorHelper,
@@ -188,6 +249,8 @@ module powerbi.extensibility.visual {
                 dataPoints: WordCloudDataPoint[],
                 wordValueFormatter: IValueFormatter,
                 queryName: string;
+
+            categorical = WordCloudColumns.getCategoricalColumns(dataView);
 
             if (!categorical || !categorical.Category || _.isEmpty(categorical.Category.values)) {
                 return null;
@@ -220,9 +283,13 @@ module powerbi.extensibility.visual {
                 || null;
 
             texts = catValues.Category
-                .filter(x => x !== null && x !== undefined && x.toString().length > 0)
+                .filter((value: string) => {
+                    return value !== null
+                        && value !== undefined
+                        && value.toString().length > 0;
+                })
                 .map((item: string, index: number) => {
-                    var color: string,
+                    let color: string,
                         selectionIdBuilder: ISelectionIdBuilder;
 
                     if (categorical.Category.objects && categorical.Category.objects[index]) {
@@ -249,7 +316,7 @@ module powerbi.extensibility.visual {
                             && catValues.Values[index]
                             && !isNaN(catValues.Values[index]))
                             ? catValues.Values[index]
-                            : 1,
+                            : WordCloud.MinCount,
                         index: index,
                         selectionId: selectionIdBuilder.createSelectionId() as ISelectionId,
                         color: color,
@@ -269,31 +336,39 @@ module powerbi.extensibility.visual {
         }
 
         private static parseSettings(dataView: DataView, previousSettings: WordCloudSettings): WordCloudSettings {
-            var settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
+            const settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
 
-            settings.general.minFontSize = Math.max(settings.general.minFontSize, 1);
-            settings.general.maxFontSize = Math.max(settings.general.maxFontSize, 1);
+            settings.general.minFontSize = Math.max(
+                settings.general.minFontSize,
+                GeneralSettings.MinFontSize);
+
+            settings.general.maxFontSize = Math.max(
+                settings.general.maxFontSize,
+                GeneralSettings.MinFontSize);
+
             settings.general.maxFontSize = Math.max(
                 settings.general.maxFontSize,
                 settings.general.minFontSize);
 
             settings.rotateText.minAngle = Math.max(
-                Math.min(settings.rotateText.minAngle, WordCloud.MaxAngle),
-                WordCloud.MinAngle);
+                Math.min(settings.rotateText.minAngle, RotateTextSettings.MaxAngle),
+                RotateTextSettings.MinAngle);
 
             settings.rotateText.maxAngle = Math.max(
-                Math.min(settings.rotateText.maxAngle, WordCloud.MaxAngle),
-                WordCloud.MinAngle);
+                Math.min(settings.rotateText.maxAngle, RotateTextSettings.MaxAngle),
+                RotateTextSettings.MinAngle);
 
             settings.rotateText.maxAngle = Math.max(
                 settings.rotateText.maxAngle,
                 settings.rotateText.minAngle);
 
             settings.general.maxNumberOfWords = Math.max(
-                Math.min(settings.general.maxNumberOfWords, WordCloud.MaxNumberOfWords), 1);
+                Math.min(settings.general.maxNumberOfWords, RotateTextSettings.MaxNumberOfWords),
+                RotateTextSettings.MinNumberOfWords);
 
             settings.rotateText.maxNumberOfOrientations = Math.max(
-                Math.min(settings.rotateText.maxNumberOfOrientations, WordCloud.MaxNumberOfWords), 1);
+                Math.min(settings.rotateText.maxNumberOfOrientations, RotateTextSettings.MaxNumberOfWords),
+                RotateTextSettings.MinNumberOfWords);
 
             return settings;
         }
@@ -303,10 +378,14 @@ module powerbi.extensibility.visual {
             stopWords: string[],
             settings: WordCloudSettings): WordCloudText[][] {
 
-            var brokenStrings: WordCloudText[] = WordCloud.getBrokenWords(texts, stopWords, settings),
-                result = <WordCloudText[][]>_.values(_.groupBy(brokenStrings, x => x.text));
+            let brokenStrings: WordCloudText[] = WordCloud.getBrokenWords(texts, stopWords, settings),
+                result = <WordCloudText[][]>_.values(_.groupBy(
+                    brokenStrings,
+                    (textObject: WordCloudText) => textObject.text));
 
-            result = result.map(texts => _.sortBy(texts, x => x.textGroup.length));
+            result = result.map((texts: WordCloudText[]) => {
+                return _.sortBy(texts, (textObject: WordCloudText) => textObject.textGroup.length);
+            });
 
             return result;
         }
@@ -316,7 +395,7 @@ module powerbi.extensibility.visual {
             stopWords: string[],
             settings: WordCloudSettings): WordCloudText[] {
 
-            var brokenStrings: WordCloudText[] = [],
+            const brokenStrings: WordCloudText[] = [],
                 whiteSpaceRegExp: RegExp = /\s/,
                 punctuatuinRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
 
@@ -326,14 +405,16 @@ module powerbi.extensibility.visual {
 
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
-                    var splittedWords: string[] = item.text
+                    let splittedWords: string[] = item.text
                         .replace(punctuatuinRegExp, " ")
                         .split(whiteSpaceRegExp);
 
                     if (settings.stopWords.show) {
-                        splittedWords = splittedWords.filter((value: string) =>
-                            value.length > 0 && !stopWords.some((removeWord: string) =>
-                                value.toLocaleLowerCase() === removeWord.toLocaleLowerCase()));
+                        splittedWords = splittedWords.filter((value: string) => {
+                            return value.length > 0 && !stopWords.some((removeWord: string) => {
+                                return value.toLocaleLowerCase() === removeWord.toLocaleLowerCase();
+                            });
+                        });
                     }
 
                     splittedWords.forEach((splittedWord: string) => {
@@ -341,7 +422,7 @@ module powerbi.extensibility.visual {
                             return;
                         }
 
-                        var existingWord = _.find(words, (word: WordCloudText) => {
+                        const existingWord = _.find(words, (word: WordCloudText) => {
                             return word.text.toString().toLocaleLowerCase() === splittedWord.toLocaleLowerCase();
                         });
 
@@ -374,37 +455,44 @@ module powerbi.extensibility.visual {
                 return [];
             }
 
-            var returnValues = textGroups.map((values: WordCloudText[]) => {
+            const returnValues = textGroups.map((values: WordCloudText[]) => {
                 return <WordCloudDataPoint>{
                     text: values[0].text,
-                    x: 0,
-                    y: 0,
+                    x: WordCloud.DefaultX,
+                    y: WordCloud.DefaultY,
                     rotate: WordCloud.getAngle(settings),
-                    padding: 1,
-                    width: 0,
-                    height: 0,
-                    xOff: 0,
-                    yOff: 0,
-                    x0: 0,
-                    y0: 0,
-                    x1: 0,
-                    y1: 0,
+                    padding: WordCloud.DefaultPadding,
+                    width: WordCloud.DefaultWidth,
+                    height: WordCloud.DefaultHeight,
+                    xOff: WordCloud.DefaultXOff,
+                    yOff: WordCloud.DefaultYOff,
+                    x0: WordCloud.DefaultX0,
+                    y0: WordCloud.DefaultY0,
+                    x1: WordCloud.DefaultX1,
+                    y1: WordCloud.DefaultY1,
                     color: values[0].color,
-                    selectionIds: values.map(x => x.selectionId),
+                    selectionIds: values.map((text: WordCloudText) => text.selectionId),
                     wordIndex: values[0].index,
-                    count: _.sumBy(values, x => x.count)
+                    count: _.sumBy(values, (text: WordCloudText) => text.count)
                 };
             });
 
-            var minValue = _.minBy(returnValues, x => x.count).count,
-                maxValue = _.maxBy(returnValues, x => x.count).count,
-                texts = textGroups.map(x => x[0]);
+            const minValue = _.minBy(returnValues, (dataPoint: WordCloudDataPoint) => dataPoint.count).count,
+                maxValue = _.maxBy(returnValues, (dataPoint: WordCloudDataPoint) => dataPoint.count).count,
+                texts = textGroups.map((textGroup: WordCloudText[]) => textGroup[0]);
 
             returnValues.forEach((dataPoint: WordCloudDataPoint) => {
-                dataPoint.size = WordCloud.getWordFontSize(texts, settings, dataPoint.count, minValue, maxValue);
+                dataPoint.size = WordCloud.getWordFontSize(
+                    texts,
+                    settings,
+                    dataPoint.count,
+                    minValue,
+                    maxValue);
             });
 
-            return returnValues.sort((a, b) => b.count - a.count);
+            return returnValues.sort((a: WordCloudDataPoint, b: WordCloudDataPoint) => {
+                return b.count - a.count;
+            });
         }
 
         private static getWordFontSize(
@@ -415,32 +503,39 @@ module powerbi.extensibility.visual {
             maxValue: number,
             scaleType: WordCloudScaleType = WordCloudScaleType.value) {
 
-            var weight: number, fontSize: number,
-                minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageCoefficent,
-                maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageCoefficent;
+            let weight: number,
+                fontSize: number,
+                minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageFactor,
+                maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageFactor;
 
-            if (texts.length < 2) {
+            if (texts.length <= RotateTextSettings.MinNumberOfWords) {
                 return maxFontSize;
             }
 
             switch (scaleType) {
                 case WordCloudScaleType.logn: {
                     weight = Math.log(value);
+
+                    break;
                 }
                 case WordCloudScaleType.sqrt: {
                     weight = Math.sqrt(value);
+
+                    break;
                 }
                 case WordCloudScaleType.value: {
                     weight = value;
+
+                    break;
                 }
             }
 
             if (weight > minValue) {
-                fontSize = (maxValue - minValue) !== 0
+                fontSize = (maxValue - minValue) !== WordCloud.MinFontSize
                     ? (maxFontSize * (weight - minValue)) / (maxValue - minValue)
-                    : 0;
+                    : WordCloud.MinFontSize;
             } else {
-                fontSize = 0;
+                fontSize = WordCloud.MinFontSize;
             }
 
             fontSize = (fontSize * 100) / maxFontSize;
@@ -452,10 +547,10 @@ module powerbi.extensibility.visual {
 
         private static getAngle(settings: WordCloudSettings): number {
             if (!settings.rotateText.show) {
-                return 0;
+                return WordCloud.DefaultAngle;
             }
 
-            var angle = ((settings.rotateText.maxAngle - settings.rotateText.minAngle)
+            const angle: number = ((settings.rotateText.maxAngle - settings.rotateText.minAngle)
                 / settings.rotateText.maxNumberOfOrientations)
                 * Math.floor(Math.random() * settings.rotateText.maxNumberOfOrientations);
 
@@ -472,10 +567,16 @@ module powerbi.extensibility.visual {
             this.colorPalette = options.host.colorPalette;
             this.visualHost = options.host;
 
-            this.selectionManager = new ValueSelectionManager<string>(this.visualHost, w => {
-                var dataPoints = this.data && this.data.dataPoints && this.data.dataPoints.filter(x => x.text === w);
+            this.selectionManager = new ValueSelectionManager<string>(this.visualHost, (text: string) => {
+                const dataPoints: WordCloudDataPoint[] = this.data
+                    && this.data.dataPoints
+                    && this.data.dataPoints.filter((dataPoint: WordCloudDataPoint) => {
+                        return dataPoint.text === text;
+                    });
 
-                return dataPoints && dataPoints[0] && dataPoints[0].selectionIds;
+                return dataPoints
+                    && dataPoints[0]
+                    && dataPoints[0].selectionIds;
             });
 
             this.layout = new VisualLayout(null, WordCloud.DefaultMargin);
@@ -486,7 +587,7 @@ module powerbi.extensibility.visual {
                 this.setSelection(null);
             });
 
-            this.fontFamily = this.root.style("font-family");
+            this.fontFamily = this.root.style("font-family"); // TODO: check it.
 
             this.main = this.root.append("g");
 
@@ -498,13 +599,13 @@ module powerbi.extensibility.visual {
         }
 
         public update(visualUpdateOptions: VisualUpdateOptions): void {
-            if (!visualUpdateOptions ||
-                !visualUpdateOptions.viewport ||
-                !visualUpdateOptions.dataViews ||
-                !visualUpdateOptions.dataViews[0] ||
-                !visualUpdateOptions.viewport ||
-                !(visualUpdateOptions.viewport.height >= 0) ||
-                !(visualUpdateOptions.viewport.width >= 0)) {
+            if (!visualUpdateOptions
+                || !visualUpdateOptions.viewport
+                || !visualUpdateOptions.dataViews
+                || !visualUpdateOptions.dataViews[0]
+                || !visualUpdateOptions.viewport
+                || !(visualUpdateOptions.viewport.height >= WordCloud.MinViewport.height)
+                || !(visualUpdateOptions.viewport.width >= WordCloud.MinViewport.width)) {
 
                 return;
             }
@@ -517,7 +618,7 @@ module powerbi.extensibility.visual {
                 this.visualUpdateOptions = this.incomingUpdateOptions;
                 this.layout.viewport = this.visualUpdateOptions.viewport;
 
-                var dataView: DataView = visualUpdateOptions.dataViews[0];
+                const dataView: DataView = visualUpdateOptions.dataViews[0];
 
                 if (this.layout.viewportInIsZero) {
                     return;
@@ -525,7 +626,7 @@ module powerbi.extensibility.visual {
 
                 this.updateSize();
 
-                var data = WordCloud.converter(
+                const data: WordCloudData = WordCloud.converter(
                     dataView,
                     this.colorPalette,
                     this.visualHost,
@@ -538,7 +639,9 @@ module powerbi.extensibility.visual {
 
                 this.data = data;
 
-                this.computePositions((wordCloudDataView: WordCloudDataView) => this.render(wordCloudDataView));
+                this.computePositions((wordCloudDataView: WordCloudDataView) => {
+                    this.render(wordCloudDataView);
+                });
             }
         }
 
@@ -550,7 +653,7 @@ module powerbi.extensibility.visual {
         }
 
         private computePositions(onPositionsComputed: (WordCloudDataView) => void): void {
-            var words: WordCloudDataPoint[] = this.data.dataPoints;
+            const words: WordCloudDataPoint[] = this.data.dataPoints;
 
             if (_.isEmpty(words)) {
                 this.clear();
@@ -559,7 +662,10 @@ module powerbi.extensibility.visual {
             }
 
             requestAnimationFrame(() => {
-                var surface: number[] = _.range(0, (this.specialViewport.width >> 5) * this.specialViewport.height, 0),
+                let surface: number[] = _.range(
+                    WordCloud.MinViewport.width,
+                    (this.specialViewport.width >> WordCloud.WidthOffset) * this.specialViewport.height,
+                    WordCloud.MinViewport.width),
                     canvasContext: CanvasRenderingContext2D;
 
                 words.forEach((dataPoint: WordCloudDataPoint) => {
@@ -568,9 +674,9 @@ module powerbi.extensibility.visual {
                         ||
                         (dataPoint.widthOfWord = TextMeasurementService.measureSvgTextWidth({
                             fontFamily: this.fontFamily,
-                            fontSize: (dataPoint.size + 1) + WordCloud.Size,
+                            fontSize: (dataPoint.size + WordCloud.AdditionalDataPointSize) + WordCloud.Size,
                             text: dataPoint.text
-                        }) + 2);
+                        }) + WordCloud.AdditionalTextWidth);
                 });
 
                 canvasContext = this.getCanvasContext();
@@ -581,9 +687,7 @@ module powerbi.extensibility.visual {
                         canvasContext,
                         surface,
                         null,
-                        onPositionsComputed,
-                        [],
-                        0);
+                        onPositionsComputed);
                 }
             });
         }
@@ -597,24 +701,14 @@ module powerbi.extensibility.visual {
             wordsForDraw: WordCloudDataPoint[] = [],
             index: number = 0): void {
 
-            var word: WordCloudDataPoint = words[index],
-                ratio: number = 1;
+            let word: WordCloudDataPoint = words[index],
+                ratio: number = this.getRatio(words.length);
 
-            if (words.length <= 10) {
-                ratio = 5;
-            }
-            else if (words.length <= 25) {
-                ratio = 3;
-            }
-            else if (words.length <= 75) {
-                ratio = 1.5;
-            }
-            else if (words.length <= 100) {
-                ratio = 1.25;
-            }
+            word.x = (this.specialViewport.width / ratio
+                * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
-            word.x = (this.specialViewport.width / ratio * (Math.random() + 0.5)) >> 1;
-            word.y = (this.specialViewport.height / ratio * (Math.random() + 0.5)) >> 1;
+            word.y = (this.specialViewport.height / ratio
+                * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
             if (!word.sprite) {
                 this.generateSprites(context, words, index);
@@ -624,8 +718,8 @@ module powerbi.extensibility.visual {
                 wordsForDraw.push(word);
 
                 borders = this.updateBorders(word, borders);
-                word.x -= this.specialViewport.width >> 1;
-                word.y -= this.specialViewport.height >> 1;
+                word.x -= this.specialViewport.width >> WordCloud.PositionOffset;
+                word.y -= this.specialViewport.height >> WordCloud.PositionOffset;
 
                 if (wordsForDraw.length >= this.settings.general.maxNumberOfWords) {
                     index = words.length - 1;
@@ -633,7 +727,14 @@ module powerbi.extensibility.visual {
             }
 
             if (++index < words.length && this.root) {
-                this.computeCycle(words, context, surface, borders, onPositionsComputed, wordsForDraw, index);
+                this.computeCycle(
+                    words,
+                    context,
+                    surface,
+                    borders,
+                    onPositionsComputed,
+                    wordsForDraw,
+                    index);
             } else {
                 onPositionsComputed({
                     data: wordsForDraw,
@@ -643,22 +744,45 @@ module powerbi.extensibility.visual {
             }
         }
 
+        private getRatio(length: number): number {
+            let ratio: number = 1;
+
+            if (length <= 10) {
+                ratio = 5;
+            }
+            else if (length <= 25) {
+                ratio = 3;
+            }
+            else if (length <= 75) {
+                ratio = 1.5;
+            }
+            else if (length <= 100) {
+                ratio = 1.25;
+            }
+
+            return ratio;
+        }
+
         private updateBorders(word: WordCloudDataPoint, borders: IPoint[]): IPoint[] {
             if (borders && borders.length === 2) {
-                var leftBorder: IPoint = borders[0],
+                const leftBorder: IPoint = borders[0],
                     rightBorder: IPoint = borders[1];
 
-                if (word.x + word.x0 < leftBorder.x)
+                if (word.x + word.x0 < leftBorder.x) {
                     leftBorder.x = word.x + word.x0;
+                }
 
-                if (word.y + word.y0 < leftBorder.y)
+                if (word.y + word.y0 < leftBorder.y) {
                     leftBorder.y = word.y + word.y0;
+                }
 
-                if (word.x + word.x1 > rightBorder.x)
+                if (word.x + word.x1 > rightBorder.x) {
                     rightBorder.x = word.x + word.x1;
+                }
 
-                if (word.y + word.y1 > rightBorder.y)
+                if (word.y + word.y1 > rightBorder.y) {
                     rightBorder.y = word.y + word.y1;
+                }
             } else {
                 borders = [
                     {
@@ -679,19 +803,23 @@ module powerbi.extensibility.visual {
             words: WordCloudDataPoint[],
             startIndex: number): void {
 
-            context.clearRect(0, 0, this.canvasViewport.width << 5, this.canvasViewport.height);
+            context.clearRect(
+                0,
+                0,
+                this.canvasViewport.width << WordCloud.WidthOffset,
+                this.canvasViewport.height);
 
-            var x: number = 0,
-                y: number = 0,
+            let x: number = WordCloud.DefaultX,
+                y: number = WordCloud.DefaultX,
                 maxHeight: number = 0;
 
-            for (var i: number = startIndex, length = words.length; i < length; i++) {
-                var currentWordData: WordCloudDataPoint = words[i],
+            for (var i: number = startIndex, length: number = words.length; i < length; i++) {
+                let currentWordData: WordCloudDataPoint = words[i],
                     widthOfWord: number = currentWordData.getWidthOfWord(),
-                    heightOfWord: number = currentWordData.size << 1;
+                    heightOfWord: number = currentWordData.size << WordCloud.PositionOffset;
 
                 if (currentWordData.rotate) {
-                    var sr: number = Math.sin(currentWordData.rotate * WordCloud.Radians),
+                    const sr: number = Math.sin(currentWordData.rotate * WordCloud.Radians),
                         cr: number = Math.cos(currentWordData.rotate * WordCloud.Radians),
                         widthCr: number = widthOfWord * cr,
                         widthSr: number = widthOfWord * sr,
@@ -700,20 +828,20 @@ module powerbi.extensibility.visual {
 
                     widthOfWord = (Math.max(
                         Math.abs(widthCr + heightSr),
-                        Math.abs(widthCr - heightSr)) + 31) >> 5 << 5;
+                        Math.abs(widthCr - heightSr)) + WordCloud.ByteMask) >> WordCloud.WidthOffset << WordCloud.WidthOffset;
 
                     heightOfWord = Math.floor(Math.max(
                         Math.abs(widthSr + heightCr),
                         Math.abs(widthSr - heightCr)));
                 } else {
-                    widthOfWord = (widthOfWord + 31) >> 5 << 5;
+                    widthOfWord = (widthOfWord + WordCloud.ByteMask) >> WordCloud.WidthOffset << WordCloud.WidthOffset;
                 }
 
                 if (heightOfWord > maxHeight) {
                     maxHeight = heightOfWord;
                 }
 
-                if (x + widthOfWord >= (this.canvasViewport.width << 5)) {
+                if (x + widthOfWord >= (this.canvasViewport.width << WordCloud.WidthOffset)) {
                     x = 0;
                     y += maxHeight;
                     maxHeight = 0;
@@ -722,12 +850,14 @@ module powerbi.extensibility.visual {
                 context.save();
 
                 context.font = "normal normal "
-                    + (currentWordData.size + 1)
+                    + (currentWordData.size + WordCloud.AdditionalDataPointSize)
                     + WordCloud.Size
                     + " "
                     + this.fontFamily;
 
-                context.translate((x + (widthOfWord >> 1)), (y + (heightOfWord >> 1)));
+                context.translate(
+                    (x + (widthOfWord >> WordCloud.PositionOffset)),
+                    (y + (heightOfWord >> WordCloud.PositionOffset)));
 
                 if (currentWordData.rotate) {
                     context.rotate(currentWordData.rotate * WordCloud.Radians);
@@ -736,7 +866,7 @@ module powerbi.extensibility.visual {
                 context.fillText(currentWordData.text, 0, 0);
 
                 if (currentWordData.padding) {
-                    context.lineWidth = 2 * currentWordData.padding;
+                    context.lineWidth = WordCloud.LineWidthFactor * currentWordData.padding;
                     context.strokeText(currentWordData.text, 0, 0);
                 }
 
@@ -744,10 +874,13 @@ module powerbi.extensibility.visual {
 
                 currentWordData.width = widthOfWord;
                 currentWordData.height = heightOfWord;
+
                 currentWordData.xOff = x;
                 currentWordData.yOff = y;
-                currentWordData.x1 = widthOfWord >> 1;
-                currentWordData.y1 = heightOfWord >> 1;
+
+                currentWordData.x1 = widthOfWord >> WordCloud.PositionOffset;
+                currentWordData.y1 = heightOfWord >> WordCloud.PositionOffset;
+
                 currentWordData.x0 = -currentWordData.x1;
                 currentWordData.y0 = -currentWordData.y1;
 
@@ -757,18 +890,18 @@ module powerbi.extensibility.visual {
             this.setSprites(context, words);
         }
 
-        private setSprites(context: CanvasRenderingContext2D, words: WordCloudDataPoint[]) {
-            var pixels: Uint8ClampedArray,
+        private setSprites(context: CanvasRenderingContext2D, words: WordCloudDataPoint[]): void {
+            let pixels: Uint8ClampedArray,
                 sprites: number[] = [];
 
             pixels = context.getImageData(
                 0,
                 0,
-                this.canvasViewport.width << 5,
+                this.canvasViewport.width << WordCloud.WidthOffset,
                 this.canvasViewport.height).data;
 
-            for (var i = words.length - 1; i >= 0; i--) {
-                var currentWordData: WordCloudDataPoint = words[i],
+            for (let i: number = words.length - 1; i >= 0; i--) {
+                let currentWordData: WordCloudDataPoint = words[i],
                     width: number = currentWordData.width,
                     width32: number = width >> 5,
                     height: number = currentWordData.y1 - currentWordData.y0,
@@ -777,14 +910,14 @@ module powerbi.extensibility.visual {
                     seen: number = 0,
                     seenRow: number = 0;
 
-                if (currentWordData.xOff + width >= (this.canvasViewport.width << 5) ||
-                    currentWordData.yOff + height >= this.canvasViewport.height) {
+                if (currentWordData.xOff + width >= (this.canvasViewport.width << WordCloud.WidthOffset)
+                    || currentWordData.yOff + height >= this.canvasViewport.height) {
                     currentWordData.sprite = null;
 
                     continue;
                 }
 
-                for (var j = 0; j < height * width32; j++) {
+                for (let j: number = 0; j < height * width32; j++) {
                     sprites[j] = 0;
                 }
 
@@ -799,12 +932,14 @@ module powerbi.extensibility.visual {
                 seen = 0;
                 seenRow = -1;
 
-                for (var j = 0; j < height; j++) {
-                    for (var k = 0; k < width; k++) {
-                        var l: number = width32 * j + (k >> 5),
-                            index: number = ((y + j) * (this.canvasViewport.width << 5) + (x + k)) << 2,
+                for (let j: number = 0; j < height; j++) {
+                    for (let k: number = 0; k < width; k++) {
+                        const l: number = width32 * j + (k >> WordCloud.WidthOffset),
+                            index: number = ((y + j)
+                                * (this.canvasViewport.width << WordCloud.WidthOffset)
+                                + (x + k)) << WordCloud.IndexOffset,
                             m: number = pixels[index]
-                                ? 1 << (31 - (k % 32))
+                                ? 1 << (WordCloud.ByteMask - (k % WordCloud.TheFirstByteMask))
                                 : 0;
 
                         sprites[l] |= m;
@@ -828,12 +963,12 @@ module powerbi.extensibility.visual {
 
         private findPosition(surface: number[], word: WordCloudDataPoint, borders: IPoint[]): boolean {
             var startPoint: IPoint = { x: word.x, y: word.y },
-                delta = Math.sqrt(
-                    this.specialViewport.width * this.specialViewport.width
-                    +
-                    this.specialViewport.height * this.specialViewport.height),
+                delta: number = Math.sqrt(this.specialViewport.width * this.specialViewport.width
+                    + this.specialViewport.height * this.specialViewport.height),
                 point: IPoint,
-                dt: number = Math.random() < 0.5 ? 1 : -1,
+                dt: number = Math.random() < WordCloud.AdditionalRandomValue
+                    ? WordCloud.DefaultDT
+                    : -WordCloud.DefaultDT,
                 shift: number = -dt,
                 dx: number,
                 dy: number;
@@ -853,30 +988,30 @@ module powerbi.extensibility.visual {
                 word.x = startPoint.x + dx;
                 word.y = startPoint.y + dy;
 
-                if (word.x + word.x0 < 0 ||
-                    word.y + word.y0 < 0 ||
-                    word.x + word.x1 > this.specialViewport.width ||
-                    word.y + word.y1 > this.specialViewport.height) {
+                if (word.x + word.x0 < WordCloud.DefaultX0
+                    || word.y + word.y0 < WordCloud.DefaultY0
+                    || word.x + word.x1 > this.specialViewport.width
+                    || word.y + word.y1 > this.specialViewport.height) {
 
                     continue;
                 }
 
                 if (!borders || !this.checkIntersect(word, surface)) {
                     if (!borders || this.checkIntersectOfRectangles(word, borders[0], borders[1])) {
-                        var sprite: number[] = word.sprite,
-                            width: number = word.width >> 5,
-                            shiftWidth: number = this.specialViewport.width >> 5,
-                            lx: number = word.x - (width << 4),
-                            sx: number = lx & 127,
-                            msx: number = 32 - sx,
+                        let sprite: number[] = word.sprite,
+                            width: number = word.width >> WordCloud.WidthOffset,
+                            shiftWidth: number = this.specialViewport.width >> WordCloud.WidthOffset,
+                            lx: number = word.x - (width << WordCloud.LxOffset),
+                            sx: number = lx & WordCloud.SxMask,
+                            msx: number = WordCloud.TheFirstByteMask - sx,
                             height: number = word.y1 - word.y0,
-                            x: number = (word.y + word.y0) * shiftWidth + (lx >> 5);
+                            x: number = (word.y + word.y0) * shiftWidth + (lx >> WordCloud.WidthOffset);
 
-                        for (var i: number = 0; i < height; i++) {
-                            var lastSprite: number = 0;
+                        for (let i: number = 0; i < height; i++) {
+                            let lastSprite: number = 0;
 
-                            for (var j: number = 0; j <= width; j++) {
-                                var leftMask: number = lastSprite << msx,
+                            for (let j: number = 0; j <= width; j++) {
+                                let leftMask: number = lastSprite << msx,
                                     rightMask: number;
 
                                 if (j < width)
@@ -903,9 +1038,9 @@ module powerbi.extensibility.visual {
         }
 
         private archimedeanSpiral(value: number): IPoint {
-            var ratio: number = this.specialViewport.width / this.specialViewport.height;
+            const ratio: number = this.specialViewport.width / this.specialViewport.height;
 
-            value = value * 0.1;
+            value = value * WordCloud.ArchimedeanFactor;
 
             return {
                 x: ratio * value * Math.cos(value),
@@ -914,20 +1049,20 @@ module powerbi.extensibility.visual {
         }
 
         private checkIntersect(word: WordCloudDataPoint, surface: number[]): boolean {
-            var shiftWidth: number = this.specialViewport.width >> 5,
+            let shiftWidth: number = this.specialViewport.width >> WordCloud.WidthOffset,
                 sprite: number[] = word.sprite,
-                widthOfWord: number = word.width >> 5,
-                lx: number = word.x - (widthOfWord << 4),
-                sx: number = lx & 127,
-                msx: number = 32 - sx,
+                widthOfWord: number = word.width >> WordCloud.WidthOffset,
+                lx: number = word.x - (widthOfWord << WordCloud.LxOffset),
+                sx: number = lx & WordCloud.SxMask,
+                msx: number = WordCloud.TheFirstByteMask - sx,
                 heightOfWord: number = word.y1 - word.y0,
-                x: number = (word.y + word.y0) * shiftWidth + (lx >> 5);
+                x: number = (word.y + word.y0) * shiftWidth + (lx >> WordCloud.WidthOffset);
 
-            for (var i = 0; i < heightOfWord; i++) {
-                var lastSprite: number = 0;
+            for (let i: number = 0; i < heightOfWord; i++) {
+                let lastSprite: number = 0;
 
-                for (var j = 0; j <= widthOfWord; j++) {
-                    var mask: number = 0,
+                for (var j: number = 0; j <= widthOfWord; j++) {
+                    let mask: number = 0,
                         leftMask: number,
                         intersectMask: number = 0;
 
@@ -973,24 +1108,24 @@ module powerbi.extensibility.visual {
                 return null;
             }
 
-            this.canvas.width = 1;
-            this.canvas.height = 1;
+            this.canvas.width = WordCloud.DefaultCanvasSize;
+            this.canvas.height = WordCloud.DefaultCanvasSize;
 
-            var context: CanvasRenderingContext2D = this.canvas.getContext("2d");
+            let context: CanvasRenderingContext2D = this.canvas.getContext("2d");
 
-            this.canvas.width = this.canvasViewport.width << 5;
+            this.canvas.width = this.canvasViewport.width << WordCloud.WidthOffset;
             this.canvas.height = this.canvasViewport.height;
 
             context = this.canvas.getContext("2d");
 
-            context.fillStyle = context.strokeStyle = "red";
-            context.textAlign = "center";
+            context.fillStyle = context.strokeStyle = WordCloud.DefaultStrokeStyle;
+            context.textAlign = WordCloud.DefaultTextAlign;
 
             return context;
         }
 
         private updateSize(): void {
-            var fakeWidth: number,
+            let fakeWidth: number,
                 fakeHeight: number,
                 ratio: number;
 
@@ -998,7 +1133,7 @@ module powerbi.extensibility.visual {
                 / (this.layout.viewportIn.width * this.layout.viewportIn.height));
 
             if (isNaN(ratio)) {
-                fakeHeight = fakeWidth = 1;
+                fakeHeight = fakeWidth = WordCloud.MinFakeSize;
             } else {
                 fakeHeight = this.layout.viewportIn.height * ratio;
                 fakeWidth = this.layout.viewportIn.width * ratio;
@@ -1034,7 +1169,7 @@ module powerbi.extensibility.visual {
 
             wordGroupEnterSelection
                 .append("svg:text")
-                .style("font-size", "1px");
+                .style("font-size", WordCloud.DefaultTextFontSize);
 
             wordGroupEnterSelection
                 .append("svg:rect");
@@ -1065,11 +1200,11 @@ module powerbi.extensibility.visual {
                 .selectAll("rect")
                 .data((dataPoint: WordCloudDataPoint) => [dataPoint])
                 .attr({
-                    x: (d: WordCloudDataPoint) => -d.getWidthOfWord() * 0.5,
+                    x: (d: WordCloudDataPoint) => -d.getWidthOfWord() * WordCloud.XOffsetPosition,
                     width: (d: WordCloudDataPoint) => d.getWidthOfWord(),
-                    y: (d: WordCloudDataPoint) => -d.size * 0.75,
-                    height: (d: WordCloudDataPoint) => d.size * 0.85,
-                    fill: (d: WordCloudDataPoint) => "rgba(63, 191, 191, 0.0)",
+                    y: (d: WordCloudDataPoint) => -d.size * WordCloud.YOffsetPosition,
+                    height: (d: WordCloudDataPoint) => d.size * WordCloud.HeightOffsetPosition,
+                    fill: (d: WordCloudDataPoint) => WordCloud.TextFillcolor,
                 })
                 .on("click", (dataPoint: WordCloudDataPoint) => {
                     (d3.event as MouseEvent).stopPropagation();
@@ -1087,8 +1222,8 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private clearIntorrectSelection(dataView: DataView) {
-            var categories: DataViewCategoryColumn[],
+        private clearIntorrectSelection(dataView: DataView): void {
+            let categories: DataViewCategoryColumn[],
                 identityKeys: string[],
                 oldIdentityKeys: string[] = this.oldIdentityKeys;
 
@@ -1110,15 +1245,25 @@ module powerbi.extensibility.visual {
             }
 
             if (!_.isEmpty(identityKeys)) {
-                var incorrectValues = this.selectionManager.getSelectionIdValues.filter(x =>
-                    x.selectionId.some(s => _.includes(identityKeys, s.getKey())));
+                let incorrectValues: SelectionIdValues<string>[] = this.selectionManager
+                    .getSelectionIdValues
+                    .filter((idValue: SelectionIdValues<string>) => {
+                        return idValue.selectionId.some((selectionId: ISelectionId) => {
+                            return _.includes(identityKeys, selectionId.getKey());
+                        });
+                    });
 
-                incorrectValues.forEach(v => this.selectionManager.selectedValues
-                    .splice(this.selectionManager.selectedValues.indexOf(v.value), 1));
+                incorrectValues.forEach((value: SelectionIdValues<string>) => {
+                    this.selectionManager
+                        .selectedValues
+                        .splice(this.selectionManager
+                            .selectedValues
+                            .indexOf(value.value), 1);
+                });
             }
         }
 
-        private setSelection(dataPoint: WordCloudDataPoint) {
+        private setSelection(dataPoint: WordCloudDataPoint): void {
             if (!dataPoint) {
                 this.selectionManager
                     .clear(true)
@@ -1128,15 +1273,13 @@ module powerbi.extensibility.visual {
             }
 
             this.selectionManager
-                .selectAndSendSelection(
-                dataPoint.text,
-                (d3.event as MouseEvent).ctrlKey)
+                .selectAndSendSelection(dataPoint.text, (d3.event as MouseEvent).ctrlKey)
                 .then(() => this.renderSelection());
         }
 
-        private scaleMainView(wordCloudDataView: WordCloudDataView) {
-            var rectangles: ClientRect[] = wordCloudDataView.data.map((dataPoint: WordCloudDataPoint) => {
-                var hw: number = dataPoint.width / 2,
+        private scaleMainView(wordCloudDataView: WordCloudDataView): void {
+            const rectangles: ClientRect[] = wordCloudDataView.data.map((dataPoint: WordCloudDataPoint) => {
+                const hw: number = dataPoint.width / 2,
                     hh: number = dataPoint.height / 2;
 
                 return <ClientRect>{
@@ -1151,23 +1294,22 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var rectangle: ClientRect = <ClientRect>{
-                left: _.minBy(rectangles, x => x.left).left,
-                top: _.minBy(rectangles, x => x.top).top,
-                right: _.maxBy(rectangles, x => x.right).right,
-                bottom: _.maxBy(rectangles, x => x.bottom).bottom
-            };
+            const rectangle: ClientRect = {
+                left: _.minBy(rectangles, (rect: ClientRect) => rect.left).left,
+                top: _.minBy(rectangles, (rect: ClientRect) => rect.top).top,
+                right: _.maxBy(rectangles, (rect: ClientRect) => rect.right).right,
+                bottom: _.maxBy(rectangles, (rect: ClientRect) => rect.bottom).bottom
+            } as ClientRect;
 
-            var rectWidth = rectangle.right - rectangle.left;
-            var rectHeight = rectangle.bottom - rectangle.top;
+            const rectWidth: number = rectangle.right - rectangle.left,
+                rectHeight: number = rectangle.bottom - rectangle.top;
 
-            var scaleByX: number = this.layout.viewportIn.width / (rectWidth),
-                scaleByY: number = this.layout.viewportIn.height / (rectHeight);
+            const scaleByX: number = this.layout.viewportIn.width / (rectWidth),
+                scaleByY: number = this.layout.viewportIn.height / (rectHeight),
+                scale: number = Math.min(scaleByX, scaleByY);
 
-            var scale: number = Math.min(scaleByX, scaleByY);
-
-            var x: number = -rectangle.left * scale + 5,
-                y: number = -rectangle.top * scale + 5;
+            const x: number = -rectangle.left * scale + WordCloud.ScalePositionOffset,
+                y: number = -rectangle.top * scale + WordCloud.ScalePositionOffset;
 
             /**
              * Note: This construction fixes bug #6343.
@@ -1175,11 +1317,11 @@ module powerbi.extensibility.visual {
              * The line-height doesn't work with svg, but it call the render cycle of the browser.
              */
             this.main
-                .style("line-height", "5px"); // Note: This construction fixes bug #6343.
+                .style("line-height", WordCloud.TheFirstLineHeight); // Note: This construction fixes bug #6343.
 
             this.main
-                .attr("transform", `${SVGUtil.translate(x, y)} scale(${scale})`)
-                .style("line-height", "10px"); // Note: This construction fixes bug #6343.
+                .attr("transform", SVGUtil.translateAndScale(x, y, scale))
+                .style("line-height", WordCloud.TheSecondLineHeight); // Note: This construction fixes bug #6343.
         }
 
         private renderSelection(): void {
@@ -1193,7 +1335,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var selectedColumns = this.wordsTextUpdateSelection.filter((dataPoint: WordCloudDataPoint) => {
+            const selectedColumns = this.wordsTextUpdateSelection.filter((dataPoint: WordCloudDataPoint) => {
                 return this.selectionManager.isSelected(dataPoint.text);
             });
 
@@ -1205,10 +1347,10 @@ module powerbi.extensibility.visual {
             element.style("fill-opacity", opacityValue);
 
             if (this.main) { // Note: This construction fixes bug #6343.
-                this.main.style("line-height", "14px");
+                this.main.style("line-height", WordCloud.TheThirdLineHeight);
 
                 this.animateSelection(this.main, 0, this.durationAnimations)
-                    .style("line-height", "15px");
+                    .style("line-height", WordCloud.TheFourthLineHeight);
             }
         }
 

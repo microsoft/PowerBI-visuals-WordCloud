@@ -37,6 +37,11 @@ module powerbi.extensibility.visual {
     // powerbi.visuals
     import ISelectionId = powerbi.visuals.ISelectionId;
 
+    export interface SelectionIdValues<T> {
+        value: T;
+        selectionId: ISelectionId[];
+    }
+
     export class ValueSelectionManager<T> {
         private selectedValuesValue: T[] = [];
         private visualHost: IVisualHost;
@@ -47,9 +52,11 @@ module powerbi.extensibility.visual {
             this.visualHost = visualHost;
             this.selectionManager = visualHost.createSelectionManager();
 
-            this.getSelectionIds = (value) => _.isArray(value)
-                ? <ISelectionId[]>_.flatten((<T[]>value).map(x => getSelectionIds(x)))
-                : getSelectionIds(<T>value);
+            this.getSelectionIds = (value: T | T[]) => _.isArray(value)
+                ? <ISelectionId[]>_.flatten((value as T[]).map((valueElement: T) => {
+                    return getSelectionIds(valueElement);
+                }))
+                : getSelectionIds(value);
         }
 
         public get selectedValues(): T[] {
@@ -64,25 +71,41 @@ module powerbi.extensibility.visual {
             return this.selectedValues.length > 0;
         }
 
-        public get getSelectionIdValues() {
-            return this.selectedValues.map(v => { return { value: v, selectionId: this.getSelectionIds(v) }; });
+        public get getSelectionIdValues(): SelectionIdValues<T>[] {
+            return this.selectedValues.map((value: T) => {
+                return {
+                    value,
+                    selectionId: this.getSelectionIds(value)
+                };
+            });
         }
 
         public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): JQueryDeferred<ISelectionId[]> {
-            var values = <T[]>(_.isArray(value) ? value : [value]);
+            const values: T[] = _.isArray(value)
+                ? value
+                : [value];
 
             this.selectInternal(values, multiSelect);
+
             return this.sendSelection();
         }
 
-        public select(value: T[] | T, multiSelect: boolean = false) {
-            var values = <T[]>(_.isArray(value) ? value : [value]);
+        public select(value: T[] | T, multiSelect: boolean = false): void {
+            const values: T[] = _.isArray(value)
+                ? value
+                : [value];
+
             this.selectInternal(values, multiSelect);
         }
 
         public isSelected(selectionId: T[] | T): boolean {
-            var values = <T[]>(_.isArray(selectionId) ? selectionId : [selectionId]);
-            return values.every(v => this.selectedValues.some(s => s === v));
+            const values: T[] = _.isArray(selectionId)
+                ? selectionId
+                : [selectionId];
+
+            return values.every((value: T) => this.selectedValues.some((selectedValue: T) => {
+                return selectedValue === value;
+            }));
         }
 
         public sendSelection(): JQueryDeferred<ISelectionId[]> {
@@ -100,29 +123,37 @@ module powerbi.extensibility.visual {
         }
 
         private selectInternal(values: T[], multiSelect: boolean) {
-            var resultValues = [];
+            let resultValues: T[];
 
             if (this.isSelected(values)) {
                 resultValues = multiSelect
-                    ? this.selectedValues.filter(s => !values.some(v => v === s))
+                    ? this.selectedValues.filter((selectedValue: T) => {
+                        return !values.some((value: T) => value === selectedValue);
+                    })
                     : this.selectedValues.length === values.length ? [] : values;
             } else {
                 resultValues = multiSelect
-                    ? values.filter(x => !this.isSelected(x)).concat(this.selectedValues)
+                    ? values.filter((value: T) => {
+                        return !this.isSelected(value);
+                    }).concat(this.selectedValues)
                     : values;
             }
 
             this.selectedValues.length = 0;
-            resultValues.forEach(x => this.selectedValues.push(x));
+
+            resultValues.forEach((value: T) => {
+                this.selectedValues.push(value);
+            });
         }
 
         private sendSelectionToHost(ids: ISelectionId[]): JQueryDeferred<ISelectionId[]> {
-            var deferred: JQueryDeferred<Selector[]> = $.Deferred();
+            const deferred: JQueryDeferred<Selector[]> = $.Deferred();
+
             (<any>this.selectionManager).sendSelectionToHost(ids);
+
             deferred.resolve(this.selectionIds);
 
             return deferred;
         }
     }
-
 }

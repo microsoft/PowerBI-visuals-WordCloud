@@ -28,10 +28,10 @@ module powerbi.extensibility.visual {
     export module wordCloudUtils {
         export function hexToRgb(hex: string): string {
             // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-            var shorthandRegex: RegExp = /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+            let shorthandRegex: RegExp = /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
                 result: RegExpExecArray;
 
-            hex = hex.replace(shorthandRegex, (m, r, g, b) => {
+            hex = hex.replace(shorthandRegex, (m: any, r: string, g: string, b: string) => {
                 return r + r + g + g + b + b;
             });
 
@@ -43,7 +43,7 @@ module powerbi.extensibility.visual {
         }
 
         export function getRandomColor(): string {
-            var red: number = Math.floor(Math.random() * 255),
+            const red: number = Math.floor(Math.random() * 255),
                 green: number = Math.floor(Math.random() * 255),
                 blue: number = Math.floor(Math.random() * 255);
 

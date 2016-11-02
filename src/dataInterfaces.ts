@@ -69,7 +69,5 @@ module powerbi.extensibility.visual {
 
     export interface WordCloudDataView {
         data: WordCloudDataPoint[];
-        leftBorder: IPoint;
-        rightBorder: IPoint;
     }
 }

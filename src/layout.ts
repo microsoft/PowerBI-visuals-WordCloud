@@ -55,7 +55,7 @@ module powerbi.extensibility.visual {
             return _.clone(this.viewport);
         }
 
-        // Returns viewport minus margin
+        // Returns viewport without margin
         public get viewportIn(): IViewport {
             return this.viewportInValue || this.viewport;
         }
@@ -69,19 +69,27 @@ module powerbi.extensibility.visual {
         }
 
         public set minViewport(value: IViewport) {
-            this.setUpdateObject(value, v => this.minViewportValue = v, VisualLayout.restrictToMinMax);
+            this.setUpdateObject(
+                value,
+                (viewPoirt: IViewport) => this.minViewportValue = viewPoirt,
+                VisualLayout.restrictToMinMax);
         }
 
         public set viewport(value: IViewport) {
             this.previousOriginalViewportValue = _.clone(this.originalViewportValue);
             this.originalViewportValue = _.clone(value);
-            this.setUpdateObject(value,
-                v => this.viewportValue = v,
-                o => VisualLayout.restrictToMinMax(o, this.minViewport));
+
+            this.setUpdateObject(
+                value,
+                (viewport: IViewport) => this.viewportValue = viewport,
+                (viewport: IViewport) => VisualLayout.restrictToMinMax<IViewport>(viewport, this.minViewport));
         }
 
         public set margin(value: IMargin) {
-            this.setUpdateObject(value, v => this.marginValue = v, VisualLayout.restrictToMinMax);
+            this.setUpdateObject(
+                value,
+                (margin: IMargin) => this.marginValue = margin,
+                VisualLayout.restrictToMinMax);
         }
 
         // Returns true if viewport has updated after last change.
@@ -108,28 +116,38 @@ module powerbi.extensibility.visual {
 
         private setUpdateObject<T>(object: T, setObjectFn: (T) => void, beforeUpdateFn?: (T) => void): void {
             object = _.clone(object);
+
             setObjectFn(VisualLayout.createNotifyChangedObject(object, o => {
-                if (beforeUpdateFn) beforeUpdateFn(object);
+                if (beforeUpdateFn) {
+                    beforeUpdateFn(object);
+                }
+
                 this.update();
             }));
 
-            if (beforeUpdateFn) beforeUpdateFn(object);
+            if (beforeUpdateFn) {
+                beforeUpdateFn(object);
+            }
+
             this.update();
         }
 
-        private static createNotifyChangedObject<T>(object: T, objectChanged: (o?: T, key?: string) => void): T {
-            var result: T = <any>{};
+        private static createNotifyChangedObject<T>(object: T, objectChanged: (obj?: T, key?: string) => void): T {
+            let result: T = <any>{};
+
             _.keys(object).forEach(key => Object.defineProperty(result, key, {
                 get: () => object[key],
                 set: (value) => { object[key] = value; objectChanged(object, key); },
                 enumerable: true,
                 configurable: true
             }));
+
             return result;
         }
 
         private static restrictToMinMax<T>(value: T, minValue?: T): T {
-            _.keys(value).forEach(x => value[x] = Math.max(minValue && minValue[x] || 0, value[x]));
+            _.keys(value).forEach((key: string) => value[key] = Math.max(minValue && minValue[key] || 0, value[key]));
+
             return value;
         }
     }

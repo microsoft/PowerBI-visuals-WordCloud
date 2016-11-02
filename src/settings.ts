@@ -34,11 +34,12 @@ module powerbi.extensibility.visual {
     }
 
     export class GeneralSettings {
-        public static FontSizePercentageCoefficent: number = 1;
+        public static FontSizePercentageFactor: number = 1;
+        public static MinFontSize: number = 1;
 
         public maxNumberOfWords: number = 200;
-        public minFontSize: number = 20 / GeneralSettings.FontSizePercentageCoefficent;
-        public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageCoefficent;
+        public minFontSize: number = 20 / GeneralSettings.FontSizePercentageFactor;
+        public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageFactor;
         public isBrokenText: boolean = true;
     }
 
@@ -49,6 +50,12 @@ module powerbi.extensibility.visual {
     }
 
     export class RotateTextSettings {
+        public static MinAngle: number = -180;
+        public static MaxAngle: number = 180;
+
+        public static MinNumberOfWords: number = 1;
+        public static MaxNumberOfWords: number = 2500;
+
         public show: boolean = true;
         public minAngle: number = -60;
         public maxAngle: number = 90;
