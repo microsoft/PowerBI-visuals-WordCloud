@@ -25,34 +25,33 @@
  */
 
 module powerbi.extensibility.visual {
-    // TODO: rewrite this class
-    export class WordCloudSettings {
-        public static get Default() {
-            return new this();
-        }
+    import SettingsParser = powerbi.extensibility.visual.settingsParser.SettingsParser;
 
-        public static parse(dataView: DataView) {
-            var settings = new this();
-            return settings;
-        }
+    export class WordCloudSettings extends SettingsParser {
+        public general: GeneralSettings = new GeneralSettings();
+        public stopWords: StopWordsSettings = new StopWordsSettings();
+        public rotateText: RotateTextSettings = new RotateTextSettings();
+    }
 
-        //Default Settings
-        public general = {
-            maxNumberOfWords: 200,
-            minFontSize: 20 / WordCloud.FontSizePercentageCoefficent,
-            maxFontSize: 100 / WordCloud.FontSizePercentageCoefficent,
-            isBrokenText: true
-        };
-        public stopWords = {
-            show: true,
-            isDefaultStopWords: false,
-            words: null
-        };
-        public rotateText = {
-            show: true,
-            minAngle: -60,
-            maxAngle: 90,
-            maxNumberOfOrientations: 2
-        };
+    export class GeneralSettings {
+        public static FontSizePercentageCoefficent: number = 1;
+
+        public maxNumberOfWords: number = 200;
+        public minFontSize: number = 20 / GeneralSettings.FontSizePercentageCoefficent;
+        public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageCoefficent;
+        public isBrokenText: boolean = true;
+    }
+
+    export class StopWordsSettings {
+        public show: boolean = true;
+        public isDefaultStopWords: boolean = false;
+        public words: string = null;
+    }
+
+    export class RotateTextSettings {
+        public show: boolean = true;
+        public minAngle: number = -60;
+        public maxAngle: number = 90;
+        public maxNumberOfOrientations: number = 2;
     }
 }

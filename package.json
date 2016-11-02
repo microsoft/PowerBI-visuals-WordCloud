@@ -33,6 +33,7 @@
     "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
     "@powerbi-visuals-utils/point": "git+https://github.com/vtkalek/powerbi-visuals-utils-point.git",
     "@powerbi-visuals-utils/rect": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-rect.git",
+    "@powerbi-visuals-utils/settingsparser": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-settingsparser.git",
     "@powerbi-visuals-utils/shapes": "git+https://github.com/vtkalek/powerbi-visuals-utils-shapes.git",
     "@powerbi-visuals-utils/svgutil": "git+https://github.com/vtkalek/powerbi-visuals-utils-svgutil.git",
     "@powerbi-visuals-utils/textmeasurementservice": "git+https://github.com/uve/powerbi-visuals-utils-textmeasurementservice.git",

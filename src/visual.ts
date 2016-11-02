@@ -95,8 +95,6 @@ module powerbi.extensibility.visual {
         private static MinOpacity: number = 0.2;
         private static MaxOpacity: number = 1;
 
-        public static FontSizePercentageCoefficent = 1;
-
         private static Punctuation: string[] = [
             "!", ".", ":", "'", ";", ",", "!",
             "@", "#", "$", "%", "^", "&", "*",
@@ -148,7 +146,7 @@ module powerbi.extensibility.visual {
             }
 
             catValues = WordCloudColumns.getCategoricalValues(dataView);
-            // properties = WordCloudSettings.getProperties(WordCloud.capabilities); // TODO: check it
+            properties = WordCloudSettings.getDefault().getProperties();
             settings = WordCloud.parseSettings(dataView, previousData && previousData.settings);
 
             wordValueFormatter = ValueFormatter.create({
@@ -226,7 +224,7 @@ module powerbi.extensibility.visual {
         }
 
         private static parseSettings(dataView: DataView, previousSettings: WordCloudSettings): WordCloudSettings {
-            var settings: WordCloudSettings = WordCloudSettings.parse(dataView);
+            var settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
 
             settings.general.minFontSize = Math.max(settings.general.minFontSize, 1);
             settings.general.maxFontSize = Math.max(settings.general.maxFontSize, 1);
@@ -251,8 +249,6 @@ module powerbi.extensibility.visual {
 
             settings.rotateText.maxNumberOfOrientations = Math.max(
                 Math.min(settings.rotateText.maxNumberOfOrientations, WordCloud.MaxNumberOfWords), 1);
-
-            // settings.createOriginalSettings(); // TODO: check it
 
             return settings;
         }
@@ -375,8 +371,8 @@ module powerbi.extensibility.visual {
             scaleType: WordCloudScaleType = WordCloudScaleType.value) {
 
             var weight: number, fontSize: number,
-                minFontSize: number = settings.general.minFontSize * WordCloud.FontSizePercentageCoefficent,
-                maxFontSize: number = settings.general.maxFontSize * WordCloud.FontSizePercentageCoefficent;
+                minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageCoefficent,
+                maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageCoefficent;
 
             if (texts.length < 2) {
                 return maxFontSize;
@@ -1215,36 +1211,45 @@ module powerbi.extensibility.visual {
             }
         }
 
-        // TODO: check it
-        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions) {
-            // var instances = WordCloudSettings.enumerateObjectInstances(
-            //     this.settings && this.settings.originalSettings,
-            //     options,
-            //     WordCloud.capabilities);
+        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
+            let instanceEnumeration: VisualObjectInstanceEnumeration = WordCloudSettings.enumerateObjectInstances(
+                this.settings && WordCloudSettings.getDefault(),
+                options);
 
-            // switch (options.objectName) {
-            //     case "dataPoint":
-            //         if (this.data && this.data.dataPoints) {
-            //             var wordCategoriesIndex: number[] = [];
+            switch (options.objectName) {
+                case "dataPoint": {
+                    if (this.data && this.data.dataPoints) {
+                        let wordCategoriesIndex: number[] = [];
 
-            //             _.uniqBy(this.data.dataPoints, x => x.wordIndex).forEach((item: WordCloudDataPoint) => {
-            //                 if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
-            //                     wordCategoriesIndex.push(item.wordIndex);
+                        _.uniqBy(this.data.dataPoints, x => x.wordIndex).forEach((item: WordCloudDataPoint) => {
+                            if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
+                                let instance: VisualObjectInstance;
 
-            //                     instances.pushInstance({
-            //                         objectName: options.objectName,
-            //                         displayName: this.data.texts[item.wordIndex].text,
-            //                         selector: ColorHelper.normalizeSelector(item.selectionIds[0].getSelector(), false),
-            //                         properties: { fill: { solid: { color: item.color } } }
-            //                     });
-            //                 }
-            //             });
-            //         }
+                                wordCategoriesIndex.push(item.wordIndex);
 
-            //         break;
-            // }
+                                instance = {
+                                    objectName: options.objectName,
+                                    displayName: this.data.texts[item.wordIndex].text,
+                                    selector: ColorHelper.normalizeSelector(item.selectionIds[0].getSelector(), false),
+                                    properties: { fill: { solid: { color: item.color } } }
+                                };
 
-            // return instances.complete() || [];
+                                if ((instanceEnumeration as VisualObjectInstanceEnumerationObject).instances) {
+                                    (instanceEnumeration as VisualObjectInstanceEnumerationObject)
+                                        .instances
+                                        .push(instance);
+                                } else {
+                                    (instanceEnumeration as VisualObjectInstance[]).push(instance);
+                                }
+                            }
+                        });
+                    }
+
+                    break;
+                }
+            }
+
+            return instanceEnumeration || [];
         }
 
         private animateSelection<T extends Selection<any>>(
