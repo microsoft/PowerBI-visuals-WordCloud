@@ -17,7 +17,15 @@
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [],
+  "externalJS": [
+    "node_modules/@powerbi-visuals-utils/external-loader/lib/index.js",
+    "node_modules/jquery/dist/jquery.min.js",
+    "node_modules/lodash/lodash.min.js",
+    "node_modules/d3/d3.min.js",
+    "node_modules/moment/min/moment.min.js",
+    "node_modules/globalize/lib/globalize.js",
+    "node_modules/globalize/lib/cultures/globalize.culture.en-US.js"
+  ],
   "style": "style/visual.less",
   "capabilities": "capabilities.json"
 }
