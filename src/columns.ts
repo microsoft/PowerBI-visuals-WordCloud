@@ -34,9 +34,6 @@ module powerbi.extensibility.visual {
     import DataViewValueColumn = powerbi.DataViewValueColumn;
 
     export class WordCloudColumns<T> {
-        public static Roles = Object.freeze(
-            _.mapValues(new WordCloudColumns<string>(), (x, i) => i));
-
         public static getColumnSources(dataView: DataView) {
             return this.getColumnSourcesT<DataViewMetadataColumn>(dataView);
         }
@@ -88,6 +85,7 @@ module powerbi.extensibility.visual {
 
         private static getColumnSourcesT<T>(dataView: DataView) {
             var columns = dataView && dataView.metadata && dataView.metadata.columns;
+
             return columns && _.mapValues(
                 new this<T>(), (n, i) => columns.filter(x => x.roles && x.roles[i])[0]);
         }

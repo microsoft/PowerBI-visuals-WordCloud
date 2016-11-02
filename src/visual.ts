@@ -123,6 +123,55 @@ module powerbi.extensibility.visual {
             left: 10
         };
 
+        private static DataPointFillProperty: DataViewObjectPropertyIdentifier = {
+            objectName: "dataPoint",
+            propertyName: "fill"
+        };
+
+        private get settings(): WordCloudSettings {
+            return this.data && this.data.settings;
+        }
+
+        private data: WordCloudData;
+        private durationAnimations: number = 150;
+        private specialViewport: IViewport;
+
+        private fakeViewport: IViewport = {
+            width: 1500,
+            height: 1000
+        };
+
+        private canvasViewport: IViewport = {
+            width: 128,
+            height: 2048
+        };
+
+        private colorPalette: IColorPalette;
+        private root: Selection<any>;
+        private main: Selection<any>;
+        private wordsContainerSelection: Selection<any>;
+        private wordsGroupUpdateSelection: UpdateSelection<WordCloudDataPoint>;
+        private wordsTextUpdateSelection: UpdateSelection<WordCloudDataPoint>;
+
+        /**
+         * Public for testability.
+         */
+        public canvas: HTMLCanvasElement;
+
+        private fontFamily: string;
+
+        private layout: VisualLayout;
+
+        private visualHost: IVisualHost;
+        private selectionManager: ValueSelectionManager<string>;
+
+        private visualUpdateOptions: VisualUpdateOptions;
+
+        private isUpdating: boolean = false;
+        private incomingUpdateOptions: VisualUpdateOptions;
+
+        private oldIdentityKeys: string[];
+
         public static converter(
             dataView: DataView,
             colors: IColorPalette,
@@ -131,7 +180,6 @@ module powerbi.extensibility.visual {
 
             var categorical = WordCloudColumns.getCategoricalColumns(dataView),
                 catValues: WordCloudColumns<any[]>,
-                properties,
                 settings: WordCloudSettings,
                 colorHelper: ColorHelper,
                 stopWords: string[],
@@ -146,13 +194,10 @@ module powerbi.extensibility.visual {
             }
 
             catValues = WordCloudColumns.getCategoricalValues(dataView);
-            properties = WordCloudSettings.getDefault().getProperties();
             settings = WordCloud.parseSettings(dataView, previousData && previousData.settings);
 
             wordValueFormatter = ValueFormatter.create({
-                format: ValueFormatter.getFormatString(
-                    categorical.Category.source,
-                    properties.general.formatString)
+                format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
             });
 
             stopWords = _.isString(settings.stopWords.words)
@@ -165,7 +210,7 @@ module powerbi.extensibility.visual {
 
             colorHelper = new ColorHelper(
                 colors,
-                properties.dataPoint.fill,
+                WordCloud.DataPointFillProperty,
                 wordCloudUtils.getRandomColor());
 
             queryName = (categorical.Values
@@ -416,50 +461,6 @@ module powerbi.extensibility.visual {
 
             return settings.rotateText.minAngle + angle;
         }
-
-        private get settings(): WordCloudSettings {
-            return this.data && this.data.settings;
-        }
-
-        private data: WordCloudData;
-        private durationAnimations: number = 500;
-        private specialViewport: IViewport;
-
-        private fakeViewport: IViewport = {
-            width: 1500,
-            height: 1000
-        };
-
-        private canvasViewport: IViewport = {
-            width: 128,
-            height: 2048
-        };
-
-        private colorPalette: IColorPalette;
-        private root: Selection<any>;
-        private main: Selection<any>;
-        private wordsContainerSelection: Selection<any>;
-        private wordsGroupUpdateSelection: UpdateSelection<WordCloudDataPoint>;
-        private wordsTextUpdateSelection: UpdateSelection<WordCloudDataPoint>;
-
-        /**
-         * Public for testability.
-         */
-        public canvas: HTMLCanvasElement;
-
-        private fontFamily: string;
-
-        private layout: VisualLayout;
-
-        private visualHost: IVisualHost;
-        private selectionManager: ValueSelectionManager<string>;
-
-        private visualUpdateOptions: VisualUpdateOptions;
-
-        private isUpdating: boolean = false;
-        private incomingUpdateOptions: VisualUpdateOptions;
-
-        private oldIdentityKeys: string[];
 
         constructor(options: VisualConstructorOptions) {
             this.init(options);
@@ -1212,9 +1213,12 @@ module powerbi.extensibility.visual {
         }
 
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
-            let instanceEnumeration: VisualObjectInstanceEnumeration = WordCloudSettings.enumerateObjectInstances(
-                this.settings && WordCloudSettings.getDefault(),
-                options);
+            const settings: WordCloudSettings = this.settings
+                ? this.settings
+                : WordCloudSettings.getDefault() as WordCloudSettings;
+
+            let instanceEnumeration: VisualObjectInstanceEnumeration =
+                WordCloudSettings.enumerateObjectInstances(settings, options);
 
             switch (options.objectName) {
                 case "dataPoint": {

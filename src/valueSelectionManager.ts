@@ -70,12 +70,9 @@ module powerbi.extensibility.visual {
 
         public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): JQueryDeferred<ISelectionId[]> {
             var values = <T[]>(_.isArray(value) ? value : [value]);
-            if ((this.visualHost as any).shouldRetainSelection()) { // TODO: check it.
-                return this.sendSelectionToHost(this.getSelectionIds(values));
-            } else {
-                this.selectInternal(values, multiSelect);
-                return this.sendSelection();
-            }
+
+            this.selectInternal(values, multiSelect);
+            return this.sendSelection();
         }
 
         public select(value: T[] | T, multiSelect: boolean = false) {
