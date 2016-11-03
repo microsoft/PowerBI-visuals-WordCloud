@@ -122,7 +122,7 @@ module powerbi.extensibility.visual {
             return $.Deferred().resolve();
         }
 
-        private selectInternal(values: T[], multiSelect: boolean) {
+        private selectInternal(values: T[], multiSelect: boolean): void {
             let resultValues: T[];
 
             if (this.isSelected(values)) {

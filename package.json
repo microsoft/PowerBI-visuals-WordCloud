@@ -32,6 +32,7 @@
     "@powerbi-visuals-utils/external-loader": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-external-loader.git",
     "@powerbi-visuals-utils/formattingservice": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formattingservice.git",
     "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
+    "@powerbi-visuals-utils/pixelconverter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-pixelconverter.git",
     "@powerbi-visuals-utils/point": "git+https://github.com/vtkalek/powerbi-visuals-utils-point.git",
     "@powerbi-visuals-utils/rect": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-rect.git",
     "@powerbi-visuals-utils/settingsparser": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-settingsparser.git",

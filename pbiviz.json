@@ -27,6 +27,7 @@
     "node_modules/globalize/lib/cultures/globalize.culture.en-US.js",
     "node_modules/@powerbi-visuals-utils/stringextensions/lib/index.js",
     "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.js",
     "node_modules/@powerbi-visuals-utils/colorhelper/lib/index.js",
     "node_modules/@powerbi-visuals-utils/svgutil/lib/index.js",
     "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.js",

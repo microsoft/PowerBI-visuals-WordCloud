@@ -117,7 +117,7 @@ module powerbi.extensibility.visual {
         private setUpdateObject<T>(object: T, setObjectFn: (T) => void, beforeUpdateFn?: (T) => void): void {
             object = _.clone(object);
 
-            setObjectFn(VisualLayout.createNotifyChangedObject(object, o => {
+            setObjectFn(VisualLayout.createNotifyChangedObject(object, () => {
                 if (beforeUpdateFn) {
                     beforeUpdateFn(object);
                 }
@@ -133,11 +133,14 @@ module powerbi.extensibility.visual {
         }
 
         private static createNotifyChangedObject<T>(object: T, objectChanged: (obj?: T, key?: string) => void): T {
-            let result: T = <any>{};
+            let result: T = {} as T;
 
-            _.keys(object).forEach(key => Object.defineProperty(result, key, {
+            _.keys(object).forEach((key: string) => Object.defineProperty(result, key, {
                 get: () => object[key],
-                set: (value) => { object[key] = value; objectChanged(object, key); },
+                set: (value) => {
+                    object[key] = value;
+                    objectChanged(object, key);
+                },
                 enumerable: true,
                 configurable: true
             }));

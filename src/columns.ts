@@ -27,7 +27,6 @@
 module powerbi.extensibility.visual {
     // powerbi
     import DataView = powerbi.DataView;
-    import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
     import DataViewValueColumns = powerbi.DataViewValueColumns;
     import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
@@ -80,17 +79,7 @@ module powerbi.extensibility.visual {
             });
         }
 
-        private static getColumnSourcesT<T>(dataView: DataView): WordCloudColumns<T> {
-            let columns: DataViewMetadataColumn[] = dataView
-                && dataView.metadata
-                && dataView.metadata.columns;
-
-            return columns && _.mapValues(new this<T>() as any, (n: any, key: string) => {
-                return columns.filter((column: DataViewMetadataColumn) => column.roles && column.roles[key])[0];
-            });
-        }
-
-        //Data Roles
+        // Data Roles
         public Category: T = null;
         public Values: T = null;
     }
