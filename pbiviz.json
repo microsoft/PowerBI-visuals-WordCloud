@@ -31,6 +31,8 @@
     "node_modules/@powerbi-visuals-utils/colorhelper/lib/index.js",
     "node_modules/@powerbi-visuals-utils/svgutil/lib/index.js",
     "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/formatting/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.js",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.js",
     "node_modules/@powerbi-visuals-utils/settingsparser/lib/index.js"
   ],

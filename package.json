@@ -30,6 +30,7 @@
     "@powerbi-visuals-utils/displayunitsystem": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-displayunitsystem.git",
     "@powerbi-visuals-utils/displayunitsystemtype": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-displayunitsystemtype.git",
     "@powerbi-visuals-utils/external-loader": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-external-loader.git",
+    "@powerbi-visuals-utils/formatting": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formatting.git",
     "@powerbi-visuals-utils/formattingservice": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formattingservice.git",
     "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
     "@powerbi-visuals-utils/pixelconverter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-pixelconverter.git",
