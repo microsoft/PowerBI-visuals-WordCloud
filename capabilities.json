@@ -1,0 +1,159 @@
+{
+    "dataRoles": [
+        {
+            "name": "Category",
+            "kind": "Grouping",
+            "displayName": "Category"
+        },
+        {
+            "name": "Values",
+            "kind": "Measure",
+            "displayName": "Values"
+        }
+    ],
+    "dataViewMappings": [
+        {
+            "conditions": [
+                {
+                    "Category": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "Values": {
+                        "min": 0,
+                        "max": 1
+                    }
+                }
+            ],
+            "categorical": {
+                "categories": {
+                    "for": {
+                        "in": "Category"
+                    },
+                    "dataReductionAlgorithm": {
+                        "top": {
+                            "count": 2500
+                        }
+                    }
+                },
+                "values": {
+                    "for": {
+                        "in": "Values"
+                    }
+                }
+            }
+        }
+    ],
+    "sorting": {
+        "implicit": {
+            "clauses": [
+                {
+                    "role": "Values",
+                    "direction": 2
+                }
+            ]
+        }
+    },
+    "objects": {
+        "general": {
+            "displayName": "General",
+            "properties": {
+                "maxNumberOfWords": {
+                    "displayName": "Max number of words",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "minFontSize": {
+                    "displayName": "Min Font",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "maxFontSize": {
+                    "displayName": "Max Font",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "isBrokenText": {
+                    "displayName": "Word-breaking",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "dataPoint": {
+            "displayName": "Data colors",
+            "properties": {
+                "fill": {
+                    "displayName": "Fill",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "stopWords": {
+            "displayName": "Stop Words",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "isDefaultStopWords": {
+                    "displayName": "Default Stop Words",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "words": {
+                    "displayName": "Words",
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
+        },
+        "rotateText": {
+            "displayName": "Rotate Text",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "minAngle": {
+                    "displayName": "Min Angle",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "maxAngle": {
+                    "displayName": "Max Angle",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "maxNumberOfOrientations": {
+                    "displayName": "Max number of orientations",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        }
+    }
+}
