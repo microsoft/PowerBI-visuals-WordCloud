@@ -180,6 +180,12 @@ module powerbi.extensibility.visual {
         private static MinFontSize: number = 0;
         private static DefaultAngle: number = 0;
 
+        private static ContextStartPosition: number = 0;
+
+        private static DefaultMaxHeightOfTheWord: number = 0;
+
+        private static FontSizePercentage: number = 100;
+
         private get settings(): WordCloudSettings {
             return this.data && this.data.settings;
         }
@@ -514,9 +520,9 @@ module powerbi.extensibility.visual {
                 fontSize = WordCloud.MinFontSize;
             }
 
-            fontSize = (fontSize * 100) / maxFontSize;
+            fontSize = (fontSize * WordCloud.FontSizePercentage) / maxFontSize;
 
-            fontSize = (fontSize * (maxFontSize - minFontSize)) / 100 + minFontSize;
+            fontSize = (fontSize * (maxFontSize - minFontSize)) / WordCloud.FontSizePercentage + minFontSize;
 
             return fontSize;
         }
@@ -532,12 +538,11 @@ module powerbi.extensibility.visual {
                 case WordCloudScaleType.sqrt: {
                     return Math.sqrt(value);
                 }
-                case WordCloudScaleType.value: {
+                case WordCloudScaleType.value:
+                default: {
                     return value;
                 }
             }
-
-            return undefined;
         }
 
         private static getAngle(settings: WordCloudSettings): number {
@@ -562,24 +567,26 @@ module powerbi.extensibility.visual {
             this.colorPalette = options.host.colorPalette;
             this.visualHost = options.host;
 
-            this.selectionManager = new ValueSelectionManager<string>(this.visualHost, (text: string) => {
-                const dataPoints: WordCloudDataPoint[] = this.data
-                    && this.data.dataPoints
-                    && this.data.dataPoints.filter((dataPoint: WordCloudDataPoint) => {
-                        return dataPoint.text === text;
-                    });
+            this.selectionManager = new ValueSelectionManager<string>(
+                this.visualHost,
+                (text: string): ISelectionId[] => {
+                    const dataPoints: WordCloudDataPoint[] = this.data
+                        && this.data.dataPoints
+                        && this.data.dataPoints.filter((dataPoint: WordCloudDataPoint) => {
+                            return dataPoint.text === text;
+                        });
 
-                return dataPoints
-                    && dataPoints[0]
-                    && dataPoints[0].selectionIds;
-            });
+                    return dataPoints && dataPoints[0] && dataPoints[0].selectionIds
+                        ? dataPoints[0].selectionIds
+                        : [];
+                });
 
             this.layout = new VisualLayout(null, WordCloud.DefaultMargin);
 
             this.root.classed(WordCloud.ClassName, true);
 
             this.root.on("click", () => {
-                this.setSelection(null);
+                this.clearSelection();
             });
 
             this.fontFamily = this.root.style("font-family"); // TODO: check it.
@@ -760,7 +767,7 @@ module powerbi.extensibility.visual {
 
         private updateBorders(word: WordCloudDataPoint, borders: IPoint[]): IPoint[] {
             if (borders && borders.length === 2) {
-                const leftBorder: IPoint = borders[0],
+                let leftBorder: IPoint = borders[0],
                     rightBorder: IPoint = borders[1];
 
                 if (word.x + word.x0 < leftBorder.x) {
@@ -799,14 +806,14 @@ module powerbi.extensibility.visual {
             startIndex: number): void {
 
             context.clearRect(
-                0,
-                0,
+                WordCloud.ContextStartPosition,
+                WordCloud.ContextStartPosition,
                 this.canvasViewport.width << WordCloud.WidthOffset,
                 this.canvasViewport.height);
 
             let x: number = WordCloud.DefaultX,
                 y: number = WordCloud.DefaultX,
-                maxHeight: number = 0;
+                maxHeight: number = WordCloud.DefaultMaxHeightOfTheWord;
 
             for (let i: number = startIndex, length: number = words.length; i < length; i++) {
                 let currentWordData: WordCloudDataPoint = words[i],
@@ -844,11 +851,7 @@ module powerbi.extensibility.visual {
 
                 context.save();
 
-                context.font = "normal normal "
-                    + (currentWordData.size + WordCloud.AdditionalDataPointSize)
-                    + "px"
-                    + " "
-                    + this.fontFamily;
+                context.font = `normal normal ${currentWordData.size + WordCloud.AdditionalDataPointSize}px ${this.fontFamily}`;
 
                 context.translate(
                     (x + (widthOfWord >> WordCloud.PositionOffset)),
@@ -890,8 +893,8 @@ module powerbi.extensibility.visual {
                 sprites: number[] = [];
 
             pixels = context.getImageData(
-                0,
-                0,
+                WordCloud.ContextStartPosition,
+                WordCloud.ContextStartPosition,
                 this.canvasViewport.width << WordCloud.WidthOffset,
                 this.canvasViewport.height).data;
 
@@ -1063,8 +1066,9 @@ module powerbi.extensibility.visual {
 
                     leftMask = lastSprite << msx;
 
-                    if (j < widthOfWord)
+                    if (j < widthOfWord) {
                         lastSprite = sprite[i * widthOfWord + j];
+                    }
 
                     mask = j < widthOfWord
                         ? lastSprite >>> sx
@@ -1072,8 +1076,9 @@ module powerbi.extensibility.visual {
 
                     intersectMask = (leftMask | mask) & surface[x + j];
 
-                    if (intersectMask)
+                    if (intersectMask) {
                         return true;
+                    }
                 }
 
                 x += shiftWidth;
@@ -1262,15 +1267,19 @@ module powerbi.extensibility.visual {
 
         private setSelection(dataPoint: WordCloudDataPoint): void {
             if (!dataPoint) {
-                this.selectionManager
-                    .clear(true)
-                    .then(() => this.renderSelection());
+                this.clearSelection();
 
                 return;
             }
 
             this.selectionManager
                 .selectAndSendSelection(dataPoint.text, (d3.event as MouseEvent).ctrlKey)
+                .then(() => this.renderSelection());
+        }
+
+        private clearSelection(): void {
+            this.selectionManager
+                .clear(true)
                 .then(() => this.renderSelection());
         }
 
@@ -1363,33 +1372,7 @@ module powerbi.extensibility.visual {
             switch (options.objectName) {
                 case "dataPoint": {
                     if (this.data && this.data.dataPoints) {
-                        let wordCategoriesIndex: number[] = [];
-
-                        _.uniqBy(this.data.dataPoints, (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex)
-                            .forEach((item: WordCloudDataPoint) => {
-                                if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
-                                    let instance: VisualObjectInstance;
-
-                                    wordCategoriesIndex.push(item.wordIndex);
-
-                                    instance = {
-                                        objectName: options.objectName,
-                                        displayName: this.data.texts[item.wordIndex].text,
-                                        selector: ColorHelper.normalizeSelector(
-                                            item.selectionIds[0].getSelector(),
-                                            false),
-                                        properties: { fill: { solid: { color: item.color } } }
-                                    };
-
-                                    if ((instanceEnumeration as VisualObjectInstanceEnumerationObject).instances) {
-                                        (instanceEnumeration as VisualObjectInstanceEnumerationObject)
-                                            .instances
-                                            .push(instance);
-                                    } else {
-                                        (instanceEnumeration as VisualObjectInstance[]).push(instance);
-                                    }
-                                }
-                            });
+                        this.enumerateDataPoint(options, instanceEnumeration);
                     }
 
                     break;
@@ -1397,6 +1380,58 @@ module powerbi.extensibility.visual {
             }
 
             return instanceEnumeration || [];
+        }
+
+        private enumerateDataPoint(
+            options: EnumerateVisualObjectInstancesOptions,
+            instanceEnumeration: VisualObjectInstanceEnumeration): void {
+
+            let uniqueDataPoints: WordCloudDataPoint[] = _.uniqBy(
+                this.data.dataPoints,
+                (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
+
+            this.enumerateDataPointColor(uniqueDataPoints, options, instanceEnumeration);
+        }
+
+        private enumerateDataPointColor(
+            dataPoints: WordCloudDataPoint[],
+            options: EnumerateVisualObjectInstancesOptions,
+            instanceEnumeration: VisualObjectInstanceEnumeration): void {
+
+            let wordCategoriesIndex: number[] = [];
+
+            dataPoints.forEach((item: WordCloudDataPoint) => {
+                if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
+                    let instance: VisualObjectInstance;
+
+                    wordCategoriesIndex.push(item.wordIndex);
+
+                    instance = {
+                        objectName: options.objectName,
+                        displayName: this.data.texts[item.wordIndex].text,
+                        selector: ColorHelper.normalizeSelector(
+                            item.selectionIds[0].getSelector(),
+                            false),
+                        properties: { fill: { solid: { color: item.color } } }
+                    };
+
+                    this.addAnInstanceToEnumeration(instanceEnumeration, instance);
+                }
+            });
+
+        }
+
+        private addAnInstanceToEnumeration(
+            instanceEnumeration: VisualObjectInstanceEnumeration,
+            instance: VisualObjectInstance): void {
+
+            if ((instanceEnumeration as VisualObjectInstanceEnumerationObject).instances) {
+                (instanceEnumeration as VisualObjectInstanceEnumerationObject)
+                    .instances
+                    .push(instance);
+            } else {
+                (instanceEnumeration as VisualObjectInstance[]).push(instance);
+            }
         }
 
         private animateSelection<T extends Selection<any>>(
