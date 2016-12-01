@@ -377,9 +377,9 @@ module powerbi.extensibility.visual {
             settings: WordCloudSettings): WordCloudText[][] {
 
             let brokenStrings: WordCloudText[] = WordCloud.getBrokenWords(texts, stopWords, settings),
-                result = <WordCloudText[][]>_.values(_.groupBy(
+                result: WordCloudText[][] = <WordCloudText[][]>_.values(_.groupBy(
                     brokenStrings,
-                    (textObject: WordCloudText) => textObject.text));
+                    (textObject: WordCloudText) => textObject.text.toLocaleLowerCase()));
 
             result = result.map((texts: WordCloudText[]) => {
                 return _.sortBy(texts, (textObject: WordCloudText) => textObject.textGroup.length);
@@ -418,14 +418,6 @@ module powerbi.extensibility.visual {
                     splittedWords.forEach((splittedWord: string) => {
                         if (splittedWord.length === 0 || whiteSpaceRegExp.test(splittedWord)) {
                             return;
-                        }
-
-                        const existingWord: WordCloudText = _.find(words, (word: WordCloudText) => {
-                            return word.text.toString().toLocaleLowerCase() === splittedWord.toLocaleLowerCase();
-                        });
-
-                        if (existingWord && existingWord !== item) {
-                            splittedWord = existingWord.text;
                         }
 
                         brokenStrings.push({
