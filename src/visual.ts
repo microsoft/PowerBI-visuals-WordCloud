@@ -30,10 +30,7 @@ module powerbi.extensibility.visual {
     import UpdateSelection = d3.selection.Update;
     import Transition = d3.Transition;
 
-    // jsCommon
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import PixelConverter = jsCommon.PixelConverter;
+
 
     // powerbi
     import IViewport = powerbi.IViewport;
@@ -42,7 +39,6 @@ module powerbi.extensibility.visual {
     import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
     import VisualObjectInstance = powerbi.VisualObjectInstance;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-    import TextMeasurementService = powerbi.TextMeasurementService;
 
     // powerbi.extensibility
     import IVisual = powerbi.extensibility.IVisual;
@@ -55,13 +51,26 @@ module powerbi.extensibility.visual {
     import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
     // powerbi.visuals
-    import ValueFormatter = powerbi.visuals.valueFormatter;
     import ISelectionId = powerbi.visuals.ISelectionId;
-    import IMargin = powerbi.visuals.IMargin;
-    import ColorHelper = powerbi.visuals.ColorHelper;
-    import SVGUtil = powerbi.visuals.SVGUtil;
-    import IPoint = powerbi.visuals.shapes.IPoint;
-    import IValueFormatter = powerbi.visuals.IValueFormatter;
+
+    // powerbi.extensibility.utils.svg
+    import IMargin = powerbi.extensibility.utils.svg.IMargin;
+    import translate = powerbi.extensibility.utils.svg.translate;
+    import IPoint = powerbi.extensibility.utils.svg.shapes.IPoint;
+    import translateAndScale = powerbi.extensibility.utils.svg.translateAndScale;
+    import ClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.ClassAndSelector;
+    import createClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.createClassAndSelector;
+
+    // powerbi.extensibility.utils.type
+    import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
+
+    // powerbi.extensibility.utils.formatting
+    import ValueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+    import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
+    import textMeasurementService = powerbi.extensibility.utils.formatting.textMeasurementService;
+
+    // powerbi.extensibility.utils.color
+    import ColorHelper = powerbi.extensibility.utils.color.ColorHelper;
 
     enum WordCloudScaleType {
         logn,
@@ -75,7 +84,7 @@ module powerbi.extensibility.visual {
         private static Words: ClassAndSelector = createClassAndSelector("words");
         private static WordGroup: ClassAndSelector = createClassAndSelector("word");
 
-        private static StopWordsDelemiter: string = " ";
+        private static StopWordsDelimiter: string = " ";
 
         private static Radians: number = Math.PI / 180;
 
@@ -175,7 +184,7 @@ module powerbi.extensibility.visual {
         private static XOffsetPosition: number = 0.5;
         private static YOffsetPosition: number = 0.75;
         private static HeightOffsetPosition: number = 0.85;
-        private static TextFillcolor: string = "rgba(63, 191, 191, 0.0)";
+        private static TextFillColor: string = "rgba(63, 191, 191, 0.0)";
 
         private static MinFontSize: number = 0;
         private static DefaultAngle: number = 0;
@@ -262,7 +271,7 @@ module powerbi.extensibility.visual {
             });
 
             stopWords = _.isString(settings.stopWords.words)
-                ? settings.stopWords.words.split(WordCloud.StopWordsDelemiter)
+                ? settings.stopWords.words.split(WordCloud.StopWordsDelimiter)
                 : [];
 
             stopWords = settings.stopWords.isDefaultStopWords
@@ -395,7 +404,7 @@ module powerbi.extensibility.visual {
 
             const brokenStrings: WordCloudText[] = [],
                 whiteSpaceRegExp: RegExp = /\s/,
-                punctuatuinRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
+                punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
 
             if (!settings.general.isBrokenText) {
                 return words;
@@ -404,7 +413,7 @@ module powerbi.extensibility.visual {
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
                     let splittedWords: string[] = item.text
-                        .replace(punctuatuinRegExp, " ")
+                        .replace(punctuationRegExp, " ")
                         .split(whiteSpaceRegExp);
 
                     if (settings.stopWords.show) {
@@ -666,7 +675,7 @@ module powerbi.extensibility.visual {
                     dataPoint.getWidthOfWord = () =>
                         dataPoint.widthOfWord
                         ||
-                        (dataPoint.widthOfWord = TextMeasurementService.measureSvgTextWidth({
+                        (dataPoint.widthOfWord = textMeasurementService.measureSvgTextWidth({
                             fontFamily: this.fontFamily,
                             fontSize: PixelConverter.toString(dataPoint.size + WordCloud.AdditionalDataPointSize),
                             text: dataPoint.text
@@ -1172,7 +1181,7 @@ module powerbi.extensibility.visual {
 
             this.wordsGroupUpdateSelection
                 .attr("transform", (dataPoint: WordCloudDataPoint) => {
-                    return `${SVGUtil.translate(dataPoint.x, dataPoint.y)} rotate(${dataPoint.rotate})`;
+                    return `${translate(dataPoint.x, dataPoint.y)} rotate(${dataPoint.rotate})`;
                 })
                 .sort((a: WordCloudDataPoint, b: WordCloudDataPoint) => {
                     return b.height * b.width - a.height * a.width;
@@ -1198,7 +1207,7 @@ module powerbi.extensibility.visual {
                     width: (dataPoint: WordCloudDataPoint) => dataPoint.getWidthOfWord(),
                     y: (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition,
                     height: (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition,
-                    fill: () => WordCloud.TextFillcolor,
+                    fill: () => WordCloud.TextFillColor,
                 })
                 .on("click", (dataPoint: WordCloudDataPoint) => {
                     (d3.event as MouseEvent).stopPropagation();
@@ -1206,7 +1215,7 @@ module powerbi.extensibility.visual {
                     this.setSelection(dataPoint);
                 });
 
-            this.clearIntorrectSelection(this.data.dataView);
+            this.clearIncorrectSelection(this.data.dataView);
             this.renderSelection();
 
             this.isUpdating = false;
@@ -1216,7 +1225,7 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private clearIntorrectSelection(dataView: DataView): void {
+        private clearIncorrectSelection(dataView: DataView): void {
             let categories: DataViewCategoryColumn[],
                 identityKeys: string[],
                 oldIdentityKeys: string[] = this.oldIdentityKeys;
@@ -1318,7 +1327,7 @@ module powerbi.extensibility.visual {
                 .style("line-height", WordCloud.TheFirstLineHeight); // Note: This construction fixes bug #6343.
 
             this.main
-                .attr("transform", SVGUtil.translateAndScale(x, y, scale))
+                .attr("transform", translateAndScale(x, y, scale))
                 .style("line-height", WordCloud.TheSecondLineHeight); // Note: This construction fixes bug #6343.
         }
 

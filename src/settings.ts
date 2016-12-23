@@ -25,9 +25,10 @@
  */
 
 module powerbi.extensibility.visual {
-    import SettingsParser = powerbi.extensibility.visual.settingsParser.SettingsParser;
+    // powerbi.extensibility.utils.dataview
+    import DataViewObjectsParser = powerbi.extensibility.utils.dataview.DataViewObjectsParser;
 
-    export class WordCloudSettings extends SettingsParser {
+    export class WordCloudSettings extends DataViewObjectsParser {
         public general: GeneralSettings = new GeneralSettings();
         public stopWords: StopWordsSettings = new StopWordsSettings();
         public rotateText: RotateTextSettings = new RotateTextSettings();
