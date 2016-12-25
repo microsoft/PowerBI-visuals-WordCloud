@@ -27,7 +27,9 @@
 module powerbi.extensibility.visual {
     // powerbi.visuals
     import ISelectionId = powerbi.visuals.ISelectionId;
-    import IPoint = powerbi.visuals.shapes.IPoint;
+
+    // powerbi.extensibility.utils.svg
+    import IPoint = powerbi.extensibility.utils.svg.shapes.IPoint;
 
     export interface WordCloudText {
         text: string;
