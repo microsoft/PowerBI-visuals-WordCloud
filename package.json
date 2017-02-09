@@ -1,7 +1,7 @@
 {
   "name": "powerbi-visuals-wordcloud",
-  "version": "1.2.8",
-  "description": "This custom visual implements a D3 force layout diagram with curved path. The thickness of the path also represents the weight of the relationship between the nodes.",
+  "version": "1.2.9",
+  "description": "Word Cloud is a visual representation of word frequency and value. Use it to get instant insight into the most important terms in a set.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Microsoft/PowerBI-visuals-WordCloud.git"
