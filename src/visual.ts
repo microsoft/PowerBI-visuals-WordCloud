@@ -15,7 +15,7 @@
  *  The above copyright notice and this permission notice shall be included in
  *  all copies or substantial portions of the Software.
  *
- *  THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ *  THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -251,7 +251,7 @@ module powerbi.extensibility.visual {
                 settings: WordCloudSettings,
                 colorHelper: ColorHelper,
                 stopWords: string[],
-                texts: WordCloudText[],
+                texts: WordCloudText[] = [],
                 reducedTexts: WordCloudText[][],
                 dataPoints: WordCloudDataPoint[],
                 wordValueFormatter: IValueFormatter,
@@ -288,48 +288,43 @@ module powerbi.extensibility.visual {
                 && categorical.Values[0].source
                 && categorical.Values[0].source.queryName)
                 || null;
+            for (let index: number = 0; index < catValues.Category.length; index += 1) {
+                let item: any = catValues.Category[index];
+                if (!item) {
+                    continue;
+                }
+                let color: string;
+                let selectionIdBuilder: ISelectionIdBuilder;
+                if (categorical.Category.objects && categorical.Category.objects[index]) {
+                    color = wordCloudUtils.hexToRgb(colorHelper.getColorForMeasure(
+                        categorical.Category.objects[index], ""));
+                } else {
+                    color = previousData && previousData.texts && previousData.texts[index]
+                        ? previousData.texts[index].color
+                        : wordCloudUtils.getRandomColor();
+                }
 
-            texts = catValues.Category
-                .filter((value: string) => {
-                    return value !== null
-                        && value !== undefined
-                        && value.toString().length > 0;
-                })
-                .map((item: string, index: number) => {
-                    let color: string,
-                        selectionIdBuilder: ISelectionIdBuilder;
+                selectionIdBuilder = visualHost.createSelectionIdBuilder()
+                    .withCategory(dataView.categorical.categories[0], index);
 
-                    if (categorical.Category.objects && categorical.Category.objects[index]) {
-                        color = wordCloudUtils.hexToRgb(colorHelper.getColorForMeasure(
-                            categorical.Category.objects[index], ""));
-                    } else {
-                        color = previousData && previousData.texts && previousData.texts[index]
-                            ? previousData.texts[index].color
-                            : wordCloudUtils.getRandomColor();
-                    }
+                if (queryName) {
+                    selectionIdBuilder.withMeasure(queryName);
+                }
 
-                    selectionIdBuilder = visualHost.createSelectionIdBuilder()
-                        .withCategory(dataView.categorical.categories[0], index);
-
-                    if (queryName) {
-                        selectionIdBuilder.withMeasure(queryName);
-                    }
-
-                    item = wordValueFormatter.format(item);
-
-                    return {
-                        text: item,
-                        count: (catValues.Values
-                            && catValues.Values[index]
-                            && !isNaN(catValues.Values[index]))
-                            ? catValues.Values[index]
-                            : WordCloud.MinCount,
-                        index: index,
-                        selectionId: selectionIdBuilder.createSelectionId() as ISelectionId,
-                        color: color,
-                        textGroup: item
-                    };
+                item = wordValueFormatter.format(item);
+                texts.push({
+                    text: item,
+                    count: (catValues.Values
+                        && catValues.Values[index]
+                        && !isNaN(catValues.Values[index]))
+                        ? catValues.Values[index]
+                        : WordCloud.MinCount,
+                    index: index,
+                    selectionId: selectionIdBuilder.createSelectionId() as ISelectionId,
+                    color: color,
+                    textGroup: item
                 });
+            }
 
             reducedTexts = WordCloud.getReducedText(texts, stopWords, settings);
             dataPoints = WordCloud.getDataPoints(reducedTexts, settings);
@@ -1101,7 +1096,7 @@ module powerbi.extensibility.visual {
 
         /**
          * Returns a CanvasRenderingContext2D to compute size of the text.
-         * 
+         *
          * Public for testability.
          */
         public getCanvasContext(): CanvasRenderingContext2D {

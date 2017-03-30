@@ -38,6 +38,7 @@ module powerbi.extensibility.visual.test {
         public static ColumnValues: string = "Values";
 
         public valuesCategoryValues: any[][] = [
+            ["", null],
             ["Afghanistan", 510],
             ["Albania", 314],
             ["Algeria", 780],

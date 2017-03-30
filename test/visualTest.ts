@@ -40,6 +40,7 @@ module powerbi.extensibility.visual.test {
 
     // WordCloud1447959067750
     import VisualClass = powerbi.extensibility.visual.WordCloud1447959067750.WordCloud;
+    import WordCloudText = powerbi.extensibility.visual.WordCloud1447959067750.WordCloudText;
 
     /**
      * Extends the mock of ISelectionManager.
@@ -352,6 +353,15 @@ module powerbi.extensibility.visual.test {
 
                 expect(context).not.toBeUndefined();
                 expect(context).not.toBeNull();
+            });
+        });
+
+        describe("Selection", () => {
+            it("Check index of the data-point after filtering", () => {
+                const item: WordCloudText = VisualClass.converter(dataView, null, visualBuilder.visualHost, null)
+                    .texts
+                    .find((item: WordCloudText) => item.text === "Angola");
+                expect(item.index).toBe(5);
             });
         });
     });
