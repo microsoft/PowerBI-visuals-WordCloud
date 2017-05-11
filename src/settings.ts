@@ -42,6 +42,7 @@ module powerbi.extensibility.visual {
         public minFontSize: number = 20 / GeneralSettings.FontSizePercentageFactor;
         public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageFactor;
         public isBrokenText: boolean = true;
+        public isPunctuationsCharacters: boolean = false;
     }
 
     export class StopWordsSettings {
