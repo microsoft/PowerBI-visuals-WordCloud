@@ -106,7 +106,7 @@ module powerbi.extensibility.visual.test {
                                 .toBeGreaterThan(0);
 
                             done();
-                        });
+                        }, 700);
                     }, 500);
                 }, 300);
             });
@@ -282,6 +282,18 @@ module powerbi.extensibility.visual.test {
                 });
 
                 it("words", done => {
+                    checkStopWords(done);
+                });
+
+                it("words when word-breaking option is disabled", done => {
+                    (dataView.metadata.objects as any).general = {
+                        isBrokenText: false
+                    };
+
+                    checkStopWords(done);
+                });
+
+                function checkStopWords(done) {
                     (dataView.metadata.objects as any).stopWords.words = "";
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
@@ -296,7 +308,7 @@ module powerbi.extensibility.visual.test {
                             done();
                         }, 500);
                     }, 500);
-                });
+                }
             });
 
             describe("Rotate text", () => {
