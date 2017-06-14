@@ -92,10 +92,10 @@ module powerbi.extensibility.visual {
         private static MaxOpacity: number = 1;
 
         private static Punctuation: string[] = [
-            "!", ".", ":", "'", ";", ",", "!",
+            "!", ".", ":", "'", ";", ",", "?",
             "@", "#", "$", "%", "^", "&", "*",
             "(", ")", "[", "]", "\"", "\\", "/",
-            "-", "_", "+", "="
+            "-", "_", "+", "=", "<", ">", "|"
         ];
 
         private static StopWords: string[] = [
@@ -402,6 +402,13 @@ module powerbi.extensibility.visual {
                 punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
 
             if (!settings.general.isBrokenText) {
+                if (!settings.general.isPunctuationsCharacters) {
+                    words.forEach((item: WordCloudText) => {
+                        item.text = item.text
+                            .replace(punctuationRegExp, " ");
+                    });
+                }
+
                 return words;
             }
 

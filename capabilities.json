@@ -85,6 +85,12 @@
                     "type": {
                         "bool": true
                     }
+                },
+                "isPunctuationsCharacters": {
+                    "displayName": "Special characters",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },
