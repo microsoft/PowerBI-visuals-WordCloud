@@ -456,9 +456,9 @@ module powerbi.extensibility.visual {
 
             if (!settings.general.isPunctuationsCharacters) {
                 item.text = item.text
-                   .replace(punctuationRegExp, " ");              
-            }  
-              
+                   .replace(punctuationRegExp, " ");
+            }
+
             if (splittedWords.length === splittedWordsOriginalLength) {
                 return [item];
             }
