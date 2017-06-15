@@ -92,10 +92,10 @@ module powerbi.extensibility.visual {
         private static MaxOpacity: number = 1;
 
         private static Punctuation: string[] = [
-            "!", ".", ":", "'", ";", ",", "!",
+            "!", ".", ":", "'", ";", ",", "?",
             "@", "#", "$", "%", "^", "&", "*",
             "(", ")", "[", "]", "\"", "\\", "/",
-            "-", "_", "+", "="
+            "-", "_", "+", "=", "<", ">", "|"
         ];
 
         private static StopWords: string[] = [
@@ -411,7 +411,7 @@ module powerbi.extensibility.visual {
                     splittedWords = WordCloud.getFilteredWords(splittedWords, stopWords, settings);
                     partOfProcessedText = settings.general.isBrokenText
                         ? WordCloud.getBrokenWords(splittedWords, item, whiteSpaceRegExp)
-                        : WordCloud.getFilteredSentences(splittedWords, item, splittedWordsOriginalLength);
+                        : WordCloud.getFilteredSentences(splittedWords, item, splittedWordsOriginalLength, settings, punctuationRegExp);
 
                     processedText.push(...partOfProcessedText);
                 } else {
@@ -450,8 +450,15 @@ module powerbi.extensibility.visual {
         private static getFilteredSentences(
             splittedWords: string[],
             item: WordCloudText,
-            splittedWordsOriginalLength: number): WordCloudText[] {
+            splittedWordsOriginalLength: number,
+            settings: WordCloudSettings,
+            punctuationRegExp: RegExp): WordCloudText[] {
 
+            if (!settings.general.isPunctuationsCharacters) {
+                item.text = item.text
+                   .replace(punctuationRegExp, " ");              
+            }  
+              
             if (splittedWords.length === splittedWordsOriginalLength) {
                 return [item];
             }

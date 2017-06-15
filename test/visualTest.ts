@@ -201,6 +201,35 @@ module powerbi.extensibility.visual.test {
                 }, 300);
             });
 
+            it("words with special characters", (done) => {
+                defaultDataViewBuilder.valuesCategoryValues = [
+                    ["email?!", 1],
+                    ["email@emil.ru", 2],
+                    ["<html_tag>", 3]
+                ];
+
+                dataView = defaultDataViewBuilder.getDataView();
+                dataView.metadata.objects = {
+                    general: {
+                        isBrokenText: false,
+                        isPunctuationsCharacters: true
+                    }
+                };
+
+                visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
+                    visualBuilder.wordText
+                        .toArray()
+                        .forEach((element: Element) => {
+                            const text = $(element).text();
+                            expect(defaultDataViewBuilder.valuesCategoryValues.some((value: any[]) => {
+                                return text === value[0];
+                            }));
+                        });
+
+                    done();
+                }, 300);
+            });
+
             it("null word values test", () => {
                 dataView.categorical.categories[0].values = dataView.categorical
                     .categories[0]
