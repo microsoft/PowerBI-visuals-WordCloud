@@ -270,7 +270,7 @@ module powerbi.extensibility.visual {
                 format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
             });
 
-            stopWords = _.isString(settings.stopWords.words)
+            stopWords = !!settings.stopWords.words && _.isString(settings.stopWords.words)
                 ? settings.stopWords.words.split(WordCloud.StopWordsDelimiter)
                 : [];
 
@@ -380,7 +380,7 @@ module powerbi.extensibility.visual {
             stopWords: string[],
             settings: WordCloudSettings): WordCloudText[][] {
 
-            let brokenStrings: WordCloudText[] = WordCloud.getBrokenWords(texts, stopWords, settings),
+            let brokenStrings: WordCloudText[] = WordCloud.processText(texts, stopWords, settings),
                 result: WordCloudText[][] = <WordCloudText[][]>_.values(_.groupBy(
                     brokenStrings,
                     (textObject: WordCloudText) => textObject.text.toLocaleLowerCase()));
@@ -392,60 +392,94 @@ module powerbi.extensibility.visual {
             return result;
         }
 
-        private static getBrokenWords(
+        private static processText(
             words: WordCloudText[],
             stopWords: string[],
             settings: WordCloudSettings): WordCloudText[] {
-
-            const brokenStrings: WordCloudText[] = [],
+            let processedText: WordCloudText[] = [],
+                partOfProcessedText: WordCloudText[] = [],
                 whiteSpaceRegExp: RegExp = /\s/,
                 punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
-
-            if (!settings.general.isBrokenText) {
-                if (!settings.general.isPunctuationsCharacters) {
-                    words.forEach((item: WordCloudText) => {
-                        item.text = item.text
-                            .replace(punctuationRegExp, " ");
-                    });
-                }
-
-                return words;
-            }
 
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
                     let splittedWords: string[] = item.text
                         .replace(punctuationRegExp, " ")
                         .split(whiteSpaceRegExp);
+                    const splittedWordsOriginalLength: number = splittedWords.length;
 
-                    if (settings.stopWords.show) {
-                        splittedWords = splittedWords.filter((value: string) => {
-                            return value.length > 0 && !stopWords.some((removeWord: string) => {
-                                return value.toLocaleLowerCase() === removeWord.toLocaleLowerCase();
-                            });
-                        });
-                    }
+                    splittedWords = WordCloud.getFilteredWords(splittedWords, stopWords, settings);
+                    partOfProcessedText = settings.general.isBrokenText
+                        ? WordCloud.getBrokenWords(splittedWords, item, whiteSpaceRegExp)
+                        : WordCloud.getFilteredSentences(splittedWords, item, splittedWordsOriginalLength, settings, punctuationRegExp);
 
-                    splittedWords.forEach((splittedWord: string) => {
-                        if (splittedWord.length === 0 || whiteSpaceRegExp.test(splittedWord)) {
-                            return;
-                        }
-
-                        brokenStrings.push({
-                            text: splittedWord,
-                            textGroup: item.textGroup,
-                            count: item.count,
-                            index: item.index,
-                            selectionId: item.selectionId,
-                            color: item.color
-                        });
-                    });
+                    processedText.push(...partOfProcessedText);
                 } else {
-                    brokenStrings.push(item);
+                    processedText.push(item);
                 }
             });
 
+            return processedText;
+        }
+
+        private static getBrokenWords(
+            splittedWords: string[],
+            item: WordCloudText,
+            whiteSpaceRegExp: RegExp): WordCloudText[] {
+
+            let brokenStrings: WordCloudText[] = [];
+
+            splittedWords.forEach((splittedWord: string) => {
+                if (splittedWord.length === 0 || whiteSpaceRegExp.test(splittedWord)) {
+                    return;
+                }
+
+                brokenStrings.push({
+                    text: splittedWord,
+                    textGroup: item.textGroup,
+                    count: item.count,
+                    index: item.index,
+                    selectionId: item.selectionId,
+                    color: item.color
+                });
+            });
+
             return brokenStrings;
+        }
+
+        private static getFilteredSentences(
+            splittedWords: string[],
+            item: WordCloudText,
+            splittedWordsOriginalLength: number,
+            settings: WordCloudSettings,
+            punctuationRegExp: RegExp): WordCloudText[] {
+
+            if (!settings.general.isPunctuationsCharacters) {
+                item.text = item.text
+                   .replace(punctuationRegExp, " ");
+            }
+
+            if (splittedWords.length === splittedWordsOriginalLength) {
+                return [item];
+            }
+
+            return [];
+        }
+
+        private static getFilteredWords(
+            words: string[],
+            stopWords: string[],
+            settings: WordCloudSettings) {
+
+            if (!settings.stopWords.show || !stopWords.length) {
+                return words;
+            }
+
+            return words.filter((value: string) => {
+                return value.length > 0 && !stopWords.some((removeWord: string) => {
+                    return value.toLocaleLowerCase() === removeWord.toLocaleLowerCase();
+                });
+            });
         }
 
         private static getDataPoints(
