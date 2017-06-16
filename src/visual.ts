@@ -76,7 +76,7 @@ module powerbi.extensibility.visual {
         logn,
         sqrt,
         value
-    };
+    }
 
     export class WordCloud implements IVisual {
         private static ClassName: string = "wordCloud";
@@ -246,7 +246,7 @@ module powerbi.extensibility.visual {
             visualHost: IVisualHost,
             previousData: WordCloudData): WordCloudData {
 
-            let categorical: WordCloudColumns<DataViewCategoricalColumn>,
+            let categorical: WordCloudColumns<DataViewCategoryColumn>,
                 catValues: WordCloudColumns<any[]>,
                 settings: WordCloudSettings,
                 colorHelper: ColorHelper,
@@ -296,12 +296,11 @@ module powerbi.extensibility.visual {
                 let color: string;
                 let selectionIdBuilder: ISelectionIdBuilder;
                 if (categorical.Category.objects && categorical.Category.objects[index]) {
-                    color = wordCloudUtils.hexToRgb(colorHelper.getColorForMeasure(
-                        categorical.Category.objects[index], ""));
+                    color = colorHelper.getColorForMeasure(categorical.Category.objects[index], "");
                 } else {
                     color = previousData && previousData.texts && previousData.texts[index]
                         ? previousData.texts[index].color
-                        : wordCloudUtils.getRandomColor();
+                        : colors.getColor(index.toString()).value;
                 }
 
                 selectionIdBuilder = visualHost.createSelectionIdBuilder()
@@ -632,7 +631,7 @@ module powerbi.extensibility.visual {
 
             this.wordsContainerSelection = this.main
                 .append("g")
-                .classed(WordCloud.Words.class, true);
+                .classed(WordCloud.Words.className, true);
 
             this.canvas = document.createElement("canvas");
         }
@@ -686,8 +685,8 @@ module powerbi.extensibility.visual {
 
         private clear(): void {
             this.main
-                .select(WordCloud.Words.selector)
-                .selectAll(WordCloud.WordGroup.selector)
+                .select(WordCloud.Words.selectorName)
+                .selectAll(WordCloud.WordGroup.selectorName)
                 .remove();
         }
 
@@ -1195,14 +1194,14 @@ module powerbi.extensibility.visual {
             this.scaleMainView(wordCloudDataView);
 
             this.wordsGroupUpdateSelection = this.main
-                .select(WordCloud.Words.selector)
+                .select(WordCloud.Words.selectorName)
                 .selectAll("g")
                 .data(wordCloudDataView.data);
 
             let wordGroupEnterSelection: Selection<WordCloudDataPoint> = this.wordsGroupUpdateSelection
                 .enter()
                 .append("svg:g")
-                .classed(WordCloud.WordGroup.class, true);
+                .classed(WordCloud.WordGroup.className, true);
 
             wordGroupEnterSelection
                 .append("svg:text")

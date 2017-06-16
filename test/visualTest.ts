@@ -38,9 +38,9 @@ module powerbi.extensibility.visual.test {
     import getRandomUniqueHexColors = powerbi.extensibility.visual.test.helpers.getRandomUniqueHexColors;
     import getSolidColorStructuralObject = powerbi.extensibility.visual.test.helpers.getSolidColorStructuralObject;
 
-    // WordCloud1447959067750
-    import VisualClass = powerbi.extensibility.visual.WordCloud1447959067750.WordCloud;
-    import WordCloudText = powerbi.extensibility.visual.WordCloud1447959067750.WordCloudText;
+    // WordCloud1447959067751
+    import VisualClass = powerbi.extensibility.visual.WordCloud1447959067751.WordCloud;
+    import WordCloudText = powerbi.extensibility.visual.WordCloud1447959067751.WordCloudText;
 
     /**
      * Extends the mock of ISelectionManager.
@@ -68,7 +68,7 @@ module powerbi.extensibility.visual.test {
             return $.grep(elements, (element: Element) => {
                 return element.innerHTML === "" || element.textContent === text;
             });
-        };
+        }
 
         describe("DOM tests", () => {
             it("svg element created", () => {

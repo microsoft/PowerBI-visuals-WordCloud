@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-wordcloud",
-  "version": "1.2.11",
+  "version": "1.2.12",
   "description": "Word Cloud is a visual representation of word frequency and value. Use it to get instant insight into the most important terms in a set.",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
     "powerbi-visuals"
   ],
   "scripts": {
-    "postinstall": "pbiviz update 1.5.0",
+    "postinstall": "pbiviz update 1.7.0",
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
@@ -29,30 +29,32 @@
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-WordCloud#readme",
   "dependencies": {
     "d3": "3.5.5",
-    "lodash": "4.16.2",
-    "powerbi-visuals-utils-colorutils": "0.2.1",
-    "powerbi-visuals-utils-dataviewutils": "1.0.1",
-    "powerbi-visuals-utils-formattingutils": "0.2.2",
-    "powerbi-visuals-utils-svgutils": "0.2.1",
-    "powerbi-visuals-utils-typeutils": "0.2.1"
+    "d3-cloud": "1.2.4",
+    "lodash": "4.17.4",
+    "powerbi-visuals-utils-colorutils": "^1.0.0",
+    "powerbi-visuals-utils-dataviewutils": "^1.0.0",
+    "powerbi-visuals-utils-formattingutils": "^1.0.0",
+    "powerbi-visuals-utils-svgutils": "^1.0.0",
+    "powerbi-visuals-utils-typeutils": "^1.0.0"
   },
   "devDependencies": {
     "@types/d3": "3.5.36",
+    "@types/d3.cloud.layout": "^1.2.32",
     "@types/jasmine": "2.5.43",
     "@types/jasmine-jquery": "1.5.29",
-    "@types/jquery": "2.0.41",
+    "@types/jquery": "2.0.46",
     "@types/lodash": "4.14.55",
-    "jasmine": "2.5.3",
+    "jasmine": "2.6.0",
     "jasmine-jquery": "2.1.1",
-    "karma": "1.5.0",
-    "karma-chrome-launcher": "2.0.0",
+    "karma": "1.7.0",
+    "karma-chrome-launcher": "2.1.1",
     "karma-jasmine": "1.1.0",
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
-    "powerbi-visuals-tools": "1.5.0",
-    "powerbi-visuals-utils-testutils": "^0.2.2",
-    "tslint": "4.5.1",
-    "tslint-microsoft-contrib": "4.0.0",
+    "powerbi-visuals-tools": "1.7.0",
+    "powerbi-visuals-utils-testutils": "^1.0.0",
+    "tslint": "5.4.3",
+    "tslint-microsoft-contrib": "5.0.0",
     "typescript": "2.1.4"
   }
 }
