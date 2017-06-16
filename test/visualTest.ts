@@ -248,8 +248,9 @@ module powerbi.extensibility.visual.test {
         describe("Format settings test", () => {
             describe("Data color", () => {
                 it("colors", (done) => {
-                    let category: DataViewCategoryColumn,
-                        colors: string[];
+                    const mockColorPallete = createColorPalette();
+                    let category: DataViewCategoryColumn;
+                    let colors: string[] = [];
 
                     defaultDataViewBuilder
                         .valuesCategoryValues
@@ -259,25 +260,25 @@ module powerbi.extensibility.visual.test {
 
                     category = dataView.categorical.categories[0];
 
-                    colors = getRandomUniqueHexColors(category.values.length);
-
                     category.objects = category.objects || [];
 
-                    category.values.forEach((value: PrimitiveValue, index: number) =>
+                    category.values.forEach((value: PrimitiveValue, index: number) => {
+                        const color = mockColorPallete.getColor(index.toString());
+                        colors.push(color.value);
                         category.objects[index] = {
                             dataPoint: {
-                                fill: getSolidColorStructuralObject(colors[index])
+                                fill: color.value
                             }
-                        });
+                        };
+                    });
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         visualBuilder.wordText
                             .toArray()
                             .forEach((element: Element) => {
                                 const fillColor: string = $(element).css("fill");
-
                                 expect(colors.some((color: string) => {
-                                    return areColorsEqual(fillColor, color);
+                                    return fillColor === color;
                                 }));
                             });
 

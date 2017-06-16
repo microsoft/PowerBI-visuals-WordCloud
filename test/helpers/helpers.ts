@@ -39,15 +39,6 @@ module powerbi.extensibility.visual.test.helpers {
         return { solid: { color } };
     }
 
-    export function areColorsEqual(firstColor: string, secondColor: string): boolean {
-        const firstConvertedColor: RgbColor = parseColorString(firstColor),
-            secondConvertedColor: RgbColor = parseColorString(secondColor);
-
-        return firstConvertedColor.R === secondConvertedColor.R
-            && firstConvertedColor.G === secondConvertedColor.G
-            && firstConvertedColor.B === secondConvertedColor.B;
-    }
-
     export function getRandomUniqueIntegers(count: number, min: number = 0, max: number): number[] {
         const result: number[] = [];
 
