@@ -32,8 +32,8 @@ module powerbi.extensibility.visual.test {
     import ClickEventType = powerbi.extensibility.utils.test.helpers.ClickEventType;
 
     // WordCloud1447959067750
-    import VisualPlugin = powerbi.visuals.plugins.WordCloud1447959067751;
-    import VisualClass = powerbi.extensibility.visual.WordCloud1447959067751.WordCloud;
+    import VisualPlugin = powerbi.visuals.plugins.WordCloud1447959067750;
+    import VisualClass = powerbi.extensibility.visual.WordCloud1447959067750.WordCloud;
 
     export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
         private static MaxOpacity: number = 1;

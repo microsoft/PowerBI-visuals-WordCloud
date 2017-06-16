@@ -35,13 +35,12 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.visual.test
     import WordCloudData = powerbi.extensibility.visual.test.WordCloudData;
     import WordCloudBuilder = powerbi.extensibility.visual.test.WordCloudBuilder;
-    import areColorsEqual = powerbi.extensibility.visual.test.helpers.areColorsEqual;
     import getRandomUniqueHexColors = powerbi.extensibility.visual.test.helpers.getRandomUniqueHexColors;
     import getSolidColorStructuralObject = powerbi.extensibility.visual.test.helpers.getSolidColorStructuralObject;
 
-    // WordCloud1447959067751
-    import VisualClass = powerbi.extensibility.visual.WordCloud1447959067751.WordCloud;
-    import WordCloudText = powerbi.extensibility.visual.WordCloud1447959067751.WordCloudText;
+    // WordCloud1447959067750
+    import VisualClass = powerbi.extensibility.visual.WordCloud1447959067750.WordCloud;
+    import WordCloudText = powerbi.extensibility.visual.WordCloud1447959067750.WordCloudText;
 
     /**
      * Extends the mock of ISelectionManager.
@@ -248,7 +247,7 @@ module powerbi.extensibility.visual.test {
         describe("Format settings test", () => {
             describe("Data color", () => {
                 it("colors", (done) => {
-                    const mockColorPallete = createColorPalette();
+                    const mockColorPallete: powerbi.extensibility.IColorPalette = createColorPalette();
                     let category: DataViewCategoryColumn;
                     let colors: string[] = [];
 
@@ -263,7 +262,7 @@ module powerbi.extensibility.visual.test {
                     category.objects = category.objects || [];
 
                     category.values.forEach((value: PrimitiveValue, index: number) => {
-                        const color = mockColorPallete.getColor(index.toString());
+                        const color: IColorInfo = mockColorPallete.getColor(index.toString());
                         colors.push(color.value);
                         category.objects[index] = {
                             dataPoint: {

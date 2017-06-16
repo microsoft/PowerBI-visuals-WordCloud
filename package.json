@@ -29,7 +29,6 @@
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-WordCloud#readme",
   "dependencies": {
     "d3": "3.5.5",
-    "d3-cloud": "1.2.4",
     "lodash": "4.17.4",
     "powerbi-visuals-utils-colorutils": "^1.0.0",
     "powerbi-visuals-utils-dataviewutils": "^1.0.0",
@@ -39,7 +38,6 @@
   },
   "devDependencies": {
     "@types/d3": "3.5.36",
-    "@types/d3.cloud.layout": "^1.2.32",
     "@types/jasmine": "2.5.43",
     "@types/jasmine-jquery": "1.5.29",
     "@types/jquery": "2.0.46",
