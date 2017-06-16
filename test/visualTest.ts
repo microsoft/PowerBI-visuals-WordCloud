@@ -30,6 +30,7 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.utils.test
     import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
     import MockISelectionManager = powerbi.extensibility.utils.test.mocks.MockISelectionManager;
+    import createColorPalette = powerbi.extensibility.utils.test.mocks.createColorPalette;
 
     // powerbi.extensibility.visual.test
     import WordCloudData = powerbi.extensibility.visual.test.WordCloudData;
@@ -326,7 +327,7 @@ module powerbi.extensibility.visual.test {
                     (dataView.metadata.objects as any).stopWords.words = "";
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(grep(visualBuilder.wordText.toArray()).length)
+                        expect(visualBuilder.wordText.toArray().length)
                             .toBeGreaterThan(0);
 
                         (dataView.metadata.objects as any).stopWords.words = "Afghanistan";
@@ -375,22 +376,8 @@ module powerbi.extensibility.visual.test {
                 visualInstance = visualBuilder.instance;
             });
 
-            it("shouldn't throw any unexpected exceptions if canvas is undefined", () => {
-                visualInstance.canvas = null;
-
-                expect(() => {
-                    visualInstance.getCanvasContext();
-                }).not.toThrow();
-            });
-
-            it("should return null if canvas is undefined", () => {
-                visualInstance.canvas = null;
-
-                expect(visualInstance.getCanvasContext()).toBeNull();
-            });
-
             it("should return defined value", () => {
-                let context: CanvasRenderingContext2D = visualInstance.getCanvasContext();
+                let context: CanvasRenderingContext2D = visualInstance.canvasContext;
 
                 expect(context).not.toBeUndefined();
                 expect(context).not.toBeNull();
@@ -399,7 +386,7 @@ module powerbi.extensibility.visual.test {
 
         describe("Selection", () => {
             it("Check index of the data-point after filtering", () => {
-                const item: WordCloudText = VisualClass.converter(dataView, null, visualBuilder.visualHost, null)
+                const item: WordCloudText = VisualClass.converter(dataView, createColorPalette(), visualBuilder.visualHost, null)
                     .texts
                     .find((item: WordCloudText) => item.text === "Angola");
                 expect(item.index).toBe(5);

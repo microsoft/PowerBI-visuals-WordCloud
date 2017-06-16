@@ -139,14 +139,9 @@ module powerbi.extensibility.visual {
         private static TheFourthLineHeight: string = PixelConverter.toString(15); // Note: This construction fixes bug #6343.
 
         private static DefaultTextFontSize: string = PixelConverter.toString(1);
-
         private static MinFakeSize: number = 1;
-
         private static DefaultStrokeStyle: string = "red";
         private static DefaultTextAlign: string = "center";
-
-        private static DefaultCanvasSize: number = 1;
-
         private static ArchimedeanFactor: number = 0.1;
 
         private static WidthOffset: number = 5;
@@ -220,26 +215,15 @@ module powerbi.extensibility.visual {
         private wordsContainerSelection: Selection<any>;
         private wordsGroupUpdateSelection: UpdateSelection<WordCloudDataPoint>;
         private wordsTextUpdateSelection: UpdateSelection<WordCloudDataPoint>;
-
-        /**
-         * Public for testability.
-         */
-        public canvas: HTMLCanvasElement;
-
+        public canvasContext: CanvasRenderingContext2D;
         private fontFamily: string;
-
         private layout: VisualLayout;
-
         private visualHost: IVisualHost;
         private selectionManager: ValueSelectionManager<string>;
-
         private visualUpdateOptions: VisualUpdateOptions;
-
         private isUpdating: boolean = false;
         private incomingUpdateOptions: VisualUpdateOptions;
-
         private oldIdentityKeys: string[];
-
         public static converter(
             dataView: DataView,
             colors: IColorPalette,
@@ -625,7 +609,7 @@ module powerbi.extensibility.visual {
                 this.clearSelection();
             });
 
-            this.fontFamily = this.root.style("font-family"); // TODO: check it.
+            this.fontFamily = this.root.style("font-family");
 
             this.main = this.root.append("g");
 
@@ -633,7 +617,9 @@ module powerbi.extensibility.visual {
                 .append("g")
                 .classed(WordCloud.Words.className, true);
 
-            this.canvas = document.createElement("canvas");
+            // init canvas context for calculate label positions
+            const canvas = document.createElement("canvas");
+            this.canvasContext = this.getCanvasContext(canvas);
         }
 
         public update(visualUpdateOptions: VisualUpdateOptions): void {
@@ -703,8 +689,7 @@ module powerbi.extensibility.visual {
                 let surface: number[] = _.range(
                     WordCloud.MinViewport.width,
                     (this.specialViewport.width >> WordCloud.WidthOffset) * this.specialViewport.height,
-                    WordCloud.MinViewport.width),
-                    canvasContext: CanvasRenderingContext2D;
+                    WordCloud.MinViewport.width);
 
                 words.forEach((dataPoint: WordCloudDataPoint) => {
                     dataPoint.getWidthOfWord = () =>
@@ -717,12 +702,10 @@ module powerbi.extensibility.visual {
                         }) + WordCloud.AdditionalTextWidth);
                 });
 
-                canvasContext = this.getCanvasContext();
-
-                if (canvasContext) {
+                if (this.canvasContext) {
                     this.computeCycle(
                         words,
-                        canvasContext,
+                        this.canvasContext,
                         surface,
                         null,
                         onPositionsComputed);
@@ -1139,20 +1122,15 @@ module powerbi.extensibility.visual {
          *
          * Public for testability.
          */
-        public getCanvasContext(): CanvasRenderingContext2D {
-            if (!this.canvasViewport || !this.canvas) {
+        public getCanvasContext(canvasElement: HTMLCanvasElement): CanvasRenderingContext2D {
+            if (!canvasElement) {
                 return null;
             }
 
-            this.canvas.width = WordCloud.DefaultCanvasSize;
-            this.canvas.height = WordCloud.DefaultCanvasSize;
+            canvasElement.width = this.canvasViewport.width << WordCloud.WidthOffset;
+            canvasElement.height = this.canvasViewport.height;
 
-            let context: CanvasRenderingContext2D = this.canvas.getContext("2d");
-
-            this.canvas.width = this.canvasViewport.width << WordCloud.WidthOffset;
-            this.canvas.height = this.canvasViewport.height;
-
-            context = this.canvas.getContext("2d");
+            const context = canvasElement.getContext("2d");
 
             context.fillStyle = context.strokeStyle = WordCloud.DefaultStrokeStyle;
             context.textAlign = WordCloud.DefaultTextAlign;
@@ -1485,7 +1463,6 @@ module powerbi.extensibility.visual {
 
         public destroy(): void {
             this.root = null;
-            this.canvas = null;
         }
     }
 }
