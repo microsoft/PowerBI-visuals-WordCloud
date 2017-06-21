@@ -30,11 +30,11 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.utils.test
     import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
     import MockISelectionManager = powerbi.extensibility.utils.test.mocks.MockISelectionManager;
+    import createColorPalette = powerbi.extensibility.utils.test.mocks.createColorPalette;
 
     // powerbi.extensibility.visual.test
     import WordCloudData = powerbi.extensibility.visual.test.WordCloudData;
     import WordCloudBuilder = powerbi.extensibility.visual.test.WordCloudBuilder;
-    import areColorsEqual = powerbi.extensibility.visual.test.helpers.areColorsEqual;
     import getRandomUniqueHexColors = powerbi.extensibility.visual.test.helpers.getRandomUniqueHexColors;
     import getSolidColorStructuralObject = powerbi.extensibility.visual.test.helpers.getSolidColorStructuralObject;
 
@@ -68,7 +68,7 @@ module powerbi.extensibility.visual.test {
             return $.grep(elements, (element: Element) => {
                 return element.innerHTML === "" || element.textContent === text;
             });
-        };
+        }
 
         describe("DOM tests", () => {
             it("svg element created", () => {
@@ -247,8 +247,9 @@ module powerbi.extensibility.visual.test {
         describe("Format settings test", () => {
             describe("Data color", () => {
                 it("colors", (done) => {
-                    let category: DataViewCategoryColumn,
-                        colors: string[];
+                    const mockColorPallete: powerbi.extensibility.IColorPalette = createColorPalette();
+                    let category: DataViewCategoryColumn;
+                    let colors: string[] = [];
 
                     defaultDataViewBuilder
                         .valuesCategoryValues
@@ -258,25 +259,25 @@ module powerbi.extensibility.visual.test {
 
                     category = dataView.categorical.categories[0];
 
-                    colors = getRandomUniqueHexColors(category.values.length);
-
                     category.objects = category.objects || [];
 
-                    category.values.forEach((value: PrimitiveValue, index: number) =>
+                    category.values.forEach((value: PrimitiveValue, index: number) => {
+                        const color: IColorInfo = mockColorPallete.getColor(index.toString());
+                        colors.push(color.value);
                         category.objects[index] = {
                             dataPoint: {
-                                fill: getSolidColorStructuralObject(colors[index])
+                                fill: color.value
                             }
-                        });
+                        };
+                    });
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         visualBuilder.wordText
                             .toArray()
                             .forEach((element: Element) => {
                                 const fillColor: string = $(element).css("fill");
-
                                 expect(colors.some((color: string) => {
-                                    return areColorsEqual(fillColor, color);
+                                    return fillColor === color;
                                 }));
                             });
 
@@ -326,7 +327,7 @@ module powerbi.extensibility.visual.test {
                     (dataView.metadata.objects as any).stopWords.words = "";
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(grep(visualBuilder.wordText.toArray()).length)
+                        expect(visualBuilder.wordText.toArray().length)
                             .toBeGreaterThan(0);
 
                         (dataView.metadata.objects as any).stopWords.words = "Afghanistan";
@@ -375,22 +376,8 @@ module powerbi.extensibility.visual.test {
                 visualInstance = visualBuilder.instance;
             });
 
-            it("shouldn't throw any unexpected exceptions if canvas is undefined", () => {
-                visualInstance.canvas = null;
-
-                expect(() => {
-                    visualInstance.getCanvasContext();
-                }).not.toThrow();
-            });
-
-            it("should return null if canvas is undefined", () => {
-                visualInstance.canvas = null;
-
-                expect(visualInstance.getCanvasContext()).toBeNull();
-            });
-
             it("should return defined value", () => {
-                let context: CanvasRenderingContext2D = visualInstance.getCanvasContext();
+                let context: CanvasRenderingContext2D = visualInstance.canvasContext;
 
                 expect(context).not.toBeUndefined();
                 expect(context).not.toBeNull();
@@ -399,7 +386,7 @@ module powerbi.extensibility.visual.test {
 
         describe("Selection", () => {
             it("Check index of the data-point after filtering", () => {
-                const item: WordCloudText = VisualClass.converter(dataView, null, visualBuilder.visualHost, null)
+                const item: WordCloudText = VisualClass.converter(dataView, createColorPalette(), visualBuilder.visualHost, null)
                     .texts
                     .find((item: WordCloudText) => item.text === "Angola");
                 expect(item.index).toBe(5);

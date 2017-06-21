@@ -28,24 +28,23 @@ module powerbi.extensibility.visual {
     // powerbi
     import DataView = powerbi.DataView;
     import DataViewValueColumns = powerbi.DataViewValueColumns;
-    import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
     import DataViewCategorical = powerbi.DataViewCategorical;
     import PrimitiveValue = powerbi.PrimitiveValue;
     import DataViewValueColumn = powerbi.DataViewValueColumn;
 
     export class WordCloudColumns<T> {
-        public static getCategoricalValues(dataView: DataView): WordCloudColumns<DataViewCategoricalColumn[]> {
+        public static getCategoricalValues(dataView: DataView): WordCloudColumns<DataViewCategoryColumn[]> {
             let categorical: DataViewCategorical = dataView && dataView.categorical,
                 categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
                 values: DataViewValueColumns = categorical && categorical.values || [] as DataViewValueColumns,
                 series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
 
-            return categorical && _.mapValues((new this<DataViewCategoricalColumn[]>() as any), (n: any, key: string) => {
-                return (_.toArray(categories) as DataViewCategoricalColumn[])
-                    .concat(_.toArray(values))
-                    .filter((column: DataViewCategoricalColumn) => column.source.roles && column.source.roles[key])
-                    .map((column: DataViewCategoricalColumn) => column.values)[0]
+            return categorical && _.mapValues((new this<DataViewCategoryColumn[]>() as any), (n: any, key: string) => {
+                return (<any[]>_.toArray(categories))
+                    .concat(<any[]>_.toArray(values))
+                    .filter((column: DataViewCategoryColumn) => column.source.roles && column.source.roles[key])
+                    .map((column: DataViewCategoryColumn) => column.values)[0]
                     || values.source
                     && values.source.roles
                     && values.source.roles[key]
@@ -64,7 +63,7 @@ module powerbi.extensibility.visual {
                 });
         }
 
-        public static getCategoricalColumns(dataView: DataView): WordCloudColumns<DataViewCategoricalColumn> {
+        public static getCategoricalColumns(dataView: DataView): WordCloudColumns<DataViewCategoryColumn> {
             let categorical: DataViewCategorical = dataView && dataView.categorical,
                 categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
                 values: DataViewValueColumns = categorical && categorical.values || [] as DataViewValueColumns;
