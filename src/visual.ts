@@ -283,9 +283,7 @@ module powerbi.extensibility.visual {
                 if (categorical.Category.objects && categorical.Category.objects[index]) {
                     color = colorHelper.getColorForMeasure(categorical.Category.objects[index], "");
                 } else {
-                    color = previousData && previousData.texts && previousData.texts[index]
-                        ? previousData.texts[index].color
-                        : colors.getColor(index.toString()).value;
+                    color = settings.dataPoint.defaultColor || colors.getColor(index.toString()).value;
                 }
 
                 selectionIdBuilder = visualHost.createSelectionIdBuilder()
@@ -323,7 +321,6 @@ module powerbi.extensibility.visual {
 
         private static parseSettings(dataView: DataView, previousSettings: WordCloudSettings): WordCloudSettings {
             const settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
-
             settings.general.minFontSize = Math.max(
                 settings.general.minFontSize,
                 GeneralSettings.MinFontSize);
@@ -1386,7 +1383,6 @@ module powerbi.extensibility.visual {
 
             let instanceEnumeration: VisualObjectInstanceEnumeration =
                 WordCloudSettings.enumerateObjectInstances(settings, options);
-
             switch (options.objectName) {
                 case "dataPoint": {
                     if (this.data && this.data.dataPoints) {
@@ -1417,13 +1413,11 @@ module powerbi.extensibility.visual {
             instanceEnumeration: VisualObjectInstanceEnumeration): void {
 
             let wordCategoriesIndex: number[] = [];
-
             dataPoints.forEach((item: WordCloudDataPoint) => {
                 if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
                     let instance: VisualObjectInstance;
 
                     wordCategoriesIndex.push(item.wordIndex);
-
                     instance = {
                         objectName: options.objectName,
                         displayName: this.data.texts[item.wordIndex].text,
@@ -1432,7 +1426,6 @@ module powerbi.extensibility.visual {
                             false),
                         properties: { fill: { solid: { color: item.color } } }
                     };
-
                     this.addAnInstanceToEnumeration(instanceEnumeration, instance);
                 }
             });

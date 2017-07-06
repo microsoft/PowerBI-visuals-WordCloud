@@ -30,6 +30,7 @@ module powerbi.extensibility.visual {
 
     export class WordCloudSettings extends DataViewObjectsParser {
         public general: GeneralSettings = new GeneralSettings();
+        public dataPoint: DataPointSettings = new DataPointSettings();
         public stopWords: StopWordsSettings = new StopWordsSettings();
         public rotateText: RotateTextSettings = new RotateTextSettings();
     }
@@ -43,6 +44,10 @@ module powerbi.extensibility.visual {
         public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageFactor;
         public isBrokenText: boolean = true;
         public isPunctuationsCharacters: boolean = false;
+    }
+
+    export class DataPointSettings {
+        defaultColor: string = null;
     }
 
     export class StopWordsSettings {
