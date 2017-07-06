@@ -72,6 +72,11 @@ module powerbi.extensibility.visual {
     // powerbi.extensibility.utils.color
     import ColorHelper = powerbi.extensibility.utils.color.ColorHelper;
 
+    // powerbi.extensibility.utils.tooptip
+    import TooltipEventArgs = powerbi.extensibility.utils.tooltip.TooltipEventArgs;
+    import ITooltipServiceWrapper = powerbi.extensibility.utils.tooltip.ITooltipServiceWrapper;
+    import createTooltipServiceWrapper = powerbi.extensibility.utils.tooltip.createTooltipServiceWrapper;
+
     enum WordCloudScaleType {
         logn,
         sqrt,
@@ -80,17 +85,13 @@ module powerbi.extensibility.visual {
 
     export class WordCloud implements IVisual {
         private static ClassName: string = "wordCloud";
-
+        private tooltipService: ITooltipServiceWrapper;
         private static Words: ClassAndSelector = createClassAndSelector("words");
         private static WordGroup: ClassAndSelector = createClassAndSelector("word");
-
         private static StopWordsDelimiter: string = " ";
-
         private static Radians: number = Math.PI / 180;
-
         private static MinOpacity: number = 0.2;
         private static MaxOpacity: number = 1;
-
         private static Punctuation: string[] = [
             "!", ".", ":", "'", ";", ",", "?",
             "@", "#", "$", "%", "^", "&", "*",
@@ -439,7 +440,7 @@ module powerbi.extensibility.visual {
 
             if (!settings.general.isPunctuationsCharacters) {
                 item.text = item.text
-                   .replace(punctuationRegExp, " ");
+                    .replace(punctuationRegExp, " ");
             }
 
             if (splittedWords.length === splittedWordsOriginalLength) {
@@ -583,6 +584,9 @@ module powerbi.extensibility.visual {
 
         public init(options: VisualConstructorOptions): void {
             this.root = d3.select(options.element).append("svg");
+            this.tooltipService = createTooltipServiceWrapper(
+                options.host.tooltipService,
+                options.element);
 
             this.colorPalette = options.host.colorPalette;
             this.visualHost = options.host;
@@ -1184,7 +1188,6 @@ module powerbi.extensibility.visual {
             wordGroupEnterSelection
                 .append("svg:text")
                 .style("font-size", WordCloud.DefaultTextFontSize);
-
             wordGroupEnterSelection
                 .append("svg:rect");
 
@@ -1230,6 +1233,7 @@ module powerbi.extensibility.visual {
 
             this.clearIncorrectSelection(this.data.dataView);
             this.renderSelection();
+            this.renderTooltip(this.wordsGroupUpdateSelection);
 
             this.isUpdating = false;
 
@@ -1459,6 +1463,14 @@ module powerbi.extensibility.visual {
                 .delay(delay)
                 .duration(duration)
                 .each("end", callback);
+        }
+        private renderTooltip(selection: UpdateSelection<WordCloudDataPoint>): void {
+            this.tooltipService.addTooltip(selection, (tooltipEvent: TooltipEventArgs<WordCloudDataPoint>) => {
+                return [{
+                    displayName: tooltipEvent.data.text,
+                    value: tooltipEvent.data.count.toString()
+                }];
+            });
         }
 
         public destroy(): void {

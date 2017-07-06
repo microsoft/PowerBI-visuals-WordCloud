@@ -31,9 +31,10 @@
     "d3": "3.5.5",
     "lodash": "4.17.4",
     "powerbi-visuals-utils-colorutils": "^1.0.0",
-    "powerbi-visuals-utils-dataviewutils": "^1.0.0",
-    "powerbi-visuals-utils-formattingutils": "^1.0.0",
-    "powerbi-visuals-utils-svgutils": "^1.0.0",
+    "powerbi-visuals-utils-dataviewutils": "^1.2.0",
+    "powerbi-visuals-utils-formattingutils": "^2.0.0",
+    "powerbi-visuals-utils-svgutils": "^1.1.0",
+    "powerbi-visuals-utils-tooltiputils": "^1.0.0",
     "powerbi-visuals-utils-typeutils": "^1.0.0"
   },
   "devDependencies": {
