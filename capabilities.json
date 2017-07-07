@@ -104,6 +104,17 @@
             "displayName": "Data colors",
             "displayNameKey": "Visual_DataColors",
             "properties": {
+                "defaultColor": {
+                    "displayName": "Default color",
+                    "displayNameKey": "Visual_DefaultColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
                 "fill": {
                     "displayName": "Fill",
                     "displayNameKey": "Visual_Fill",

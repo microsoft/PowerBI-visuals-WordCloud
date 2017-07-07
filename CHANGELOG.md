@@ -1,3 +1,7 @@
+## 1.2.13
+ADD. Added default color for words
+ADD. Added tooltips
+
 ## 1.2.12
 * FIX. memory leak: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': Out of memory at ImageData creation
 * UPDATE. Updated package dependencies 

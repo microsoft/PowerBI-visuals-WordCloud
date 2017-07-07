@@ -9,6 +9,7 @@
     "Visual_General": "General",
     "Visual_MinFontSize": "Min font size",
     "Visual_DataColors": "Data colors",
+    "Visual_DefaultColor": "Default color",
     "Visual_Fill": "Fill",
     "Visual_MaxFontSize": "Max font size",
     "Visual_Show": "Show",
