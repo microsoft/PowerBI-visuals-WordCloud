@@ -403,7 +403,7 @@ module powerbi.extensibility.visual.test {
                     }, 500);
                 });
             });
-
+        });
         describe("getCanvasContext", () => {
             let visualInstance: VisualClass;
 
