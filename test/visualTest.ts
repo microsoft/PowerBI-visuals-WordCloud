@@ -201,7 +201,7 @@ module powerbi.extensibility.visual.test {
                 }, 300);
             });
 
-            // Check only max number of words, with out additional options
+            // Check only max number of words, without additional options
             it("Max number of words", done => {
                 const numberOfWords: number = 10;
 
@@ -218,7 +218,7 @@ module powerbi.extensibility.visual.test {
                 }, 500);
             });
 
-            // Check only Word-breaking, with out additional options
+            // Check only Word-breaking, without additional options
             it("Word-breaking option", done => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let oldLength: number = visualBuilder.words.toArray().length;
