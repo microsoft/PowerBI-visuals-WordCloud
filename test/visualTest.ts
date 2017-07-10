@@ -201,6 +201,40 @@ module powerbi.extensibility.visual.test {
                 }, 300);
             });
 
+            // Check only max number of words, without additional options
+            it("Max number of words", done => {
+                const numberOfWords: number = 10;
+
+                dataView.metadata.objects = {
+                    general: {
+                        maxNumberOfWords: numberOfWords
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let length: number =  visualBuilder.words.toArray().length;
+                    expect(length).toBeLessThanOrEqual(numberOfWords);
+                    done();
+                }, 500);
+            });
+
+            // Check only Word-breaking, without additional options
+            it("Word-breaking option", done => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let oldLength: number = visualBuilder.words.toArray().length;
+                    dataView.metadata.objects = {
+                        general: {
+                            isBrokenText: true
+                        }
+                    };
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let newLength: number = visualBuilder.words.toArray().length;
+                        expect(newLength).toBeLessThanOrEqual(oldLength);
+                        done();
+                    }, 500);
+                }, 500);
+            });
+
             it("words with special characters", (done) => {
                 defaultDataViewBuilder.valuesCategoryValues = [
                     ["email?!", 1],
@@ -368,7 +402,6 @@ module powerbi.extensibility.visual.test {
                 });
             });
         });
-
         describe("getCanvasContext", () => {
             let visualInstance: VisualClass;
 
