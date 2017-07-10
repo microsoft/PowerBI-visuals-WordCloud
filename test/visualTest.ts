@@ -201,7 +201,7 @@ module powerbi.extensibility.visual.test {
                 }, 300);
             });
 
-            //Check only max number of words, with out additional options
+            // Check only max number of words, with out additional options
             it("Max number of words", done => {
                 const numberOfWords: number = 10;
 
@@ -212,13 +212,13 @@ module powerbi.extensibility.visual.test {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let length =  visualBuilder.words.toArray().length;
+                    let length: number =  visualBuilder.words.toArray().length;
                     expect(length).toBeLessThanOrEqual(numberOfWords);
                     done();
                 }, 500);
             });
 
-            //Check only Word-breaking, with out additional options
+            // Check only Word-breaking, with out additional options
             it("Word-breaking option", done => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let oldLength: number = visualBuilder.words.toArray().length;
@@ -227,9 +227,8 @@ module powerbi.extensibility.visual.test {
                             isBrokenText: true
                         }
                     };
-                    
+  
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        debugger;
                         let newLength: number = visualBuilder.words.toArray().length;
                         expect(newLength).toBeLessThanOrEqual(oldLength);
                         done();
