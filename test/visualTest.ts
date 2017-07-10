@@ -226,8 +226,7 @@ module powerbi.extensibility.visual.test {
                         general: {
                             isBrokenText: true
                         }
-                    };
-  
+                    };  
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         let newLength: number = visualBuilder.words.toArray().length;
                         expect(newLength).toBeLessThanOrEqual(oldLength);
