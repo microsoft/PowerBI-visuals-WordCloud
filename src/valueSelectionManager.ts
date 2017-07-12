@@ -80,22 +80,14 @@ module powerbi.extensibility.visual {
             });
         }
 
-        public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): JQueryDeferred<ISelectionId[]> {
+        public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): void {
             const values: T[] = _.isArray(value)
                 ? value
                 : [value];
 
             this.selectInternal(values, multiSelect);
 
-            return this.sendSelection();
-        }
-
-        public select(value: T[] | T, multiSelect: boolean = false): void {
-            const values: T[] = _.isArray(value)
-                ? value
-                : [value];
-
-            this.selectInternal(values, multiSelect);
+            this.sendSelection();
         }
 
         public isSelected(selectionId: T[] | T): boolean {
@@ -108,18 +100,16 @@ module powerbi.extensibility.visual {
             }));
         }
 
-        public sendSelection(): JQueryDeferred<ISelectionId[]> {
-            return this.sendSelectionToHost(this.selectionIds);
+        public sendSelection(): void {
+            this.sendSelectionToHost(this.selectionIds);
         }
 
-        public clear(sendToHost: boolean): JQueryDeferred<{}> {
+        public clear(sendToHost: boolean): void {
             this.selectedValues.length = 0;
 
             if (sendToHost) {
-                return this.sendSelection();
+                this.sendSelection();
             }
-
-            return $.Deferred().resolve();
         }
 
         private selectInternal(values: T[], multiSelect: boolean): void {
@@ -146,14 +136,9 @@ module powerbi.extensibility.visual {
             });
         }
 
-        private sendSelectionToHost(ids: ISelectionId[]): JQueryDeferred<ISelectionId[]> {
-            const deferred: JQueryDeferred<Selector[]> = $.Deferred();
-
+        private sendSelectionToHost(ids: ISelectionId[]): void {
             (<any>this.selectionManager).sendSelectionToHost(ids);
 
-            deferred.resolve(this.selectionIds);
-
-            return deferred;
         }
     }
 }

@@ -1288,14 +1288,14 @@ module powerbi.extensibility.visual {
             }
 
             this.selectionManager
-                .selectAndSendSelection(dataPoint.text, (d3.event as MouseEvent).ctrlKey)
-                .then(() => this.renderSelection());
+                .selectAndSendSelection(dataPoint.text, (d3.event as MouseEvent).ctrlKey);
+            this.renderSelection();
         }
 
         private clearSelection(): void {
             this.selectionManager
-                .clear(true)
-                .then(() => this.renderSelection());
+                .clear(true);
+            this.renderSelection();
         }
 
         private scaleMainView(wordCloudDataView: WordCloudDataView): void {
