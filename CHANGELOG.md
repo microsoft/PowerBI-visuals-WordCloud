@@ -1,3 +1,6 @@
+## 1.2.14
+FIX. Fix to use Defered object without jQuery library 
+
 ## 1.2.13
 ADD. Added default color for words
 ADD. Added tooltips
