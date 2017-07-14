@@ -52,7 +52,9 @@ module.exports = (config) => {
         colors: true,
         frameworks: ['jasmine'],
         reporters: [
-            'progress'
+            'progress',
+            'coverage',
+            'karma-remap-istanbul'
         ],
         singleRun: true,
         files: [
@@ -69,7 +71,8 @@ module.exports = (config) => {
             }
         ],
         preprocessors: {
-            [recursivePathToTests]: ['typescript']
+            [recursivePathToTests]: ['typescript'],
+            [srcRecursivePath]: ['sourcemap', 'coverage']
         },
         typescriptPreprocessor: {
             options: {
@@ -77,6 +80,20 @@ module.exports = (config) => {
                 target: 'ES5',
                 removeComments: false,
                 concatenateOutput: false
+            }
+        },
+        coverageReporter: {
+            dir: coverageFolder,
+            reporters: [
+                { type: 'html' },
+                { type: 'lcov' }
+            ]
+        },
+        remapIstanbulReporter: {
+            reports: {
+                lcovonly: coverageFolder + '/lcov.info',
+                html: coverageFolder,
+                'text-summary': null
             }
         }
     });
