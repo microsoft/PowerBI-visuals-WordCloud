@@ -5,4 +5,3 @@ dist
 typings
 .api
 *.log
-coverage
