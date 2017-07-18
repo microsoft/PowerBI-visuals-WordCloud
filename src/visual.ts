@@ -570,7 +570,7 @@ module powerbi.extensibility.visual {
 
             const angle: number = ((settings.rotateText.maxAngle - settings.rotateText.minAngle)
                 / settings.rotateText.maxNumberOfOrientations)
-                * Math.floor(Math.random() * settings.rotateText.maxNumberOfOrientations);
+                * wordCloudUtils.getRandomNumber(0, settings.rotateText.maxNumberOfOrientations);
 
             return settings.rotateText.minAngle + angle;
         }
@@ -727,10 +727,10 @@ module powerbi.extensibility.visual {
                 ratio: number = this.getRatio(words.length);
 
             word.x = (this.specialViewport.width / ratio
-                * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
+                * (wordCloudUtils.getRandomNumber(0, 100) / 100 + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
             word.y = (this.specialViewport.height / ratio
-                * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
+                * (wordCloudUtils.getRandomNumber(0, 100) / 100 + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
             if (!word.sprite) {
                 this.generateSprites(context, words, index);
@@ -984,7 +984,7 @@ module powerbi.extensibility.visual {
                 delta: number = Math.sqrt(this.specialViewport.width * this.specialViewport.width
                     + this.specialViewport.height * this.specialViewport.height),
                 point: IPoint,
-                dt: number = Math.random() < WordCloud.AdditionalRandomValue
+                dt: number = (wordCloudUtils.getRandomNumber(0, 100) / 100) < WordCloud.AdditionalRandomValue
                     ? WordCloud.DefaultDT
                     : -WordCloud.DefaultDT,
                 shift: number = -dt,
