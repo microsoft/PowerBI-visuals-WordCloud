@@ -26,12 +26,27 @@
 
 module powerbi.extensibility.visual {
     export module wordCloudUtils {
+        const crypto: Crypto = window.crypto || (<any>window).msCrypto;
         export function getRandomColor(): string {
-            const red: number = Math.floor(Math.random() * 255),
-                green: number = Math.floor(Math.random() * 255),
-                blue: number = Math.floor(Math.random() * 255);
+            const array = new Uint8Array(3);
+            crypto.getRandomValues(array);
+            return `rgb(${array.join(",")})`;
+        }
 
-            return `rgb(${red},${green},${blue})`;
+        export function getSecureRandomUint(): number {
+            const buf = new Uint8Array(4);
+            const dv = new DataView(buf.buffer);
+            crypto.getRandomValues(buf);
+            return dv.getUint32(0);
+        }
+
+        export function getRandomNumber(min: number, max: number): number {
+            const bits: number = ((max - min)).toString(2).length;
+            let randUint: number = wordCloudUtils.getSecureRandomUint();
+            while ((randUint & (Math.pow(2, bits) - 1)) > (max - min)) {
+                randUint = wordCloudUtils.getSecureRandomUint();
+            }
+            return min + (Math.abs(randUint & (Math.pow(2, bits) - 1)));
         }
     }
 }
