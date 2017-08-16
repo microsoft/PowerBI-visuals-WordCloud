@@ -1,9 +1,12 @@
+## 1.2.15
+* ADD. Added a new role to set excludes (like filters) for categories. This feature works in addition to StopWords options, however, if option is disabled, excludes will be applied anyway
+
 ## 1.2.14
-FIX. Fix to use Defered object without jQuery library 
+* FIX. Fix to use Defered object without jQuery library 
 
 ## 1.2.13
-ADD. Added default color for words
-ADD. Added tooltips
+* ADD. Added default color for words
+* ADD. Added tooltips
 
 ## 1.2.12
 * FIX. memory leak: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': Out of memory at ImageData creation
