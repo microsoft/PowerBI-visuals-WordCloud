@@ -11,6 +11,12 @@
             "displayNameKey": "Visual_Values",
             "kind": "Measure",
             "displayName": "Values"
+        },
+        {
+            "name": "Excludes",
+            "displayNameKey": "Visual_Excludes",
+            "kind": "Grouping",
+            "displayName": "Excludes"
         }
     ],
     "dataViewMappings": [

@@ -81,5 +81,6 @@ module powerbi.extensibility.visual {
         // Data Roles
         public Category: T = null;
         public Values: T = null;
+        public Excludes: T = null;
     }
 }
