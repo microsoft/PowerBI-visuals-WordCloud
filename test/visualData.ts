@@ -36,6 +36,7 @@ module powerbi.extensibility.visual.test {
     export class WordCloudData extends TestDataViewBuilder {
         public static ColumnCategory: string = "Category";
         public static ColumnValues: string = "Values";
+        public static ColumnExcludes: string = "Excludes";
 
         public valuesCategoryValues: any[][] = [
             ["", null],
@@ -123,6 +124,14 @@ module powerbi.extensibility.visual.test {
                         type: ValueType.fromDescriptor({ text: true })
                     },
                     values: this.valuesCategoryValues.map((value: any[]) => value[0])
+                },
+                {
+                   source: {
+                        displayName: WordCloudData.ColumnExcludes,
+                        roles: { "Excludes": true },
+                        type: ValueType.fromDescriptor({ text: true }),
+                    },
+                    values: ["Afganistan", "Something", "\"Rwanda\", \"Uganda\""]
                 }
             ], [
                     {

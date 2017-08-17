@@ -75,6 +75,26 @@ module powerbi.extensibility.visual.test {
                 expect(visualBuilder.mainElement[0]).toBeInDOM();
             });
 
+            it("apply excludes", (done) => {
+                dataView.categorical.categories[0].values = ["Afganistan", "Angola", "Rwanda", "Uganda", "Fiji", "Papua New Guinea"];
+
+                dataView.metadata.objects = {
+                    stopWords: {
+                        show: true,
+                        words: "Papua New Guinea"
+                    }
+                };
+
+                // Should leave Angola and Fiji only
+                // Afganistan, Rwanda, Uganda must be filtered by Excludes
+                // Papua New Guinea must be filtered by StopWords option
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let length: number =  visualBuilder.words.toArray().length;
+                    expect(length).toEqual(2);
+                    done();
+                }, 500);
+            });
+
             it("basic update", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(visualBuilder.wordText.length)

@@ -17,5 +17,6 @@
     "Visual_Show": "Show",
     "Visual_MinAngle": "Min Angle",
     "Visual_MaxAngle": "Max Angle",
-    "Visual_RotateText": "Rotate Text"
+    "Visual_RotateText": "Rotate Text",
+    "Visual_Excludes": "Excludes"
 }

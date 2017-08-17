@@ -236,6 +236,7 @@ module powerbi.extensibility.visual {
                 settings: WordCloudSettings,
                 colorHelper: ColorHelper,
                 stopWords: string[],
+                excludedSet: PrimitiveValue[],
                 texts: WordCloudText[] = [],
                 reducedTexts: WordCloudText[][],
                 dataPoints: WordCloudDataPoint[],
@@ -262,6 +263,10 @@ module powerbi.extensibility.visual {
             stopWords = settings.stopWords.isDefaultStopWords
                 ? stopWords.concat(WordCloud.StopWords)
                 : stopWords;
+
+            excludedSet = !categorical.Excludes || _.isEmpty(categorical.Excludes.values)
+                ? []
+                : categorical.Excludes.values;
 
             colorHelper = new ColorHelper(
                 colors,
@@ -308,7 +313,7 @@ module powerbi.extensibility.visual {
                 });
             }
 
-            reducedTexts = WordCloud.getReducedText(texts, stopWords, settings);
+            reducedTexts = WordCloud.getReducedText(texts, stopWords, excludedSet, settings);
             dataPoints = WordCloud.getDataPoints(reducedTexts, settings);
 
             return {
@@ -358,10 +363,11 @@ module powerbi.extensibility.visual {
 
         private static getReducedText(
             texts: WordCloudText[],
-            stopWords: string[],
+            stopWords: PrimitiveValue[],
+            excludedSet: PrimitiveValue[],
             settings: WordCloudSettings): WordCloudText[][] {
 
-            let brokenStrings: WordCloudText[] = WordCloud.processText(texts, stopWords, settings),
+            let brokenStrings: WordCloudText[] = WordCloud.processText(texts, stopWords, excludedSet, settings),
                 result: WordCloudText[][] = <WordCloudText[][]>_.values(_.groupBy(
                     brokenStrings,
                     (textObject: WordCloudText) => textObject.text.toLocaleLowerCase()));
@@ -375,21 +381,34 @@ module powerbi.extensibility.visual {
 
         private static processText(
             words: WordCloudText[],
-            stopWords: string[],
+            stopWords: PrimitiveValue[],
+            excludedSet: PrimitiveValue[],
             settings: WordCloudSettings): WordCloudText[] {
             let processedText: WordCloudText[] = [],
                 partOfProcessedText: WordCloudText[] = [],
                 whiteSpaceRegExp: RegExp = /\s/,
-                punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
+                punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim"),
+                splittedExcludes: PrimitiveValue[] = [];
+
+            excludedSet.forEach((item: PrimitiveValue) => {
+                if (typeof item === "string" || typeof item === "number") {
+                    let splittedExclude: string[] = item.toString()
+                        .replace(punctuationRegExp, " ")
+                        .split(whiteSpaceRegExp);
+
+                    splittedExcludes = splittedExcludes.concat(splittedExclude);
+                }
+            });
 
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
                     let splittedWords: string[] = item.text
                         .replace(punctuationRegExp, " ")
                         .split(whiteSpaceRegExp);
+
                     const splittedWordsOriginalLength: number = splittedWords.length;
 
-                    splittedWords = WordCloud.getFilteredWords(splittedWords, stopWords, settings);
+                    splittedWords = WordCloud.getFilteredWords(splittedWords, stopWords, splittedExcludes, settings);
                     partOfProcessedText = settings.general.isBrokenText
                         ? WordCloud.getBrokenWords(splittedWords, item, whiteSpaceRegExp)
                         : WordCloud.getFilteredSentences(splittedWords, item, splittedWordsOriginalLength, settings, punctuationRegExp);
@@ -449,8 +468,15 @@ module powerbi.extensibility.visual {
 
         private static getFilteredWords(
             words: string[],
-            stopWords: string[],
+            stopWords: PrimitiveValue[],
+            splittedExcludes: PrimitiveValue[],
             settings: WordCloudSettings) {
+
+            words = words.filter((value: string) => {
+                return value.length > 0 && !splittedExcludes.some((removeWord: string) => {
+                    return value.toLocaleLowerCase() === removeWord.toLocaleLowerCase();
+                });
+            });
 
             if (!settings.stopWords.show || !stopWords.length) {
                 return words;

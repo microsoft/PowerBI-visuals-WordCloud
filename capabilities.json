@@ -11,6 +11,12 @@
             "displayNameKey": "Visual_Values",
             "kind": "Measure",
             "displayName": "Values"
+        },
+        {
+            "name": "Excludes",
+            "displayNameKey": "Visual_Excludes",
+            "kind": "Grouping",
+            "displayName": "Excludes"
         }
     ],
     "dataViewMappings": [
@@ -24,14 +30,28 @@
                     "Values": {
                         "min": 0,
                         "max": 1
+                    },
+                    "Excludes": {
+                        "min": 0,
+                        "max": 1
                     }
                 }
             ],
             "categorical": {
                 "categories": {
-                    "for": {
-                        "in": "Category"
-                    },
+                    "select": [
+                        {
+                            "bind": {
+                                "to": "Category"
+                            }
+                        },
+                        {
+                            "bind": {
+                                "to": "Excludes"
+                            }
+                        }
+                    ],
+
                     "dataReductionAlgorithm": {
                         "top": {
                             "count": 2500
