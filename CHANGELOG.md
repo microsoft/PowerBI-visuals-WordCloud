@@ -1,4 +1,4 @@
-## 1.2.15
+## 1.3.0
 * ADD. Added a new role to set excludes (like filters) for categories. This feature works in addition to StopWords options, however, if option is disabled, excludes will be applied anyway
 
 ## 1.2.14
