@@ -131,7 +131,7 @@ module powerbi.extensibility.visual.test {
                         roles: { "Excludes": true },
                         type: ValueType.fromDescriptor({ text: true }),
                     },
-                    values: ['Afganistan', 'Something', '"Rwanda", "Uganda"']  
+                    values: ["Afganistan", "Something", "\"Rwanda\", \"Uganda\""]
                 }
             ], [
                     {

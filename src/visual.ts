@@ -391,11 +391,11 @@ module powerbi.extensibility.visual {
                 splittedExcludes: PrimitiveValue[] = [];
 
             excludedSet.forEach((item: PrimitiveValue) => {
-                if (typeof item === "string" || typeof item == "number") {
+                if (typeof item === "string" || typeof item === "number") {
                     let splittedExclude: string[] = item.toString()
                         .replace(punctuationRegExp, " ")
                         .split(whiteSpaceRegExp);
-                    
+
                     splittedExcludes = splittedExcludes.concat(splittedExclude);
                 }
             });
@@ -405,7 +405,7 @@ module powerbi.extensibility.visual {
                     let splittedWords: string[] = item.text
                         .replace(punctuationRegExp, " ")
                         .split(whiteSpaceRegExp);
-                        
+
                     const splittedWordsOriginalLength: number = splittedWords.length;
 
                     splittedWords = WordCloud.getFilteredWords(splittedWords, stopWords, splittedExcludes, settings);

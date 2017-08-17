@@ -76,7 +76,7 @@ module powerbi.extensibility.visual.test {
             });
 
             it("apply excludes", (done) => {
-                dataView.categorical.categories[0].values = ['Afganistan', 'Angola', "Rwanda", "Uganda", "Fiji", "Papua New Guinea"];
+                dataView.categorical.categories[0].values = ["Afganistan", "Angola", "Rwanda", "Uganda", "Fiji", "Papua New Guinea"];
 
                 dataView.metadata.objects = {
                     stopWords: {
@@ -84,7 +84,7 @@ module powerbi.extensibility.visual.test {
                         words: "Papua New Guinea"
                     }
                 };
-                
+
                 // Should leave Angola and Fiji only
                 // Afganistan, Rwanda, Uganda must be filtered by Excludes
                 // Papua New Guinea must be filtered by StopWords option
