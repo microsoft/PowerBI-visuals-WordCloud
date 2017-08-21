@@ -473,7 +473,7 @@ module powerbi.extensibility.visual {
             if (splittedWords.length === 0) {
                 return []
             }
-            
+
             return [item];
         }
 
