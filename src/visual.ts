@@ -379,6 +379,23 @@ module powerbi.extensibility.visual {
             return result;
         }
 
+        private static CleanAndSplit(
+            item: string,
+            settings: WordCloudSettings,
+            punctuationRegExp: RegExp,
+            whiteSpaceRegExp: RegExp) {
+
+            let splittedWords: string[] = [];
+
+            if (!settings.general.isPunctuationsCharacters) {
+                splittedWords = item.replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
+            } else {
+                splittedWords = item.split(whiteSpaceRegExp);
+            }
+
+            return splittedWords;
+        }
+
         private static processText(
             words: WordCloudText[],
             stopWords: PrimitiveValue[],
@@ -392,19 +409,19 @@ module powerbi.extensibility.visual {
 
             excludedSet.forEach((item: PrimitiveValue) => {
                 if (typeof item === "string" || typeof item === "number") {
-                    let splittedExclude: string[] = item.toString()
-                        .replace(punctuationRegExp, " ")
-                        .split(whiteSpaceRegExp);
+                    let splittedExclude: string[] = [];
 
+                    // Filters should keep the same rules that target words
+                    splittedExclude = this.CleanAndSplit(item.toString(), settings, punctuationRegExp, whiteSpaceRegExp);
                     splittedExcludes = splittedExcludes.concat(splittedExclude);
                 }
             });
 
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
-                    let splittedWords: string[] = item.text
-                        .replace(punctuationRegExp, " ")
-                        .split(whiteSpaceRegExp);
+                    let splittedWords: string[] = [];
+
+                    splittedWords = this.CleanAndSplit(item.text, settings, punctuationRegExp, whiteSpaceRegExp);
 
                     const splittedWordsOriginalLength: number = splittedWords.length;
 
@@ -454,16 +471,18 @@ module powerbi.extensibility.visual {
             settings: WordCloudSettings,
             punctuationRegExp: RegExp): WordCloudText[] {
 
+            let whiteSpaceRegExp: RegExp = /\s/;
+
             if (!settings.general.isPunctuationsCharacters) {
                 item.text = item.text
                     .replace(punctuationRegExp, " ");
             }
 
-            if (splittedWords.length === splittedWordsOriginalLength) {
-                return [item];
+            if (splittedWords.length === 0) {
+                return [];
             }
 
-            return [];
+            return [item];
         }
 
         private static getFilteredWords(

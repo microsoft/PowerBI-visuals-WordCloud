@@ -95,6 +95,89 @@ module powerbi.extensibility.visual.test {
                 }, 500);
             });
 
+            it("special characters Off with Word-breaking On", (done) => {
+                dataView.categorical.categories[0].values = ["!!!!", "\"\"\"\"\"", "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
+
+                dataView.metadata.objects = {
+                    general: {
+                        isPunctuationsCharacters: false,
+                        isBrokenText: true,
+                    }
+                };
+
+                let expectedWords: string[] = ["C", "M", "Ms", "special", "characters"];
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    visualBuilder.wordText
+                    .toArray()
+                    .forEach((element: Element) => {
+                        const text = $(element).text();
+                        expect(expectedWords.some((value: string) => {
+                            return text === value;
+                        }));
+                    });
+
+                    let length: number =  visualBuilder.words.toArray().length;
+                    expect(length).toEqual(5);
+                    done();
+                }, 500);
+            });
+
+            it("special characters Off with Word-breaking Off", (done) => {
+                dataView.categorical.categories[0].values = ["!!!!", "\"\"\"\"\"", "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
+
+                dataView.metadata.objects = {
+                    general: {
+                        isPunctuationsCharacters: false,
+                        isBrokenText: false,
+                    }
+                };
+
+                let expectedWords: string[] = ["C", "M Ms", "special characters"];
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    visualBuilder.wordText
+                    .toArray()
+                    .forEach((element: Element) => {
+                        const text = $(element).text();
+                        expect(expectedWords.some((value: string) => {
+                            return text === value;
+                        }));
+                    });
+
+                    let length: number =  visualBuilder.words.toArray().length;
+                    expect(length).toEqual(3);
+                    done();
+                }, 500);
+            });
+
+            it("special characters On", (done) => {
+                dataView.categorical.categories[0].values = ["!!!!", "\"\"\"\"\"", "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
+
+                dataView.metadata.objects = {
+                    general: {
+                        isPunctuationsCharacters: true
+                    }
+                };
+
+                visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
+                    visualBuilder.wordText
+                        .toArray()
+                        .forEach((element: Element) => {
+                            const text = $(element).text();
+                            expect(defaultDataViewBuilder.valuesCategoryValues.some((value: any[]) => {
+                                return text === value[0];
+                            }));
+                        });
+
+                    let length: number =  visualBuilder.words.toArray().length;
+                    expect(length).toEqual(10);
+
+                    done();
+                }, 300);
+
+            });
+
             it("basic update", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(visualBuilder.wordText.length)
