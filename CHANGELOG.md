@@ -1,3 +1,6 @@
+## 1.3.1
+* FIX. Option for showing of special characters was repaired 
+
 ## 1.3.0
 * ADD. Added a new role to set excludes (like filters) for categories. This feature works in addition to StopWords options, however, if option is disabled, excludes will be applied anyway
 

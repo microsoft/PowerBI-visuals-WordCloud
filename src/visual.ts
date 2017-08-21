@@ -392,9 +392,14 @@ module powerbi.extensibility.visual {
 
             excludedSet.forEach((item: PrimitiveValue) => {
                 if (typeof item === "string" || typeof item === "number") {
-                    let splittedExclude: string[] = item.toString()
-                        .replace(punctuationRegExp, " ")
-                        .split(whiteSpaceRegExp);
+                    let splittedExclude: string[] = [];
+
+                    // Filters should keep the same rules that target words
+                    if (!settings.general.isPunctuationsCharacters) {
+                        splittedExclude = item.toString().replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
+                    } else {
+                        splittedExclude = item.toString().split(whiteSpaceRegExp);
+                    }
 
                     splittedExcludes = splittedExcludes.concat(splittedExclude);
                 }
@@ -402,9 +407,13 @@ module powerbi.extensibility.visual {
 
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
-                    let splittedWords: string[] = item.text
-                        .replace(punctuationRegExp, " ")
-                        .split(whiteSpaceRegExp);
+                    let splittedWords: string[] = [];
+                    
+                    if (!settings.general.isPunctuationsCharacters) {
+                        splittedWords = item.text.replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
+                    } else {
+                        splittedWords = item.text.split(whiteSpaceRegExp);
+                    }
 
                     const splittedWordsOriginalLength: number = splittedWords.length;
 
@@ -454,16 +463,18 @@ module powerbi.extensibility.visual {
             settings: WordCloudSettings,
             punctuationRegExp: RegExp): WordCloudText[] {
 
+            let whiteSpaceRegExp: RegExp = /\s/;
+
             if (!settings.general.isPunctuationsCharacters) {
                 item.text = item.text
                     .replace(punctuationRegExp, " ");
             }
 
-            if (splittedWords.length === splittedWordsOriginalLength) {
-                return [item];
+            if (splittedWords.length === 0) {
+                return []
             }
-
-            return [];
+            
+            return [item];
         }
 
         private static getFilteredWords(
