@@ -379,6 +379,23 @@ module powerbi.extensibility.visual {
             return result;
         }
 
+        private static CleanAndSplit(
+            item: string,
+            settings: WordCloudSettings,
+            punctuationRegExp: RegExp,
+            whiteSpaceRegExp: RegExp) {
+
+            let splittedWords: string[] = [];
+
+            if (!settings.general.isPunctuationsCharacters) {
+                splittedWords = item.replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
+            } else {
+                splittedWords = item.split(whiteSpaceRegExp);
+            }
+
+            return splittedWords;
+        }
+
         private static processText(
             words: WordCloudText[],
             stopWords: PrimitiveValue[],
@@ -395,12 +412,7 @@ module powerbi.extensibility.visual {
                     let splittedExclude: string[] = [];
 
                     // Filters should keep the same rules that target words
-                    if (!settings.general.isPunctuationsCharacters) {
-                        splittedExclude = item.toString().replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
-                    } else {
-                        splittedExclude = item.toString().split(whiteSpaceRegExp);
-                    }
-
+                    splittedExclude = this.CleanAndSplit(item.toString(), settings, punctuationRegExp, whiteSpaceRegExp);
                     splittedExcludes = splittedExcludes.concat(splittedExclude);
                 }
             });
@@ -408,12 +420,8 @@ module powerbi.extensibility.visual {
             words.forEach((item: WordCloudText) => {
                 if (typeof item.text === "string") {
                     let splittedWords: string[] = [];
-                    
-                    if (!settings.general.isPunctuationsCharacters) {
-                        splittedWords = item.text.replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
-                    } else {
-                        splittedWords = item.text.split(whiteSpaceRegExp);
-                    }
+
+                    splittedWords = this.CleanAndSplit(item.text, settings, punctuationRegExp, whiteSpaceRegExp);
 
                     const splittedWordsOriginalLength: number = splittedWords.length;
 
@@ -471,7 +479,7 @@ module powerbi.extensibility.visual {
             }
 
             if (splittedWords.length === 0) {
-                return []
+                return [];
             }
 
             return [item];
