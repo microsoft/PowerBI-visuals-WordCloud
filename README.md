@@ -1,5 +1,6 @@
 # PowerBI-visuals-WordCloud
 [![Build Status](https://travis-ci.org/Microsoft/PowerBI-visuals-WordCloud.svg?branch=master)](https://travis-ci.org/Microsoft/PowerBI-visuals-WordCloud)
+[![Coverage Status](https://coveralls.io/repos/github/Microsoft/PowerBI-visuals-WordCloud/badge.svg?branch=master)](https://coveralls.io/github/Microsoft/PowerBI-visuals-WordCloud?branch=master)
 > Word Cloud is a visual representation of word frequency and value. Use it to get instant insight into the most important terms in a set.
 
 ![Wordcloud chart screenshot](https://az158878.vo.msecnd.net/marketing/Partner_21474836617/Product_42949680547/Asset_82e6791c-3970-4cd9-b687-1e9100c8ef5a/WordCloudscreenshot1.png)
