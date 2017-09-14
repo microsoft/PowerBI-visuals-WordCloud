@@ -680,6 +680,8 @@ module powerbi.extensibility.visual {
                 return;
             }
 
+            let dataViewValues: any = visualUpdateOptions.dataViews[0].categorical.values[0];
+
             if (visualUpdateOptions !== this.visualUpdateOptions) {
                 this.incomingUpdateOptions = visualUpdateOptions;
             }
@@ -1503,10 +1505,20 @@ module powerbi.extensibility.visual {
                 .each("end", callback);
         }
         private renderTooltip(selection: UpdateSelection<WordCloudDataPoint>): void {
+            let categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.getCategoricalColumns(this.incomingUpdateOptions.dataViews[0]),
+            wordValueFormatter: IValueFormatter = null;
+
+            if (categorical.Values && categorical.Values[0]) {
+                wordValueFormatter = ValueFormatter.create({
+                    format: ValueFormatter.getFormatStringByColumn(categorical.Values[0].source)
+                });
+            }
+
             this.tooltipService.addTooltip(selection, (tooltipEvent: TooltipEventArgs<WordCloudDataPoint>) => {
+                let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.data.count) : tooltipEvent.data.count;
                 return [{
                     displayName: tooltipEvent.data.text,
-                    value: tooltipEvent.data.count.toString()
+                    value: item.toString()
                 }];
             });
         }
