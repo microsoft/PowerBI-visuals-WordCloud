@@ -1,3 +1,6 @@
+## 1.3.2
+* FIX. Applying of value format to tooltip values
+
 ## 1.3.1
 * FIX. Option for showing of special characters was repaired 
 

@@ -680,8 +680,6 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            let dataViewValues: any = visualUpdateOptions.dataViews[0].categorical.values[0];
-
             if (visualUpdateOptions !== this.visualUpdateOptions) {
                 this.incomingUpdateOptions = visualUpdateOptions;
             }
