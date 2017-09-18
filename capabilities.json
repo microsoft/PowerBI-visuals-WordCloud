@@ -210,6 +210,29 @@
                     }
                 }
             }
+        },
+        "performance": {
+            "displayName": "Performance",
+            "displayNameKey": "Visual_Performance",
+            "properties": {
+                "preestimate": {
+                    "displayName": "Pre-estimate words count to draw",
+                    "displayNameKey": "Visual_Preestimate",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "quality": {
+                    "displayName": "Quality",
+                    "displayNameKey": "Visual_Quality",
+                    "description": "The value determines the quality of the pre-estimation",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                }
+            }
         }
     }
 }

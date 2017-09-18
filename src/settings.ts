@@ -33,6 +33,7 @@ module powerbi.extensibility.visual {
         public dataPoint: DataPointSettings = new DataPointSettings();
         public stopWords: StopWordsSettings = new StopWordsSettings();
         public rotateText: RotateTextSettings = new RotateTextSettings();
+        public performance: PerformanceSettings = new PerformanceSettings();
     }
 
     export class GeneralSettings {
@@ -67,5 +68,10 @@ module powerbi.extensibility.visual {
         public minAngle: number = -60;
         public maxAngle: number = 90;
         public maxNumberOfOrientations: number = 2;
+    }
+
+    export class PerformanceSettings {
+        public preestimate: boolean = false;
+        public quality: number = 40;
     }
 }
