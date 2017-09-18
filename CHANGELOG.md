@@ -1,3 +1,6 @@
+## 1.4.0
+* Added performance tuning settings
+
 ## 1.3.2
 * FIX. Applying of value format to tooltip values
 

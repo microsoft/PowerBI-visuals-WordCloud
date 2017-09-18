@@ -722,6 +722,26 @@ module powerbi.extensibility.visual {
                 .remove();
         }
 
+        private estimatePossibleWordsToDraw(words: WordCloudDataPoint[], viewport: IViewport, quality: number = 40): number {
+            let sortedWords: WordCloudDataPoint[] = _.sortBy(words, "size");
+            let square: number = viewport.height * viewport.width;
+            let wordCount: number = 0;
+
+            this.generateSprites(this.canvasContext, words, 0);
+
+            sortedWords.some((word: WordCloudDataPoint) => {
+                let wordSquare: number = word.height * word.width * (1 - quality / 100);
+                square -= wordSquare;
+                if (square < 0) {
+                    return true;
+                }
+                wordCount++;
+                return false;
+            });
+
+            return wordCount;
+        }
+
         private computePositions(onPositionsComputed: (WordCloudDataView) => void): void {
             const words: WordCloudDataPoint[] = this.data.dataPoints;
 
@@ -748,9 +768,16 @@ module powerbi.extensibility.visual {
                         }) + WordCloud.AdditionalTextWidth);
                 });
 
+                let wordsToDraw: WordCloudDataPoint[] = words;
+
+                if (this.settings.performance.preestimate) {
+                    let countOfWordsToDraw: number = this.estimatePossibleWordsToDraw(words, this.specialViewport, this.settings.performance.quality);
+                    wordsToDraw = words.slice(0, countOfWordsToDraw);
+                }
+
                 if (this.canvasContext) {
                     this.computeCycle(
-                        words,
+                        wordsToDraw,
                         this.canvasContext,
                         surface,
                         null,
