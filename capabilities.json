@@ -217,7 +217,7 @@
             "properties": {
                 "preestimate": {
                     "displayName": "Pre-estimate words count to draw",
-                    "displayNameKey": "Visual_Preestimate",
+                    "displayNameKey": "Visual_PreestimateWordCount",
                     "type": {
                         "bool": true
                     }
