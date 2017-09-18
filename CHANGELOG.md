@@ -1,3 +1,7 @@
+## 1.4.0
+
+* Added performance tuning settings
+
 ## 1.3.1
 * FIX. Option for showing of special characters was repaired 
 
