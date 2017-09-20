@@ -1,3 +1,7 @@
+## 1.4.1
+
+* Remove recursion call of function computeCycle
+
 ## 1.4.0
 * Added performance tuning settings
 
