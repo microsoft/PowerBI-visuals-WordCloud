@@ -795,47 +795,39 @@ module powerbi.extensibility.visual {
             wordsForDraw: WordCloudDataPoint[] = [],
             index: number = 0): void {
 
-            let word: WordCloudDataPoint = words[index],
-                ratio: number = this.getRatio(words.length);
+            while ( index < words.length && this.root !== undefined) {
+                let word: WordCloudDataPoint = words[index],
+                    ratio: number = this.getRatio(words.length);
 
-            word.x = (this.specialViewport.width / ratio
-                * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
+                word.x = (this.specialViewport.width / ratio
+                    * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
-            word.y = (this.specialViewport.height / ratio
-                * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
+                word.y = (this.specialViewport.height / ratio
+                    * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
-            if (!word.sprite) {
-                this.generateSprites(context, words, index);
-            }
-
-            if (word.sprite && this.findPosition(surface, word, borders)) {
-                wordsForDraw.push(word);
-
-                borders = this.updateBorders(word, borders);
-                word.x -= this.specialViewport.width >> WordCloud.PositionOffset;
-                word.y -= this.specialViewport.height >> WordCloud.PositionOffset;
-
-                if (wordsForDraw.length >= this.settings.general.maxNumberOfWords) {
-                    index = words.length - 1;
+                if (!word.sprite) {
+                    this.generateSprites(context, words, index);
                 }
+
+                if (word.sprite && this.findPosition(surface, word, borders)) {
+                    wordsForDraw.push(word);
+
+                    borders = this.updateBorders(word, borders);
+                    word.x -= this.specialViewport.width >> WordCloud.PositionOffset;
+                    word.y -= this.specialViewport.height >> WordCloud.PositionOffset;
+
+                    if (wordsForDraw.length >= this.settings.general.maxNumberOfWords) {
+                        index = words.length - 1;
+                    }
+                }
+                index++;
             }
 
-            if (++index < words.length && this.root) {
-                this.computeCycle(
-                    words,
-                    context,
-                    surface,
-                    borders,
-                    onPositionsComputed,
-                    wordsForDraw,
-                    index);
-            } else {
-                onPositionsComputed({
-                    data: wordsForDraw,
-                    leftBorder: borders && borders[0],
-                    rightBorder: borders && borders[1]
-                });
-            }
+            onPositionsComputed({
+                data: wordsForDraw,
+                leftBorder: borders && borders[0],
+                rightBorder: borders && borders[1]
+            });
         }
 
         private getRatio(length: number): number {
