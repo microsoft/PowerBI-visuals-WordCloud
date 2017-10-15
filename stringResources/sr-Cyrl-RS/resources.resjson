@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "Категорија",
+	"Visual_Values": "Вредности",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "Words",
+	"Visual_WordCloud_StopWords": "Stop Words",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "Опште",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "Боје података",
+	"Visual_DefaultColor": "Подразумевана боја",
+	"Visual_Fill": "Попуни",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "Прикажи",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

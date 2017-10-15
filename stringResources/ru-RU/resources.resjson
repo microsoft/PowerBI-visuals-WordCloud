@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "Категория",
+	"Visual_Values": "Значения",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "Слова",
+	"Visual_WordCloud_StopWords": "Стоп-слова",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "Общие",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "Цвета данных",
+	"Visual_DefaultColor": "Цвет по умолчанию",
+	"Visual_Fill": "Заливка",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "Показать",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

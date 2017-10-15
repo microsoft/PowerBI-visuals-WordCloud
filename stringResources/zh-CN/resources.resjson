@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "类别",
+	"Visual_Values": "值",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "字",
+	"Visual_WordCloud_StopWords": "非索引字",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "常规",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "数据颜色",
+	"Visual_DefaultColor": "默认颜色",
+	"Visual_Fill": "填充",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "显示",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "カテゴリ",
+	"Visual_Values": "値",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "単語",
+	"Visual_WordCloud_StopWords": "ストップワード",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "全般",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "データの色",
+	"Visual_DefaultColor": "既定色",
+	"Visual_Fill": "フィル",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "表示",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

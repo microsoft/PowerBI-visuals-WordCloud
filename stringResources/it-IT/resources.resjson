@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "Categoria",
+	"Visual_Values": "Valori",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "Parole",
+	"Visual_WordCloud_StopWords": "Parole non significative",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "Generale",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "Colori dati",
+	"Visual_DefaultColor": "Colore predefinito",
+	"Visual_Fill": "Riempimento",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "Mostra",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

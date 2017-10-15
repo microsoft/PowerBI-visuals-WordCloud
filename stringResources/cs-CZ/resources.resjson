@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "Kategorie",
+	"Visual_Values": "Hodnoty",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "Slova",
+	"Visual_WordCloud_StopWords": "Stop Words",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "Obecné",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "Barvy dat",
+	"Visual_DefaultColor": "Výchozí barva",
+	"Visual_Fill": "Vyplnit",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "Zobrazení",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

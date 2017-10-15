@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "類別",
+	"Visual_Values": "值",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "字組",
+	"Visual_WordCloud_StopWords": "停用字詞",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "一般",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "資料色彩",
+	"Visual_DefaultColor": "預設色彩",
+	"Visual_Fill": "填滿",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "顯示",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}

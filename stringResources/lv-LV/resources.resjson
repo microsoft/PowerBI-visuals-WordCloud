@@ -1,0 +1,21 @@
+{
+	"Visual_Category": "Kategorija",
+	"Visual_Values": "Vērtības",
+	"Visual_WordCloud_MaxNumberWords": "Max number of words",
+	"Visual_WordCloud_WordBreaking": "Word-breaking",
+	"Visual_WordCloud_SpecialCharacters": "Special characters",
+	"Visual_WordCloud_DefaultStopWords": "Default Stop Words",
+	"Visual_WordCloud_Words": "Words",
+	"Visual_WordCloud_StopWords": "Stop Words",
+	"Visual_WordCloud_MaxOrientationNumber": "Max number of orientations",
+	"Visual_General": "Vispārīgi",
+	"Visual_MinFontSize": "Min font size",
+	"Visual_DataColors": "Datu krāsas",
+	"Visual_DefaultColor": "Noklusējuma krāsa",
+	"Visual_Fill": "Aizpildīt",
+	"Visual_MaxFontSize": "Max font size",
+	"Visual_Show": "Rādīt",
+	"Visual_MinAngle": "Min Angle",
+	"Visual_MaxAngle": "Max Angle",
+	"Visual_RotateText": "Rotate Text"
+}
