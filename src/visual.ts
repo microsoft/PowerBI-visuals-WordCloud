@@ -93,7 +93,6 @@ module powerbi.extensibility.visual {
         private static MinOpacity: number = 0.2;
         private static MaxOpacity: number = 1;
 
-
         public static PreparedRandoms: number[] = [
             0.7119651380581562,
             0.9329344002304909,

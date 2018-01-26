@@ -135,21 +135,21 @@ module powerbi.extensibility.visual.test {
                 expect(visualBuilder.mainElement[0]).toBeInDOM();
             });
 
-            it("no intersections (simplified check)", (done) => {
+            it("words mustn't intersect each other (rotation is disabled)", (done) => {
                 let originalPreparedRandom: number[] = VisualClass.PreparedRandoms;
                 dataView.categorical.categories[0].values = ["Abracadabra1", "Abracadabra2", "Abracadabra3", "Abracadabra4", "Abracadabra5", "Abracadabra6"];
                 dataView.categorical.values[0].values = [20, 20, 20, 20, 20, 20];
                 VisualClass.PreparedRandoms = [1];
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let length: number = visualBuilder.words.toArray().length;
                     let boundedElements: any[] = [];
 
                     const isIntersected = function (firstBounded: ClientRect, secondBounded: ClientRect): boolean {
-                        return !(secondBounded.bottom < firstBounded.top ||
-                            secondBounded.top > firstBounded.bottom ||
-                            secondBounded.right < firstBounded.left ||
-                            secondBounded.left > firstBounded.right);
+                        const leftBorder: number = Math.max(firstBounded.left, secondBounded.left);
+                        const rightBorder: number = Math.min(firstBounded.right, secondBounded.right);
+                        const topBorder: number = Math.max(firstBounded.top, secondBounded.top);
+                        const botttomBorder: number = Math.min(firstBounded.bottom, secondBounded.bottom);
+                        return (rightBorder > leftBorder && botttomBorder > topBorder);
                     };
 
                     visualBuilder.wordRects
@@ -166,7 +166,6 @@ module powerbi.extensibility.visual.test {
                     }
 
                     VisualClass.PreparedRandoms = originalPreparedRandom;
-
                     done();
                 }, 500);
             });
