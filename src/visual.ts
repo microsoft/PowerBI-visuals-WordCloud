@@ -92,6 +92,161 @@ module powerbi.extensibility.visual {
         private static Radians: number = Math.PI / 180;
         private static MinOpacity: number = 0.2;
         private static MaxOpacity: number = 1;
+
+        public static PreparedRandoms: number[] = [
+            0.7119651380581562,
+            0.9329344002304909,
+            0.662959468447071,
+            0.9228123970858741,
+            0.43461353653769996,
+            0.9717759976768092,
+            0.23354868432789977,
+            0.05665724247093462,
+            0.9133485665730616,
+            0.42817521183988005,
+            0.3431085737847315,
+            0.6324131131505653,
+            0.7468332461483578,
+            0.4643976574428279,
+            0.4750947480854484,
+            0.2143275692982769,
+            0.39899915692847454,
+            0.9081383316416052,
+            0.4884639438943552,
+            0.6512544550008093,
+            0.7020535189664152,
+            0.5855367801489577,
+            0.4163850692496507,
+            0.38506558455341144,
+            0.7726508508690297,
+            0.45220013068612275,
+            0.9987730018309247,
+            0.9966030725467623,
+            0.5100716402564676,
+            0.8843030102084446,
+            0.6185888295842394,
+            0.2585174804781327,
+            0.9669109683758605,
+            0.4792229039278242,
+            0.6771520680568055,
+            0.06436759010290904,
+            0.06577871027668003,
+            0.07476647887643595,
+            0.3097861449310102,
+            0.6697645410312734,
+            0.45933560073048785,
+            0.6140456351949446,
+            0.41313740505582053,
+            0.4223996807520398,
+            0.273216627761788,
+            0.594455364989926,
+            0.6111206428844973,
+            0.2344564184258855,
+            0.7935004554669307,
+            0.15634614118589307,
+            0.35404688574625043,
+            0.9559018017624286,
+            0.20373931295767522,
+            0.589806042363701,
+            0.48676220830768857,
+            0.2630657508957841,
+            0.9840415707128016,
+            0.6683721512493264,
+            0.6800096146801025,
+            0.3771308535548552,
+            0.280209191150526,
+            0.8174784609535564,
+            0.22975018037139705,
+            0.7014031004777657,
+            0.9838404957723734,
+            0.3980602404401452,
+            0.15250625386122674,
+            0.40714150687677053,
+            0.5712314130109579,
+            0.24557673419176118,
+            0.5767449586868045,
+            0.420320306742207,
+            0.7028689593560018,
+            0.9326180451104844,
+            0.6166855894615995,
+            0.2367178370531675,
+            0.2493272366865278,
+            0.4644410266668575,
+            0.7896221140300397,
+            0.680882424354031,
+            0.0029629084067046563,
+            0.0979613143571465,
+            0.3202875814486119,
+            0.7925423139206076,
+            0.8654113018607466,
+            0.9571407616513157,
+            0.14242246772434441,
+            0.05020948959091154,
+            0.037391824571629595,
+            0.3620785408785594,
+            0.17788577243572745,
+            0.03870854119017397,
+            0.45348901969702826,
+            0.14773330398707096,
+            0.4829866527254727,
+            0.6917393749231506,
+            0.1948561915730751,
+            0.5602782437544376,
+            0.5485548947416654,
+            0.8662688115119965,
+            0.07982360080189133,
+            0.8798860513813294,
+            0.7735626915256364,
+            0.7887931317844401,
+            0.8786305221478938,
+            0.9782356557805927,
+            0.8698593252656257,
+            0.9798429306765815,
+            0.9125054440052776,
+            0.7071114232379871,
+            0.7343649239762027,
+            0.36464367209680404,
+            0.6539512470571758,
+            0.5433197785789505,
+            0.2132301795467224,
+            0.6090221657181336,
+            0.9445309978523204,
+            0.8394516248024986,
+            0.10021084646589773,
+            0.774218487658193,
+            0.4696885674127247,
+            0.30658052221710186,
+            0.6894459120200798,
+            0.5522419897341373,
+            0.7526198658064869,
+            0.03148319408882316,
+            0.5619938316490898,
+            0.8973245539219599,
+            0.5547965192937578,
+            0.9691891251891405,
+            0.8895331945745231,
+            0.15054507376971227,
+            0.8674501624139273,
+            0.025667523239569556,
+            0.17484001304286023,
+            0.5545436578380758,
+            0.25914191780371554,
+            0.7538003379951115,
+            0.7955673652292796,
+            0.6844265178341766,
+            0.9566325432078542,
+            0.5899073183082202,
+            0.2699370030222161,
+            0.4080942990841423,
+            0.7877546776964146,
+            0.29399227188680577,
+            0.26716994700559527,
+            0.27688430337482495,
+            0.5336060372482627,
+            0.5670500974881956,
+            0.7308249505322317
+        ];
+
         private static Punctuation: string[] = [
             "!", ".", ":", "'", ";", ",", "?",
             "@", "#", "$", "%", "^", "&", "*",
@@ -516,12 +671,12 @@ module powerbi.extensibility.visual {
                 return [];
             }
 
-            const returnValues: WordCloudDataPoint[] = textGroups.map((values: WordCloudText[]) => {
+            const returnValues: WordCloudDataPoint[] = textGroups.map((values: WordCloudText[], index: number) => {
                 return {
                     text: values[0].text,
                     x: WordCloud.DefaultX,
                     y: WordCloud.DefaultY,
-                    rotate: WordCloud.getAngle(settings),
+                    rotate: WordCloud.getAngle(settings, index),
                     padding: WordCloud.DefaultPadding,
                     width: WordCloud.DefaultWidth,
                     height: WordCloud.DefaultHeight,
@@ -608,14 +763,30 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private static getAngle(settings: WordCloudSettings): number {
+        /**
+         * Uses to iterate by custom array cyclically.
+         * The starting index can be changed with offset.
+         */
+        public static getFromCycledSequence(targetArray: number[], index: number, offset: number = 0): number {
+            let currentIndex: number = index + offset;
+            let seqLength = targetArray.length;
+
+            if (currentIndex >= seqLength) {
+
+                currentIndex = currentIndex % seqLength;
+            }
+
+            return targetArray[currentIndex];
+        }
+
+        private static getAngle(settings: WordCloudSettings, index: number): number {
             if (!settings.rotateText.show) {
                 return WordCloud.DefaultAngle;
             }
 
             const angle: number = ((settings.rotateText.maxAngle - settings.rotateText.minAngle)
                 / settings.rotateText.maxNumberOfOrientations)
-                * Math.floor(Math.random() * settings.rotateText.maxNumberOfOrientations);
+                * Math.floor(WordCloud.getFromCycledSequence(WordCloud.PreparedRandoms, index) * settings.rotateText.maxNumberOfOrientations);
 
             return settings.rotateText.minAngle + angle;
         }
@@ -795,21 +966,21 @@ module powerbi.extensibility.visual {
             wordsForDraw: WordCloudDataPoint[] = [],
             index: number = 0): void {
 
-            while ( index < words.length && this.root !== undefined) {
-                let word: WordCloudDataPoint = words[index],
-                    ratio: number = this.getRatio(words.length);
+            let ratio: number = this.getRatio(words.length);
+            while (index < words.length && this.root !== undefined) {
+                let word: WordCloudDataPoint = words[index];
 
                 word.x = (this.specialViewport.width / ratio
-                    * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
+                    * (WordCloud.getFromCycledSequence(WordCloud.PreparedRandoms, index) + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
                 word.y = (this.specialViewport.height / ratio
-                    * (Math.random() + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
+                    * (WordCloud.getFromCycledSequence(WordCloud.PreparedRandoms, index + 1) + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
 
                 if (!word.sprite) {
                     this.generateSprites(context, words, index);
                 }
 
-                if (word.sprite && this.findPosition(surface, word, borders)) {
+                if (word.sprite && this.findPosition(surface, word, borders, index)) {
                     wordsForDraw.push(word);
 
                     borders = this.updateBorders(word, borders);
@@ -1043,12 +1214,12 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private findPosition(surface: number[], word: WordCloudDataPoint, borders: IPoint[]): boolean {
+        private findPosition(surface: number[], word: WordCloudDataPoint, borders: IPoint[], index: number): boolean {
             let startPoint: IPoint = { x: word.x, y: word.y },
                 delta: number = Math.sqrt(this.specialViewport.width * this.specialViewport.width
                     + this.specialViewport.height * this.specialViewport.height),
                 point: IPoint,
-                dt: number = Math.random() < WordCloud.AdditionalRandomValue
+                dt: number = WordCloud.getFromCycledSequence(WordCloud.PreparedRandoms, index) < WordCloud.AdditionalRandomValue
                     ? WordCloud.DefaultDT
                     : -WordCloud.DefaultDT,
                 shift: number = -dt,
@@ -1523,7 +1694,7 @@ module powerbi.extensibility.visual {
         }
         private renderTooltip(selection: UpdateSelection<WordCloudDataPoint>): void {
             let categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.getCategoricalColumns(this.incomingUpdateOptions.dataViews[0]),
-            wordValueFormatter: IValueFormatter = null;
+                wordValueFormatter: IValueFormatter = null;
 
             if (categorical.Values && categorical.Values[0]) {
                 wordValueFormatter = ValueFormatter.create({

@@ -70,9 +70,104 @@ module powerbi.extensibility.visual.test {
             });
         }
 
+        describe("Unit tests", () => {
+            it("getFromCycledSequence returns array item by exact index", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, 3);
+                expect(receivedNum).toEqual(5);
+            });
+
+            it("getFromCycledSequence returns array item by exact index with offset", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, 1, 2);
+                expect(receivedNum).toEqual(5);
+            });
+
+            it("getFromCycledSequence returns array item by exceeded index", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, 9);
+                expect(receivedNum).toEqual(5);
+                receivedNum = VisualClass.getFromCycledSequence(targetArr, 21);
+                expect(receivedNum).toEqual(5);
+            });
+
+            it("getFromCycledSequence returns array item by exceeded index with offset", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, 4, 5);
+                expect(receivedNum).toEqual(5);
+                receivedNum = VisualClass.getFromCycledSequence(targetArr, 14, 7);
+                expect(receivedNum).toEqual(5);
+                receivedNum = VisualClass.getFromCycledSequence(targetArr, 7, 14);
+                expect(receivedNum).toEqual(5);
+            });
+
+            it("getFromCycledSequence returns array item by negative index", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, -2);
+                expect(receivedNum).toBeUndefined();
+            });
+
+            it("getFromCycledSequence returns array item by negative index and positive offset", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, -2, 5);
+                expect(receivedNum).toEqual(5);
+                receivedNum = VisualClass.getFromCycledSequence(targetArr, -2, 1);
+                expect(receivedNum).toBeUndefined();
+            });
+
+            it("getFromCycledSequence returns array item by positive index and negative offset", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, 3, -4);
+                expect(receivedNum).toBeUndefined();
+                receivedNum = VisualClass.getFromCycledSequence(targetArr, 5, -2);
+                expect(receivedNum).toEqual(5);
+            });
+
+            it("getFromCycledSequence returns array item by negative index and negative offset", () => {
+                let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+                let receivedNum = VisualClass.getFromCycledSequence(targetArr, -3, -3);
+                expect(receivedNum).toBeUndefined();
+            });
+        });
+
         describe("DOM tests", () => {
             it("svg element created", () => {
                 expect(visualBuilder.mainElement[0]).toBeInDOM();
+            });
+
+            it("words mustn't intersect each other (rotation is disabled)", (done) => {
+                let originalPreparedRandom: number[] = VisualClass.PreparedRandoms;
+                dataView.categorical.categories[0].values = ["Abracadabra1", "Abracadabra2", "Abracadabra3", "Abracadabra4", "Abracadabra5", "Abracadabra6"];
+                dataView.categorical.values[0].values = [20, 20, 20, 20, 20, 20];
+                VisualClass.PreparedRandoms = [1];
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let boundedElements: any[] = [];
+
+                    const isIntersected = function (firstBounded: ClientRect, secondBounded: ClientRect): boolean {
+                        const leftBorder: number = Math.max(firstBounded.left, secondBounded.left);
+                        const rightBorder: number = Math.min(firstBounded.right, secondBounded.right);
+                        const topBorder: number = Math.max(firstBounded.top, secondBounded.top);
+                        const botttomBorder: number = Math.min(firstBounded.bottom, secondBounded.bottom);
+                        return (rightBorder > leftBorder && botttomBorder > topBorder);
+                    };
+
+                    visualBuilder.wordRects
+                        .toArray()
+                        .forEach((element: Element, index: number) => {
+                            const domRect = element.getBoundingClientRect();
+                            boundedElements.push({ "domRect": domRect, "id": index });
+                        });
+
+                    for (let i: number = 0; i < boundedElements.length - 1; i++) {
+                        for (let k: number = i + 1; k < boundedElements.length; k++) {
+                            expect(isIntersected(boundedElements[i].domRect, boundedElements[k].domRect)).toBeFalsy();
+                        }
+                    }
+
+                    VisualClass.PreparedRandoms = originalPreparedRandom;
+                    done();
+                }, 500);
             });
 
             it("apply excludes", (done) => {
@@ -89,7 +184,7 @@ module powerbi.extensibility.visual.test {
                 // Afganistan, Rwanda, Uganda must be filtered by Excludes
                 // Papua New Guinea must be filtered by StopWords option
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let length: number =  visualBuilder.words.toArray().length;
+                    let length: number = visualBuilder.words.toArray().length;
                     expect(length).toEqual(2);
                     done();
                 }, 500);
@@ -109,15 +204,15 @@ module powerbi.extensibility.visual.test {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.wordText
-                    .toArray()
-                    .forEach((element: Element) => {
-                        const text = $(element).text();
-                        expect(expectedWords.some((value: string) => {
-                            return text === value;
-                        }));
-                    });
+                        .toArray()
+                        .forEach((element: Element) => {
+                            const text = $(element).text();
+                            expect(expectedWords.some((value: string) => {
+                                return text === value;
+                            }));
+                        });
 
-                    let length: number =  visualBuilder.words.toArray().length;
+                    let length: number = visualBuilder.words.toArray().length;
                     expect(length).toEqual(5);
                     done();
                 }, 500);
@@ -137,15 +232,15 @@ module powerbi.extensibility.visual.test {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.wordText
-                    .toArray()
-                    .forEach((element: Element) => {
-                        const text = $(element).text();
-                        expect(expectedWords.some((value: string) => {
-                            return text === value;
-                        }));
-                    });
+                        .toArray()
+                        .forEach((element: Element) => {
+                            const text = $(element).text();
+                            expect(expectedWords.some((value: string) => {
+                                return text === value;
+                            }));
+                        });
 
-                    let length: number =  visualBuilder.words.toArray().length;
+                    let length: number = visualBuilder.words.toArray().length;
                     expect(length).toEqual(3);
                     done();
                 }, 500);
@@ -170,7 +265,7 @@ module powerbi.extensibility.visual.test {
                             }));
                         });
 
-                    let length: number =  visualBuilder.words.toArray().length;
+                    let length: number = visualBuilder.words.toArray().length;
                     expect(length).toEqual(10);
 
                     done();
@@ -315,7 +410,7 @@ module powerbi.extensibility.visual.test {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let length: number =  visualBuilder.words.toArray().length;
+                    let length: number = visualBuilder.words.toArray().length;
                     expect(length).toBeLessThanOrEqual(numberOfWords);
                     done();
                 }, 500);
@@ -505,6 +600,7 @@ module powerbi.extensibility.visual.test {
                 });
             });
         });
+
         describe("getCanvasContext", () => {
             let visualInstance: VisualClass;
 
