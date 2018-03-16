@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-wordcloud",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Word Cloud is a visual representation of word frequency and value. Use it to get instant insight into the most important terms in a set.",
   "repository": {
     "type": "git",
@@ -10,13 +10,14 @@
     "powerbi-visuals"
   ],
   "scripts": {
-    "postinstall": "pbiviz update 1.7.0",
+    "postinstall": "pbiviz update 1.11.0",
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
     "lint": "tslint -r \"node_modules/tslint-microsoft-contrib\" \"+(src|test)/**/*.ts\"",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz",
-    "test": "karma start"
+    "test": "karma start",
+    "cert": "pbiviz --create-cert"
   },
   "author": {
     "name": "Microsoft",
@@ -35,7 +36,8 @@
     "powerbi-visuals-utils-formattingutils": "^2.0.0",
     "powerbi-visuals-utils-svgutils": "^1.1.0",
     "powerbi-visuals-utils-tooltiputils": "^1.0.0",
-    "powerbi-visuals-utils-typeutils": "^1.0.0"
+    "powerbi-visuals-utils-typeutils": "^1.0.0",
+    "powerbi-models": "^1.0.2"
   },
   "devDependencies": {
     "@types/d3": "3.5.36",
@@ -46,13 +48,15 @@
     "coveralls": "^2.13.1",
     "jasmine": "2.6.0",
     "jasmine-jquery": "2.1.1",
+    "jquery": "3.2.1",
     "karma": "1.7.0",
     "karma-chrome-launcher": "2.1.1",
     "karma-jasmine": "1.1.0",
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
-    "powerbi-visuals-tools": "1.7.0",
-    "powerbi-visuals-utils-testutils": "^1.0.0",
+    "powerbi-visuals-tools": "1.11.0",
+    "powerbi-visuals-utils-interactivityutils": "3.1.0",
+    "powerbi-visuals-utils-testutils": "1.1.1",
     "tslint": "5.4.3",
     "tslint-microsoft-contrib": "5.0.0",
     "typescript": "2.1.4"

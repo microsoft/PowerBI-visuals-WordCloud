@@ -1,3 +1,6 @@
+## 1.5.0
+* ADD. Bookmarks support
+
 ## 1.4.2
 * UPD. Words positioninig is fixed for now
 
