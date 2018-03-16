@@ -56,7 +56,7 @@ module powerbi.extensibility.visual {
                 this.clear(false);
                 ids.forEach( (selection: ISelectionId ) => {
                     getDataPoints().forEach( (dataPoint: WordCloudDataPoint) => {
-                        if (selection.getKey() === dataPoint.selectionIds[0].getKey()) {
+                        if (selection.includes(dataPoint.selectionIds[0])) {
                             this.selectedValues.push(dataPoint.text as any);
                             renderSelection();
                         }
