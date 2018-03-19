@@ -816,7 +816,12 @@ module powerbi.extensibility.visual {
                     return dataPoints && dataPoints[0] && dataPoints[0].selectionIds
                         ? dataPoints[0].selectionIds
                         : [];
-                });
+                },
+                () => {
+                    return this.data.dataPoints;
+                },
+                this.renderSelection.bind(this)
+            );
 
             this.layout = new VisualLayout(null, WordCloud.DefaultMargin);
 
