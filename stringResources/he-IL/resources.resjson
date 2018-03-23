@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "זווית מינימלית",
 	"Visual_MaxAngle": "זווית מקסימלית",
 	"Visual_RotateText": "סיבוב טקסט",
-	"Visual_Excludes": "לא כולל"
+	"Visual_Excludes": "לא כולל",
+	"Visual_PreestimateWordCount": "בצע הערכה מקדימה של ספירת מילים לעריכה",
+	"Visual_Quality": "איכות"
 }

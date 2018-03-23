@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Min. szög",
 	"Visual_MaxAngle": "Max. szög",
 	"Visual_RotateText": "Szöveg elforgatása",
-	"Visual_Excludes": "Kizárások"
+	"Visual_Excludes": "Kizárások",
+	"Visual_PreestimateWordCount": "Szavak számának előzetes becslése a rajzoláshoz",
+	"Visual_Quality": "Minőség"
 }

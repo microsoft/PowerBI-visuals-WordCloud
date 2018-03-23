@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Мін. кут",
 	"Visual_MaxAngle": "Макс. кут",
 	"Visual_RotateText": "Повернути текст",
-	"Visual_Excludes": "За винятком"
+	"Visual_Excludes": "За винятком",
+	"Visual_PreestimateWordCount": "Попередньо оцініть кількість слів для візуалізації",
+	"Visual_Quality": "Якість"
 }

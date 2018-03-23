@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Angle min.",
 	"Visual_MaxAngle": "Angle max.",
 	"Visual_RotateText": "Faire pivoter le texte",
-	"Visual_Excludes": "Exclut"
+	"Visual_Excludes": "Exclut",
+	"Visual_PreestimateWordCount": "Préestimer le nombre de mots à retirer",
+	"Visual_Quality": "Qualité"
 }

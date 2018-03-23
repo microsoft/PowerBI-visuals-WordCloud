@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Najmanjši možni kot",
 	"Visual_MaxAngle": "Največji možni kot",
 	"Visual_RotateText": "Sukanje besedila",
-	"Visual_Excludes": "Izključitve OEM-jev"
+	"Visual_Excludes": "Izključitve OEM-jev",
+	"Visual_PreestimateWordCount": "Vnaprej predvidi število besed za risanje",
+	"Visual_Quality": "Kakovost"
 }

@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimálny uhol",
 	"Visual_MaxAngle": "Maximálny uhol",
 	"Visual_RotateText": "Otočiť text",
-	"Visual_Excludes": "Vylúčenia"
+	"Visual_Excludes": "Vylúčenia",
+	"Visual_PreestimateWordCount": "Vopred odhadovať počet slov na kreslenie",
+	"Visual_Quality": "Kvalita"
 }

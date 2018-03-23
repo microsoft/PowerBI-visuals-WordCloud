@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Góc tối thiểu",
 	"Visual_MaxAngle": "Góc tối đa",
 	"Visual_RotateText": "Xoay văn bản",
-	"Visual_Excludes": "Ngoại trừ"
+	"Visual_Excludes": "Ngoại trừ",
+	"Visual_PreestimateWordCount": "Ước tính trước số từ cần rút",
+	"Visual_Quality": "Chất lượng"
 }

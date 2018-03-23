@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "มุมต่ำสุด",
 	"Visual_MaxAngle": "มุมสูงสุด",
 	"Visual_RotateText": "หมุนข้อความ",
-	"Visual_Excludes": "ไม่รวม"
+	"Visual_Excludes": "ไม่รวม",
+	"Visual_PreestimateWordCount": "ประเมินจำนวนคำล่วงหน้าเพื่อวาด",
+	"Visual_Quality": "คุณภาพ"
 }

@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimalny kąt",
 	"Visual_MaxAngle": "Maksymalny kąt",
 	"Visual_RotateText": "Obróć tekst",
-	"Visual_Excludes": "Wyklucza"
+	"Visual_Excludes": "Wyklucza",
+	"Visual_PreestimateWordCount": "Wstępnie oszacuj liczbę wyrazów do narysowania",
+	"Visual_Quality": "Jakość"
 }

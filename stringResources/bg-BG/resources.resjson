@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Мин. ъгъл",
 	"Visual_MaxAngle": "Макс. ъгъл",
 	"Visual_RotateText": "Завъртане на текста",
-	"Visual_Excludes": "Изключени"
+	"Visual_Excludes": "Изключени",
+	"Visual_PreestimateWordCount": "Предварително прогнозно изчисляване на брой думи за извличане",
+	"Visual_Quality": "Качество"
 }

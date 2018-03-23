@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimaler Winkel",
 	"Visual_MaxAngle": "Maximaler Winkel",
 	"Visual_RotateText": "Text drehen",
-	"Visual_Excludes": "Ausschlüsse"
+	"Visual_Excludes": "Ausschlüsse",
+	"Visual_PreestimateWordCount": "Anzahl der Wörter für Zeichnung im Voraus schätzen",
+	"Visual_Quality": "Qualität"
 }

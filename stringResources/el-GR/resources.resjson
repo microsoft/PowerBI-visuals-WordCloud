@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Ελάχιστη γωνία",
 	"Visual_MaxAngle": "Μέγιστη γωνία",
 	"Visual_RotateText": "Περιστροφή κειμένου",
-	"Visual_Excludes": "Εξαιρεί"
+	"Visual_Excludes": "Εξαιρεί",
+	"Visual_PreestimateWordCount": "Εκτίμηση πλήθους λέξεων για σχεδίαση",
+	"Visual_Quality": "Ποιότητα"
 }

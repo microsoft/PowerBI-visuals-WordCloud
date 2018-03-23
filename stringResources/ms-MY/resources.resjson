@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Sudut Min",
 	"Visual_MaxAngle": "Sudut Maks",
 	"Visual_RotateText": "Putar Teks",
-	"Visual_Excludes": "Pengecualian"
+	"Visual_Excludes": "Pengecualian",
+	"Visual_PreestimateWordCount": "Praanggarkan bilangan perkataan untuk melukis",
+	"Visual_Quality": "Kualiti"
 }

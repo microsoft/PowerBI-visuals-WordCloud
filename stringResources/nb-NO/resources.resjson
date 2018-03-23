@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Min. vinkel",
 	"Visual_MaxAngle": "Maks vinkel",
 	"Visual_RotateText": "Roter tekst",
-	"Visual_Excludes": "Utelukker"
+	"Visual_Excludes": "Utelukker",
+	"Visual_PreestimateWordCount": "Forhåndsberegn antall ord for tegning",
+	"Visual_Quality": "Kvalitet"
 }

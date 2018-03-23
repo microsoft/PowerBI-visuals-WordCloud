@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Минималды бұрыш",
 	"Visual_MaxAngle": "Максималды бұрыш",
 	"Visual_RotateText": "Мәтінді айналдыру",
-	"Visual_Excludes": "Қоспайды"
+	"Visual_Excludes": "Қоспайды",
+	"Visual_PreestimateWordCount": "Алынатын сөздер санын алдын ала бағалау",
+	"Visual_Quality": "Сапа"
 }

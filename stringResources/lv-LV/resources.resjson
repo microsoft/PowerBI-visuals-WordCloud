@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimālais leņķis",
 	"Visual_MaxAngle": "Maksimālais leņķis",
 	"Visual_RotateText": "Pagriezt tekstu",
-	"Visual_Excludes": "Neietvert"
+	"Visual_Excludes": "Neietvert",
+	"Visual_PreestimateWordCount": "Iepriekš aprēķināt zīmējamo vārdu skaitu",
+	"Visual_Quality": "Kvalitāte"
 }

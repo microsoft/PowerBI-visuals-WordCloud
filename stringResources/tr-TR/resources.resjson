@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "En Küçük Açı",
 	"Visual_MaxAngle": "En Büyük Açı",
 	"Visual_RotateText": "Metni Döndür",
-	"Visual_Excludes": "Dışlar"
+	"Visual_Excludes": "Dışlar",
+	"Visual_PreestimateWordCount": "Çizilecek önceden tahmin edilen sözcük sayısı",
+	"Visual_Quality": "Kalite"
 }

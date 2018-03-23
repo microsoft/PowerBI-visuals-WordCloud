@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minsta vinkel",
 	"Visual_MaxAngle": "Maxvinkel",
 	"Visual_RotateText": "Rotera texten",
-	"Visual_Excludes": "Omfattar inte"
+	"Visual_Excludes": "Omfattar inte",
+	"Visual_PreestimateWordCount": "Gör preliminär uppskattning av ord att rita",
+	"Visual_Quality": "Kvalitet"
 }

@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimalni kut",
 	"Visual_MaxAngle": "Maksimalni kut",
 	"Visual_RotateText": "Rotiranje teksta",
-	"Visual_Excludes": "Izuzima"
+	"Visual_Excludes": "Izuzima",
+	"Visual_PreestimateWordCount": "Unaprijed procijenjeni broj riječi za crtanje",
+	"Visual_Quality": "Kvaliteta"
 }

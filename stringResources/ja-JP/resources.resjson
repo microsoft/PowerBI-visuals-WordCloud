@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "最小角度",
 	"Visual_MaxAngle": "最大角度",
 	"Visual_RotateText": "テキストの回転",
-	"Visual_Excludes": "除外"
+	"Visual_Excludes": "除外",
+	"Visual_PreestimateWordCount": "描画する単語数を事前に見積もる",
+	"Visual_Quality": "品質"
 }

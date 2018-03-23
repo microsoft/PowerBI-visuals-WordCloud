@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Минимальный угол",
 	"Visual_MaxAngle": "Максимальный угол",
 	"Visual_RotateText": "Повернуть текст",
-	"Visual_Excludes": "Исключение"
+	"Visual_Excludes": "Исключение",
+	"Visual_PreestimateWordCount": "Предварительное число слов для отображения",
+	"Visual_Quality": "Качество"
 }

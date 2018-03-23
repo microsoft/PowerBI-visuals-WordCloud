@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Unghi minim",
 	"Visual_MaxAngle": "Unghi maxim",
 	"Visual_RotateText": "Rotire text",
-	"Visual_Excludes": "Excluderi"
+	"Visual_Excludes": "Excluderi",
+	"Visual_PreestimateWordCount": "Pre-estimați numărul de cuvinte pentru a desena",
+	"Visual_Quality": "Calitate"
 }

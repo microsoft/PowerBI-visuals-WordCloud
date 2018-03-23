@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Angle mínim",
 	"Visual_MaxAngle": "Angle màxim",
 	"Visual_RotateText": "Gira el text",
-	"Visual_Excludes": "Exclusions"
+	"Visual_Excludes": "Exclusions",
+	"Visual_PreestimateWordCount": "Nombre de paraules estimat per inserir",
+	"Visual_Quality": "Qualitat"
 }

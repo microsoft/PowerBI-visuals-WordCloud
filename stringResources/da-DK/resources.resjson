@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Min. vinkel",
 	"Visual_MaxAngle": "Maks. vinkel",
 	"Visual_RotateText": "Rotér tekst",
-	"Visual_Excludes": "Udelukker"
+	"Visual_Excludes": "Udelukker",
+	"Visual_PreestimateWordCount": "Foreløbigt antal ord, der skal tegnes",
+	"Visual_Quality": "Kvalitet"
 }

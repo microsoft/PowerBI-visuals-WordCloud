@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimale hoek",
 	"Visual_MaxAngle": "Maximale hoek",
 	"Visual_RotateText": "Tekst draaien",
-	"Visual_Excludes": "Uitsluitingen"
+	"Visual_Excludes": "Uitsluitingen",
+	"Visual_PreestimateWordCount": "Vooraf geschat woordaantal voor tekenen",
+	"Visual_Quality": "Kwaliteit"
 }

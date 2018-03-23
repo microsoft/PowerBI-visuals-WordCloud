@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Gutxieneko angelua",
 	"Visual_MaxAngle": "Gehienezko angelua",
 	"Visual_RotateText": "Biratu testua",
-	"Visual_Excludes": "Bazterketak"
+	"Visual_Excludes": "Bazterketak",
+	"Visual_PreestimateWordCount": "Kalkulatu aurrez marraztu beharreko hitz kopurua",
+	"Visual_Quality": "Kalitatea"
 }

@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Minimální úhel",
 	"Visual_MaxAngle": "Maximální úhel",
 	"Visual_RotateText": "Otočit text",
-	"Visual_Excludes": "Nezahrnuje se"
+	"Visual_Excludes": "Nezahrnuje se",
+	"Visual_PreestimateWordCount": "Předběžný odhad počtu slov k vykreslení",
+	"Visual_Quality": "Kvalita"
 }

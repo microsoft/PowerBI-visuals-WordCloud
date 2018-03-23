@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Angolo minimo",
 	"Visual_MaxAngle": "Angolo massimo",
 	"Visual_RotateText": "Ruota il testo",
-	"Visual_Excludes": "Esclusioni"
+	"Visual_Excludes": "Esclusioni",
+	"Visual_PreestimateWordCount": "Stima preliminare del conteggio parole da tracciare",
+	"Visual_Quality": "Qualità"
 }

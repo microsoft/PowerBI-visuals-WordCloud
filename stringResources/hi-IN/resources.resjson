@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "न्यूनतम कोण",
 	"Visual_MaxAngle": "अधिकतम कोण",
 	"Visual_RotateText": "पाठ घुमाएँ",
-	"Visual_Excludes": "शामिल नहीं हैं"
+	"Visual_Excludes": "शामिल नहीं हैं",
+	"Visual_PreestimateWordCount": "आरेखित करने के लिए पूर्व-आकलन शब्दों की गिनती",
+	"Visual_Quality": "गुणवत्ता"
 }

@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "角度下限",
 	"Visual_MaxAngle": "角度上限",
 	"Visual_RotateText": "旋轉文字",
-	"Visual_Excludes": "排除"
+	"Visual_Excludes": "排除",
+	"Visual_PreestimateWordCount": "要繪製的預估字數",
+	"Visual_Quality": "品質"
 }

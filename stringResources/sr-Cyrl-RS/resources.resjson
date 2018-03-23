@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Минимални угао",
 	"Visual_MaxAngle": "Максимални угао",
 	"Visual_RotateText": "Ротирај текст",
-	"Visual_Excludes": "Искључивања"
+	"Visual_Excludes": "Искључивања",
+	"Visual_PreestimateWordCount": "Унапред процењени број речи за цртање",
+	"Visual_Quality": "Квалитет"
 }

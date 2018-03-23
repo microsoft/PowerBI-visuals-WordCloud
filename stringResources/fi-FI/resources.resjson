@@ -18,5 +18,7 @@
 	"Visual_MinAngle": "Pienin kulma",
 	"Visual_MaxAngle": "Suurin kulma",
 	"Visual_RotateText": "Kierrä teksti",
-	"Visual_Excludes": "Jättää pois"
+	"Visual_Excludes": "Jättää pois",
+	"Visual_PreestimateWordCount": "Arvioi piirrettävien sanojen määrä etukäteen",
+	"Visual_Quality": "Laatu"
 }
