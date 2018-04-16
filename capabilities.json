@@ -226,6 +226,7 @@
                     "displayName": "Quality",
                     "displayNameKey": "Visual_Quality",
                     "description": "The value determines the quality of the pre-estimation",
+                    "descriptionKey": "Visual_Description_Quality",
                     "type": {
                         "formatting": {
                             "fontSize": true

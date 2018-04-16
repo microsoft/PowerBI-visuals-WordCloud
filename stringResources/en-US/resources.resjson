@@ -20,5 +20,7 @@
     "Visual_RotateText": "Rotate Text",
     "Visual_Excludes": "Excludes",
     "Visual_PreestimateWordCount": "Pre-estimate words count to draw",
-    "Visual_Quality": "Quality"
+    "Visual_Quality": "Quality",
+    "Visual_Performance": "Performance",
+    "Visual_Description_Quality": "The value determines the quality of the pre-estimation"
 }
