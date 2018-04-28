@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Otočit text",
 	"Visual_Excludes": "Nezahrnuje se",
 	"Visual_PreestimateWordCount": "Předběžný odhad počtu slov k vykreslení",
-	"Visual_Quality": "Kvalita"
+	"Visual_Quality": "Kvalita",
+	"Visual_Performance": "Výkon",
+	"Visual_Description_Quality": "Hodnota určuje kvalitu předběžného odhadu"
 }

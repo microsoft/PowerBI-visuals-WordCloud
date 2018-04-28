@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Text drehen",
 	"Visual_Excludes": "Ausschlüsse",
 	"Visual_PreestimateWordCount": "Anzahl der Wörter für Zeichnung im Voraus schätzen",
-	"Visual_Quality": "Qualität"
+	"Visual_Quality": "Qualität",
+	"Visual_Performance": "Leistung",
+	"Visual_Description_Quality": "Der Wert bestimmt die Qualität der Vorabschätzung."
 }

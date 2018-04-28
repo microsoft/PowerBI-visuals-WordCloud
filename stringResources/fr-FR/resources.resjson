@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Faire pivoter le texte",
 	"Visual_Excludes": "Exclut",
 	"Visual_PreestimateWordCount": "Préestimer le nombre de mots à retirer",
-	"Visual_Quality": "Qualité"
+	"Visual_Quality": "Qualité",
+	"Visual_Performance": "Performances",
+	"Visual_Description_Quality": "La valeur détermine la qualité de la préestimation"
 }

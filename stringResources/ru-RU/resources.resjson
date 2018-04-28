@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Повернуть текст",
 	"Visual_Excludes": "Исключение",
 	"Visual_PreestimateWordCount": "Предварительное число слов для отображения",
-	"Visual_Quality": "Качество"
+	"Visual_Quality": "Качество",
+	"Visual_Performance": "Производительность",
+	"Visual_Description_Quality": "Значение определяет качество предварительной оценки"
 }

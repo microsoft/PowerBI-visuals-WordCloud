@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Biratu testua",
 	"Visual_Excludes": "Bazterketak",
 	"Visual_PreestimateWordCount": "Kalkulatu aurrez marraztu beharreko hitz kopurua",
-	"Visual_Quality": "Kalitatea"
+	"Visual_Quality": "Kalitatea",
+	"Visual_Performance": "Errendimendua",
+	"Visual_Description_Quality": "Aldez aurretik egindako kalkuluaren kalitatea zehazten du balio honek"
 }

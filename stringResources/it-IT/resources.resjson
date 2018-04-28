@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Ruota il testo",
 	"Visual_Excludes": "Esclusioni",
 	"Visual_PreestimateWordCount": "Stima preliminare del conteggio parole da tracciare",
-	"Visual_Quality": "Qualità"
+	"Visual_Quality": "Qualità",
+	"Visual_Performance": "Prestazioni",
+	"Visual_Description_Quality": "Il valore determina la qualità della stima preliminare"
 }

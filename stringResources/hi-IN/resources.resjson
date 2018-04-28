@@ -20,5 +20,7 @@
 	"Visual_RotateText": "पाठ घुमाएँ",
 	"Visual_Excludes": "शामिल नहीं हैं",
 	"Visual_PreestimateWordCount": "आरेखित करने के लिए पूर्व-आकलन शब्दों की गिनती",
-	"Visual_Quality": "गुणवत्ता"
+	"Visual_Quality": "गुणवत्ता",
+	"Visual_Performance": "प्रदर्शन टूल्स",
+	"Visual_Description_Quality": "पूर्वाकलन की गुणवत्ता को परिमाण निर्धारित करता है"
 }

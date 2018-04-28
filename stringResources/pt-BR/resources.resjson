@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Girar Texto",
 	"Visual_Excludes": "Exclusões",
 	"Visual_PreestimateWordCount": "Contagem de palavras de pré-estimativa para desenhar",
-	"Visual_Quality": "Qualidade"
+	"Visual_Quality": "Qualidade",
+	"Visual_Performance": "Desempenho",
+	"Visual_Description_Quality": "O valor determina a qualidade da pré-estimativa"
 }

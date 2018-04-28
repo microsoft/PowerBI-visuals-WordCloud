@@ -20,5 +20,7 @@
 	"Visual_RotateText": "หมุนข้อความ",
 	"Visual_Excludes": "ไม่รวม",
 	"Visual_PreestimateWordCount": "ประเมินจำนวนคำล่วงหน้าเพื่อวาด",
-	"Visual_Quality": "คุณภาพ"
+	"Visual_Quality": "คุณภาพ",
+	"Visual_Performance": "ประสิทธิภาพ",
+	"Visual_Description_Quality": "ค่ากำหนดคุณภาพของการประเมินล่วงหน้า"
 }

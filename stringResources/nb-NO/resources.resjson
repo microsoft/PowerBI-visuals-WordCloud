@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Roter tekst",
 	"Visual_Excludes": "Utelukker",
 	"Visual_PreestimateWordCount": "Forhåndsberegn antall ord for tegning",
-	"Visual_Quality": "Kvalitet"
+	"Visual_Quality": "Kvalitet",
+	"Visual_Performance": "Ytelse",
+	"Visual_Description_Quality": "Verdien bestemmer kvaliteten på førberegningen"
 }

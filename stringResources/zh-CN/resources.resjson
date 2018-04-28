@@ -20,5 +20,7 @@
 	"Visual_RotateText": "旋转文本",
 	"Visual_Excludes": "不包含",
 	"Visual_PreestimateWordCount": "要绘制的预估计字词数",
-	"Visual_Quality": "质量"
+	"Visual_Quality": "质量",
+	"Visual_Performance": "性能",
+	"Visual_Description_Quality": "值确定了预估计的质量"
 }

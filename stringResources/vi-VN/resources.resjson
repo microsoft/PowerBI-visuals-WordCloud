@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Xoay văn bản",
 	"Visual_Excludes": "Ngoại trừ",
 	"Visual_PreestimateWordCount": "Ước tính trước số từ cần rút",
-	"Visual_Quality": "Chất lượng"
+	"Visual_Quality": "Chất lượng",
+	"Visual_Performance": "Hiệu suất",
+	"Visual_Description_Quality": "Giá trị xác định chất lượng của ước tính trước"
 }

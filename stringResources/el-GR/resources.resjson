@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Περιστροφή κειμένου",
 	"Visual_Excludes": "Εξαιρεί",
 	"Visual_PreestimateWordCount": "Εκτίμηση πλήθους λέξεων για σχεδίαση",
-	"Visual_Quality": "Ποιότητα"
+	"Visual_Quality": "Ποιότητα",
+	"Visual_Performance": "Απόδοση",
+	"Visual_Description_Quality": "Η τιμή προσδιορίζει την ποιότητα της εκ των προτέρων εκτίμησης"
 }

@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Мәтінді айналдыру",
 	"Visual_Excludes": "Қоспайды",
 	"Visual_PreestimateWordCount": "Алынатын сөздер санын алдын ала бағалау",
-	"Visual_Quality": "Сапа"
+	"Visual_Quality": "Сапа",
+	"Visual_Performance": "Орындау",
+	"Visual_Description_Quality": "Мән алдын ала есептеудің сапасын анықтайды"
 }

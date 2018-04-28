@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Завъртане на текста",
 	"Visual_Excludes": "Изключени",
 	"Visual_PreestimateWordCount": "Предварително прогнозно изчисляване на брой думи за извличане",
-	"Visual_Quality": "Качество"
+	"Visual_Quality": "Качество",
+	"Visual_Performance": "Производителност",
+	"Visual_Description_Quality": "Стойността определя качеството на предварителната оценка"
 }

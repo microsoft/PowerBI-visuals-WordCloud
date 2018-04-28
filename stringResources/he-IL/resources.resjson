@@ -20,5 +20,7 @@
 	"Visual_RotateText": "סיבוב טקסט",
 	"Visual_Excludes": "לא כולל",
 	"Visual_PreestimateWordCount": "בצע הערכה מקדימה של ספירת מילים לעריכה",
-	"Visual_Quality": "איכות"
+	"Visual_Quality": "איכות",
+	"Visual_Performance": "ביצועים",
+	"Visual_Description_Quality": "הערך קובע את האיכות של ההערכה המקדימה"
 }

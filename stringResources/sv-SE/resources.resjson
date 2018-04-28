@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Rotera texten",
 	"Visual_Excludes": "Omfattar inte",
 	"Visual_PreestimateWordCount": "Gör preliminär uppskattning av ord att rita",
-	"Visual_Quality": "Kvalitet"
+	"Visual_Quality": "Kvalitet",
+	"Visual_Performance": "Prestanda",
+	"Visual_Description_Quality": "Värdet anger kvaliteten före uppskattning"
 }

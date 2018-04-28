@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Rotér tekst",
 	"Visual_Excludes": "Udelukker",
 	"Visual_PreestimateWordCount": "Foreløbigt antal ord, der skal tegnes",
-	"Visual_Quality": "Kvalitet"
+	"Visual_Quality": "Kvalitet",
+	"Visual_Performance": "Ydelse",
+	"Visual_Description_Quality": "Værdien angiver kvaliteten af præ-estimeringen"
 }

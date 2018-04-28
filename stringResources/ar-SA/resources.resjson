@@ -20,5 +20,7 @@
 	"Visual_RotateText": "تدوير النص",
 	"Visual_Excludes": "استثناء",
 	"Visual_PreestimateWordCount": "التقدير المسبق لعدد الكلمات المطلوب للرسم",
-	"Visual_Quality": "الجودة"
+	"Visual_Quality": "الجودة",
+	"Visual_Performance": "الأداء",
+	"Visual_Description_Quality": "تحدد القيمة جودة التقدير المسبق"
 }

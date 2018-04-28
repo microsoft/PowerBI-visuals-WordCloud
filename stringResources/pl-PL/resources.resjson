@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Obróć tekst",
 	"Visual_Excludes": "Wyklucza",
 	"Visual_PreestimateWordCount": "Wstępnie oszacuj liczbę wyrazów do narysowania",
-	"Visual_Quality": "Jakość"
+	"Visual_Quality": "Jakość",
+	"Visual_Performance": "Wydajność",
+	"Visual_Description_Quality": "Wartość określa jakość wstępnego szacowania"
 }

@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Rotire text",
 	"Visual_Excludes": "Excluderi",
 	"Visual_PreestimateWordCount": "Pre-estimați numărul de cuvinte pentru a desena",
-	"Visual_Quality": "Calitate"
+	"Visual_Quality": "Calitate",
+	"Visual_Performance": "Performanță",
+	"Visual_Description_Quality": "Valoarea determină calitatea preestimării"
 }

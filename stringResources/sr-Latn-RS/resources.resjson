@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Rotiraj tekst",
 	"Visual_Excludes": "Isključivanja",
 	"Visual_PreestimateWordCount": "Unapred procenjeni broj reči za crtanje",
-	"Visual_Quality": "Kvalitet"
+	"Visual_Quality": "Kvalitet",
+	"Visual_Performance": "Performanse",
+	"Visual_Description_Quality": "Vrednost određuje kvalitet preliminarne procene"
 }

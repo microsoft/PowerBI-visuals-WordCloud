@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Metni Döndür",
 	"Visual_Excludes": "Dışlar",
 	"Visual_PreestimateWordCount": "Çizilecek önceden tahmin edilen sözcük sayısı",
-	"Visual_Quality": "Kalite"
+	"Visual_Quality": "Kalite",
+	"Visual_Performance": "Performans",
+	"Visual_Description_Quality": "Değer, ön tahminin kalitesini belirler"
 }

@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Putar Teks",
 	"Visual_Excludes": "Pengecualian",
 	"Visual_PreestimateWordCount": "Praanggarkan bilangan perkataan untuk melukis",
-	"Visual_Quality": "Kualiti"
+	"Visual_Quality": "Kualiti",
+	"Visual_Performance": "Prestasi",
+	"Visual_Description_Quality": "Nilai menentukan kualiti praanggaran"
 }

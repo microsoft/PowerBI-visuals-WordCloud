@@ -20,5 +20,7 @@
 	"Visual_RotateText": "旋轉文字",
 	"Visual_Excludes": "排除",
 	"Visual_PreestimateWordCount": "要繪製的預估字數",
-	"Visual_Quality": "品質"
+	"Visual_Quality": "品質",
+	"Visual_Performance": "效能",
+	"Visual_Description_Quality": "此值決定估計前的品質"
 }

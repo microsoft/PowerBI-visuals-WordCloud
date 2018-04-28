@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Szöveg elforgatása",
 	"Visual_Excludes": "Kizárások",
 	"Visual_PreestimateWordCount": "Szavak számának előzetes becslése a rajzoláshoz",
-	"Visual_Quality": "Minőség"
+	"Visual_Quality": "Minőség",
+	"Visual_Performance": "Teljesítmény",
+	"Visual_Description_Quality": "Ez az érték határozza meg az előzetes becslés minőségét"
 }

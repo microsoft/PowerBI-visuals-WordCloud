@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Tekst draaien",
 	"Visual_Excludes": "Uitsluitingen",
 	"Visual_PreestimateWordCount": "Vooraf geschat woordaantal voor tekenen",
-	"Visual_Quality": "Kwaliteit"
+	"Visual_Quality": "Kwaliteit",
+	"Visual_Performance": "Prestaties",
+	"Visual_Description_Quality": "De waarde bepaalt de kwaliteit van de voorlopige schatting"
 }

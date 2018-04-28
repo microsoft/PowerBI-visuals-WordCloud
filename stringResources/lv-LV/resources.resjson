@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Pagriezt tekstu",
 	"Visual_Excludes": "Neietvert",
 	"Visual_PreestimateWordCount": "Iepriekš aprēķināt zīmējamo vārdu skaitu",
-	"Visual_Quality": "Kvalitāte"
+	"Visual_Quality": "Kvalitāte",
+	"Visual_Performance": "Veiktspēja",
+	"Visual_Description_Quality": "Šī vērtība nosaka iepriekšējā novērtējuma kvalitāti"
 }

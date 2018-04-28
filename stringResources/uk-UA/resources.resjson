@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Повернути текст",
 	"Visual_Excludes": "За винятком",
 	"Visual_PreestimateWordCount": "Попередньо оцініть кількість слів для візуалізації",
-	"Visual_Quality": "Якість"
+	"Visual_Quality": "Якість",
+	"Visual_Performance": "Продуктивність",
+	"Visual_Description_Quality": "Значення визначає якість попереднього оцінювання"
 }

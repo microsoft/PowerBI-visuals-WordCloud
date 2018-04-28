@@ -20,5 +20,7 @@
 	"Visual_RotateText": "Sukanje besedila",
 	"Visual_Excludes": "Izključitve OEM-jev",
 	"Visual_PreestimateWordCount": "Vnaprej predvidi število besed za risanje",
-	"Visual_Quality": "Kakovost"
+	"Visual_Quality": "Kakovost",
+	"Visual_Performance": "Učinkovitost delovanja",
+	"Visual_Description_Quality": "Vrednost določa kakovost predhodne ocene"
 }
