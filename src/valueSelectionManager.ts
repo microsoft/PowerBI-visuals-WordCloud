@@ -48,9 +48,21 @@ module powerbi.extensibility.visual {
         private getSelectionIds: (value: T | T[]) => ISelectionId[];
         private selectionManager: ISelectionManager;
 
-        public constructor(visualHost: IVisualHost, getSelectionIds: (value: T) => ISelectionId[]) {
+        public constructor(visualHost: IVisualHost, getSelectionIds: (value: T) => ISelectionId[], getDataPoints: () => WordCloudDataPoint[], renderSelection: () => void) {
             this.visualHost = visualHost;
             this.selectionManager = visualHost.createSelectionManager();
+
+            this.selectionManager.registerOnSelectCallback((ids: ISelectionId[]) => {
+                this.clear(false);
+                ids.forEach( (selection: ISelectionId ) => {
+                    getDataPoints().forEach( (dataPoint: WordCloudDataPoint) => {
+                        if (selection.includes(dataPoint.selectionIds[0])) {
+                            this.selectedValues.push(dataPoint.text as any);
+                            renderSelection();
+                        }
+                    });
+                });
+            });
 
             this.getSelectionIds = (value: T | T[]) => _.isArray(value)
                 ? <ISelectionId[]>_.flatten((value as T[]).map((valueElement: T) => {

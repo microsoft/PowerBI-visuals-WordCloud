@@ -1,15 +1,15 @@
 {
   "visual": {
     "name": "WordCloud",
-    "displayName": "WordCloud 1.4.1",
+    "displayName": "WordCloud 1.5.0",
     "guid": "WordCloud1447959067750",
     "visualClassName": "WordCloud",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "description": "Word Cloud is a visual representation of word frequency and value. Use it to get instant insight into the most important terms in a set.",
     "supportUrl": "http://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-WordCloud"
   },
-  "apiVersion": "1.7.0",
+  "apiVersion": "1.11.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
