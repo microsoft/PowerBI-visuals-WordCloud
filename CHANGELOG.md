@@ -1,3 +1,6 @@
+## 1.6.0
+* Added localization for all supported languages
+
 ## 1.5.0
 * ADD. Bookmarks support
 
