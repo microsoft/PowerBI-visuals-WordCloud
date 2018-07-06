@@ -40,7 +40,7 @@ module powerbi.extensibility.visual {
 
     // powerbi.extensibility
     import IVisual = powerbi.extensibility.IVisual;
-    import IColorPalette = powerbi.extensibility.IColorPalette;
+    import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
     // powerbi.extensibility.visual
     import IVisualHost = powerbi.extensibility.visual.IVisualHost;
@@ -349,7 +349,7 @@ module powerbi.extensibility.visual {
         }
 
         private data: WordCloudData;
-        private colorPalette: IColorPalette;
+        private colorPalette: ISandboxExtendedColorPalette;
         private durationAnimations: number = 50;
 
         private specialViewport: IViewport;
@@ -378,38 +378,32 @@ module powerbi.extensibility.visual {
         private isUpdating: boolean = false;
         private incomingUpdateOptions: VisualUpdateOptions;
         private oldIdentityKeys: string[];
+
         public static converter(
             dataView: DataView,
-            colors: IColorPalette,
-            visualHost: IVisualHost,
-            previousData: WordCloudData): WordCloudData {
-
-            let categorical: WordCloudColumns<DataViewCategoryColumn>,
-                catValues: WordCloudColumns<any[]>,
-                settings: WordCloudSettings,
-                colorHelper: ColorHelper,
-                stopWords: string[],
-                excludedSet: PrimitiveValue[],
-                texts: WordCloudText[] = [],
-                reducedTexts: WordCloudText[][],
-                dataPoints: WordCloudDataPoint[],
-                wordValueFormatter: IValueFormatter,
-                queryName: string;
-
-            categorical = WordCloudColumns.getCategoricalColumns(dataView);
+            colorPalette: ISandboxExtendedColorPalette,
+            visualHost: IVisualHost
+        ): WordCloudData {
+            const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.getCategoricalColumns(dataView);
 
             if (!categorical || !categorical.Category || _.isEmpty(categorical.Category.values)) {
                 return null;
             }
 
-            catValues = WordCloudColumns.getCategoricalValues(dataView);
-            settings = WordCloud.parseSettings(dataView, previousData && previousData.settings);
+            const colorHelper: ColorHelper = new ColorHelper(
+                colorPalette,
+                WordCloud.DataPointFillProperty,
+                wordCloudUtils.getRandomColor()
+            );
 
-            wordValueFormatter = ValueFormatter.create({
+            const catValues: WordCloudColumns<any[]> = WordCloudColumns.getCategoricalValues(dataView);
+            const settings: WordCloudSettings = WordCloud.parseSettings(dataView, colorHelper);
+
+            const wordValueFormatter: IValueFormatter = ValueFormatter.create({
                 format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
             });
 
-            stopWords = !!settings.stopWords.words && _.isString(settings.stopWords.words)
+            let stopWords: string[] = !!settings.stopWords.words && _.isString(settings.stopWords.words)
                 ? settings.stopWords.words.split(WordCloud.StopWordsDelimiter)
                 : [];
 
@@ -417,34 +411,38 @@ module powerbi.extensibility.visual {
                 ? stopWords.concat(WordCloud.StopWords)
                 : stopWords;
 
-            excludedSet = !categorical.Excludes || _.isEmpty(categorical.Excludes.values)
+            const excludedSet: PrimitiveValue[] = !categorical.Excludes || _.isEmpty(categorical.Excludes.values)
                 ? []
                 : categorical.Excludes.values;
 
-            colorHelper = new ColorHelper(
-                colors,
-                WordCloud.DataPointFillProperty,
-                wordCloudUtils.getRandomColor());
-
-            queryName = (categorical.Values
+            const queryName: string = (categorical.Values
                 && categorical.Values[0]
                 && categorical.Values[0].source
                 && categorical.Values[0].source.queryName)
                 || null;
+
+            const texts: WordCloudText[] = [];
+
             for (let index: number = 0; index < catValues.Category.length; index += 1) {
                 let item: any = catValues.Category[index];
+
                 if (!item) {
                     continue;
                 }
+
                 let color: string;
-                let selectionIdBuilder: ISelectionIdBuilder;
+
                 if (categorical.Category.objects && categorical.Category.objects[index]) {
-                    color = colorHelper.getColorForMeasure(categorical.Category.objects[index], "");
+                    color = colorHelper.getColorForMeasure(categorical.Category.objects[index], "", "foreground");
                 } else {
-                    color = settings.dataPoint.defaultColor || colors.getColor(index.toString()).value;
+                    color = colorHelper.getHighContrastColor(
+                        "foreground",
+                        settings.dataPoint.defaultColor || colorPalette.getColor(index.toString()).value
+                    );
                 }
 
-                selectionIdBuilder = visualHost.createSelectionIdBuilder()
+                const selectionIdBuilder: ISelectionIdBuilder = visualHost
+                    .createSelectionIdBuilder()
                     .withCategory(dataView.categorical.categories[0], index);
 
                 if (queryName) {
@@ -452,6 +450,7 @@ module powerbi.extensibility.visual {
                 }
 
                 item = wordValueFormatter.format(item);
+
                 texts.push({
                     text: item,
                     count: (catValues.Values
@@ -466,19 +465,20 @@ module powerbi.extensibility.visual {
                 });
             }
 
-            reducedTexts = WordCloud.getReducedText(texts, stopWords, excludedSet, settings);
-            dataPoints = WordCloud.getDataPoints(reducedTexts, settings);
+            const reducedTexts: WordCloudText[][] = WordCloud.getReducedText(texts, stopWords, excludedSet, settings);
+            const dataPoints: WordCloudDataPoint[] = WordCloud.getDataPoints(reducedTexts, settings);
 
             return {
-                dataView: dataView,
-                settings: settings,
-                texts: texts,
-                dataPoints: dataPoints
+                texts,
+                settings,
+                dataView,
+                dataPoints,
             };
         }
 
-        private static parseSettings(dataView: DataView, previousSettings: WordCloudSettings): WordCloudSettings {
+        private static parseSettings(dataView: DataView, colorHelper: ColorHelper): WordCloudSettings {
             const settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
+
             settings.general.minFontSize = Math.max(
                 settings.general.minFontSize,
                 GeneralSettings.MinFontSize);
@@ -510,6 +510,11 @@ module powerbi.extensibility.visual {
             settings.rotateText.maxNumberOfOrientations = Math.max(
                 Math.min(settings.rotateText.maxNumberOfOrientations, RotateTextSettings.MaxNumberOfWords),
                 RotateTextSettings.MinNumberOfWords);
+
+            settings.dataPoint.defaultColor = colorHelper.getHighContrastColor(
+                "foreground",
+                settings.dataPoint.defaultColor,
+            );
 
             return settings;
         }
@@ -874,7 +879,7 @@ module powerbi.extensibility.visual {
                     dataView,
                     this.colorPalette,
                     this.visualHost,
-                    this.data);
+                );
 
                 if (!data) {
                     this.clear();
