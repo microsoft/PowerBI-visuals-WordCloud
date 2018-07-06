@@ -35,8 +35,7 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.visual.test
     import WordCloudData = powerbi.extensibility.visual.test.WordCloudData;
     import WordCloudBuilder = powerbi.extensibility.visual.test.WordCloudBuilder;
-    import getRandomUniqueHexColors = powerbi.extensibility.visual.test.helpers.getRandomUniqueHexColors;
-    import getSolidColorStructuralObject = powerbi.extensibility.visual.test.helpers.getSolidColorStructuralObject;
+    import areColorsEqual = powerbi.extensibility.visual.test.helpers.areColorsEqual;
 
     // WordCloud1447959067750
     import VisualClass = powerbi.extensibility.visual.WordCloud1447959067750.WordCloud;
@@ -493,7 +492,7 @@ module powerbi.extensibility.visual.test {
 
                     category.objects = category.objects || [];
 
-                    category.values.forEach((value: PrimitiveValue, index: number) => {
+                    category.values.forEach((index: number) => {
                         const color: IColorInfo = mockColorPallete.getColor(index.toString());
                         colors.push(color.value);
                         category.objects[index] = {
@@ -618,7 +617,7 @@ module powerbi.extensibility.visual.test {
 
         describe("Selection", () => {
             it("Check index of the data-point after filtering", () => {
-                const item: WordCloudText = VisualClass.converter(dataView, createColorPalette(), visualBuilder.visualHost, null)
+                const item: WordCloudText = VisualClass.converter(dataView, createColorPalette(), visualBuilder.visualHost)
                     .texts
                     .find((item: WordCloudText) => item.text === "Angola");
                 expect(item.index).toBe(5);
@@ -646,6 +645,46 @@ module powerbi.extensibility.visual.test {
                 };
 
                 objectsChecker(jsonData);
+            });
+        });
+
+        describe("Accessibility", () => {
+            describe("High contrast mode", () => {
+                const backgroundColor: string = "#000000";
+                const foregroundColor: string = "#ffff00";
+
+                beforeEach(() => {
+                    visualBuilder.visualHost.colorPalette.isHighContrast = true;
+
+                    visualBuilder.visualHost.colorPalette.background = { value: backgroundColor };
+                    visualBuilder.visualHost.colorPalette.foreground = { value: foregroundColor };
+                });
+
+                it("should render all of render with foreground color applied", (done) => {
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        const words: JQuery[] = visualBuilder.wordText.toArray().map($);
+
+                        expect(isColorAppliedToElements(words, foregroundColor, "fill"));
+
+                        done();
+                    });
+                });
+
+                function isColorAppliedToElements(
+                    elements: JQuery[],
+                    color?: string,
+                    colorStyleName: string = "fill"
+                ): boolean {
+                    return elements.some((element: JQuery) => {
+                        const currentColor: string = element.css(colorStyleName);
+
+                        if (!currentColor || !color) {
+                            return currentColor === color;
+                        }
+
+                        return areColorsEqual(currentColor, color);
+                    });
+                }
             });
         });
     });

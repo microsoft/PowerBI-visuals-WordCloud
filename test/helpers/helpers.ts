@@ -64,4 +64,13 @@ module powerbi.extensibility.visual.test.helpers {
 
         return `#${color}`;
     }
+
+    export function areColorsEqual(firstColor: string, secondColor: string): boolean {
+        const firstConvertedColor: RgbColor = parseColorString(firstColor),
+            secondConvertedColor: RgbColor = parseColorString(secondColor);
+
+        return firstConvertedColor.R === secondConvertedColor.R
+            && firstConvertedColor.G === secondConvertedColor.G
+            && firstConvertedColor.B === secondConvertedColor.B;
+    }
 }

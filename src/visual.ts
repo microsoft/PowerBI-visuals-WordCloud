@@ -40,7 +40,7 @@ module powerbi.extensibility.visual {
 
     // powerbi.extensibility
     import IVisual = powerbi.extensibility.IVisual;
-    import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
+    import IColorPalette = powerbi.extensibility.IColorPalette;
 
     // powerbi.extensibility.visual
     import IVisualHost = powerbi.extensibility.visual.IVisualHost;
@@ -349,7 +349,7 @@ module powerbi.extensibility.visual {
         }
 
         private data: WordCloudData;
-        private colorPalette: ISandboxExtendedColorPalette;
+        private colorPalette: IColorPalette;
         private durationAnimations: number = 50;
 
         private specialViewport: IViewport;
@@ -381,7 +381,7 @@ module powerbi.extensibility.visual {
 
         public static converter(
             dataView: DataView,
-            colorPalette: ISandboxExtendedColorPalette,
+            colorPalette: IColorPalette,
             visualHost: IVisualHost
         ): WordCloudData {
             const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.getCategoricalColumns(dataView);
