@@ -30,8 +30,6 @@ module powerbi.extensibility.visual {
     import UpdateSelection = d3.selection.Update;
     import Transition = d3.Transition;
 
-
-
     // powerbi
     import IViewport = powerbi.IViewport;
     import DataView = powerbi.DataView;
