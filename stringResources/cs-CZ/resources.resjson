@@ -22,5 +22,7 @@
 	"Visual_PreestimateWordCount": "Předběžný odhad počtu slov k vykreslení",
 	"Visual_Quality": "Kvalita",
 	"Visual_Performance": "Výkon",
-	"Visual_Description_Quality": "Hodnota určuje kvalitu předběžného odhadu"
+	"Visual_Description_Quality": "Hodnota určuje kvalitu předběžného odhadu",
+	"WordCloud_Short_Description": "Vytvoření zábavného vizuálu z častého textu ve vašich datech",
+	"WordCloud_Long_Description": "Word Cloud je vizuální znázornění četnosti a hodnoty slov. Slouží k získání okamžitého přehledu o nejdůležitějších termínech ve vašich datech.\nDíky interaktivnímu nástroji Word Cloud v Power BI se už nebudete muset zdlouhavě prodírat velkými objemy textu a zjišťovat, jaké termíny jsou významné nebo převažující. Můžete je jednoduše vizualizovat jako Word Cloud a okamžitě získat velký obraz spolu s možnostmi uživatelské interaktivity Power BI, které umožňují podrobnější zkoumání a odhalení motivů skrývajících se za textovým obsahem.\nTento vizuál vám také umožňuje řídit vzhled Word Cloud, ať už se jedná o velikost nebo využití prostoru, a způsob zpracování dat. Slova v textu můžete rozdělit a hledat četnost slov nebo je ponechat nerozdělené a promítnout měřítko jako hodnotu textu. Také můžete povolit možnost odebrání určitých slov, aby se z Cloudu odstranily nejběžnější termíny a nedocházelo k nepřehlednosti. U tohoto vizuálu také můžete povolit otáčení slov a pohrát si s možnými úhly. Můžete být velmi kreativní.\nVolitelně také můžete použít měřítko zohledňující váhu textu. Pokud nic nezadáte, jednoduše se použije četnost. Další možnosti najdete v podokně formátování.\nTento vizuál je typu open source. Kód můžete získat z Githubu: https://github.com/Microsoft/PowerBI-visuals-wordcloud"
 }

@@ -22,5 +22,7 @@
 	"Visual_PreestimateWordCount": "Vnaprej predvidi število besed za risanje",
 	"Visual_Quality": "Kakovost",
 	"Visual_Performance": "Učinkovitost delovanja",
-	"Visual_Description_Quality": "Vrednost določa kakovost predhodne ocene"
+	"Visual_Description_Quality": "Vrednost določa kakovost predhodne ocene",
+	"WordCloud_Short_Description": "Ustvarite zabavno upodobitev pogostega besedila v vaših podatkih",
+	"WordCloud_Long_Description": "Word Cloud je vizualna predstavitev pogostosti besed in vrednosti. Uporabite jo lahko za pridobivanje takojšnjih vpogledov v najpomembnejše izraze v vaših podatkih.\nInteraktivna izkušnja Word Cloud v storitvi Power BI zagotavlja, da vam ni treba več brskati po velikih količinah besedila, da bi našli pomembne izraze. Preprosto upodobite izraz kot Word Cloud in takoj pridobite širšo sliko. Nato z interaktivnostjo v storitvi Power BI dodatno razčlenite elemente, da odkrijete teme znotraj vsebine besedila.\nS to upodobitvijo lahko nadzirate tudi videz dela v oblaku – naj bo to velikost ali uporaba prostora ali način upodobitve podatkov. Besede lahko v besedilu prelomite tako, da poiščete pogoste besede, ali pa pustite prelom besed izklopljen, da upodobite mero kot vrednost besedila. Prav tako lahko omogočite prepovedane besede, da odstranite pogoste izraze iz besed v oblaku in s tem preprečite prenatrpanost. Ta upodobitev omogoča kreativno uporabo sukanja in kotov.\nIzbirno lahko uporabite tudi mero za ponazoritev pomembnosti besedila. Če te ni na voljo, bo uporabljena pogostost. Dodatne možnosti si lahko ogledate v podoknu za oblikovanje.\nTo je odprtokodna ponazoritev. Kodo lahko pridobite na spletnem mestu storitve GitHub: https://github.com/Microsoft/PowerBI-visuals-wordcloud"
 }
