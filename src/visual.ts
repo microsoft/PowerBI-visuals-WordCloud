@@ -297,7 +297,7 @@ module powerbi.extensibility.visual {
         private static DefaultTextFontSize: string = PixelConverter.toString(1);
         private static MinFakeSize: number = 1;
         private static DefaultStrokeStyle: string = "red";
-        private static DefaultTextAlign: CanvasTextAlign = "center";
+        private static DefaultTextAlign: string = "center";
         private static ArchimedeanFactor: number = 0.1;
 
         private static WidthOffset: number = 5;
@@ -473,7 +473,7 @@ module powerbi.extensibility.visual {
             };
         }
 
-        private static parseSettings(dataView: DataView, colorHelper: ColorHelper): WordCloudSettings {
+        public static parseSettings(dataView: DataView, colorHelper: ColorHelper): WordCloudSettings {
             const settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
 
             settings.general.minFontSize = Math.max(
@@ -526,7 +526,7 @@ module powerbi.extensibility.visual {
             const result: WordCloudGroup[] = [];
             brokenStrings.forEach((item: WordCloudText) => {
                 const key = item.text.toLocaleLowerCase();
-                if(combinedMap[key]) {
+                if (combinedMap[key]) {
                     combinedMap[key].count += item.count;
                     combinedMap[key].selectionIds.push(item.selectionId);
                 } else {
@@ -540,7 +540,7 @@ module powerbi.extensibility.visual {
                 }
             });
 
-            for(var key in combinedMap) {
+            for (let key in combinedMap) {
                 if (settings.general.minRepetitionsToDisplay <= combinedMap[key].count) {
                     result.push(combinedMap[key]);
                 }
@@ -564,14 +564,14 @@ module powerbi.extensibility.visual {
                     .split(WordCloud.StopWordsDelimiter)
                     .forEach((word: string) => {
                         word = word.toLocaleLowerCase();
-                        if(!map[word]) map[word] = true;
+                        if (!map[word]) map[word] = true;
                     });
             }
             if (settings.stopWords.isDefaultStopWords) {
                 WordCloud.StopWords
                     .forEach((word: string) => {
                         word = word.toLocaleLowerCase();
-                        if(!map[word]) map[word] = true;
+                        if (!map[word]) map[word] = true;
                     });
             }
             return map;
@@ -584,11 +584,11 @@ module powerbi.extensibility.visual {
                 // Filters should keep the same rules that target words
                 this.CleanAndSplit(item.toString(), settings).forEach((word: string) => {
                     word = word.toLocaleLowerCase();
-                    if(!map[word]) map[word] = true;
+                    if (!map[word]) map[word] = true;
                 });
             });
 
-            return { ...map,...this.getStopWords(settings) };
+            return { ...map, ...this.getStopWords(settings) };
         }
 
         private static processText(
@@ -688,7 +688,6 @@ module powerbi.extensibility.visual {
 
             returnValues.forEach((dataPoint: WordCloudDataPoint) => {
                 dataPoint.size = WordCloud.getWordFontSize(
-                    dataPoint.count,
                     settings,
                     dataPoint.count,
                     minValue,
@@ -701,7 +700,6 @@ module powerbi.extensibility.visual {
         }
 
         private static getWordFontSize(
-            itemCount: number,
             settings: WordCloudSettings,
             value: number,
             minValue: number,
@@ -712,10 +710,6 @@ module powerbi.extensibility.visual {
                 fontSize: number,
                 minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageFactor,
                 maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageFactor;
-
-            if (itemCount <= RotateTextSettings.MinNumberOfWords) {
-                return maxFontSize;
-            }
 
             weight = WordCloud.getWeightByScaleType(value, scaleType);
 
