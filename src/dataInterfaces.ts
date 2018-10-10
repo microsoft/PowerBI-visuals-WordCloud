@@ -40,6 +40,14 @@ module powerbi.extensibility.visual {
         color: string;
     }
 
+    export interface WordCloudGroup {
+        text: string;
+        count: number;
+        wordIndex: number;
+        selectionIds: ISelectionId[];
+        color: string;
+    }
+
     export interface WordCloudDataPoint extends IPoint {
         text: string;
         xOff: number;
