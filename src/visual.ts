@@ -75,6 +75,8 @@ module powerbi.extensibility.visual {
     import ITooltipServiceWrapper = powerbi.extensibility.utils.tooltip.ITooltipServiceWrapper;
     import createTooltipServiceWrapper = powerbi.extensibility.utils.tooltip.createTooltipServiceWrapper;
 
+    type WordMap = { [word: string]: boolean };
+
     enum WordCloudScaleType {
         logn,
         sqrt,
@@ -378,6 +380,9 @@ module powerbi.extensibility.visual {
         private isUpdating: boolean = false;
         private incomingUpdateOptions: VisualUpdateOptions;
         private oldIdentityKeys: string[];
+        private static punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
+        private static whiteSpaceRegExp: RegExp = /\s/;
+
 
         public static converter(
             dataView: DataView,
@@ -403,17 +408,11 @@ module powerbi.extensibility.visual {
                 format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
             });
 
-            let stopWords: string[] = !!settings.stopWords.words && _.isString(settings.stopWords.words)
-                ? settings.stopWords.words.split(WordCloud.StopWordsDelimiter)
-                : [];
-
-            stopWords = settings.stopWords.isDefaultStopWords
-                ? stopWords.concat(WordCloud.StopWords)
-                : stopWords;
-
             const excludedSet: PrimitiveValue[] = !categorical.Excludes || _.isEmpty(categorical.Excludes.values)
                 ? []
                 : categorical.Excludes.values;
+
+            const excludedWords = this.getExcludes(excludedSet, settings);
 
             const queryName: string = (categorical.Values
                 && categorical.Values[0]
@@ -426,9 +425,7 @@ module powerbi.extensibility.visual {
             for (let index: number = 0; index < catValues.Category.length; index += 1) {
                 let item: any = catValues.Category[index];
 
-                if (!item) {
-                    continue;
-                }
+                if (!item) continue;
 
                 let color: string;
 
@@ -465,7 +462,7 @@ module powerbi.extensibility.visual {
                 });
             }
 
-            const reducedTexts: WordCloudText[][] = WordCloud.getReducedText(texts, stopWords, excludedSet, settings);
+            const reducedTexts: WordCloudGroup[] = WordCloud.getReducedText(texts, excludedWords, settings);
             const dataPoints: WordCloudDataPoint[] = WordCloud.getDataPoints(reducedTexts, settings);
 
             return {
@@ -476,7 +473,7 @@ module powerbi.extensibility.visual {
             };
         }
 
-        private static parseSettings(dataView: DataView, colorHelper: ColorHelper): WordCloudSettings {
+        public static parseSettings(dataView: DataView, colorHelper: ColorHelper): WordCloudSettings {
             const settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
 
             settings.general.minFontSize = Math.max(
@@ -521,77 +518,98 @@ module powerbi.extensibility.visual {
 
         private static getReducedText(
             texts: WordCloudText[],
-            stopWords: PrimitiveValue[],
-            excludedSet: PrimitiveValue[],
-            settings: WordCloudSettings): WordCloudText[][] {
+            excludedWords: WordMap,
+            settings: WordCloudSettings): WordCloudGroup[] {
 
-            let brokenStrings: WordCloudText[] = WordCloud.processText(texts, stopWords, excludedSet, settings),
-                result: WordCloudText[][] = <WordCloudText[][]>_.values(_.groupBy(
-                    brokenStrings,
-                    (textObject: WordCloudText) => textObject.text.toLocaleLowerCase()));
-
-            result = result.map((texts: WordCloudText[]) => {
-                return _.sortBy(texts, (textObject: WordCloudText) => textObject.textGroup.length);
+            const brokenStrings: WordCloudText[] = WordCloud.processText(texts, excludedWords, settings);
+            const combinedMap: { [text: string]: WordCloudGroup } = Object.create(null);
+            const result: WordCloudGroup[] = [];
+            brokenStrings.forEach((item: WordCloudText) => {
+                const key = item.text.toLocaleLowerCase();
+                if (combinedMap[key]) {
+                    combinedMap[key].count += item.count;
+                    combinedMap[key].selectionIds.push(item.selectionId);
+                } else {
+                    combinedMap[key] = {
+                        text: item.text,
+                        wordIndex: item.index,
+                        selectionIds: [item.selectionId],
+                        count: item.count,
+                        color: item.color
+                    };
+                }
             });
+
+            for (let key in combinedMap) {
+                if (settings.general.minRepetitionsToDisplay <= combinedMap[key].count) {
+                    result.push(combinedMap[key]);
+                }
+            }
 
             return result;
         }
 
-        private static CleanAndSplit(
-            item: string,
-            settings: WordCloudSettings,
-            punctuationRegExp: RegExp,
-            whiteSpaceRegExp: RegExp) {
-
-            let splittedWords: string[] = [];
-
+        private static CleanAndSplit(item: string, settings: WordCloudSettings): string[] {
             if (!settings.general.isPunctuationsCharacters) {
-                splittedWords = item.replace(punctuationRegExp, " ").split(whiteSpaceRegExp);
-            } else {
-                splittedWords = item.split(whiteSpaceRegExp);
+                return item.replace(this.punctuationRegExp, " ").split(this.whiteSpaceRegExp);
             }
+            return item.split(WordCloud.whiteSpaceRegExp);
+        }
 
-            return splittedWords;
+        private static getStopWords(settings: WordCloudSettings): WordMap {
+            const map: WordMap = Object.create(null);
+            if (!settings.stopWords.show) return map;
+            if (!!settings.stopWords.words && _.isString(settings.stopWords.words)) {
+                settings.stopWords.words
+                    .split(WordCloud.StopWordsDelimiter)
+                    .forEach((word: string) => {
+                        word = word.toLocaleLowerCase();
+                        if (!map[word]) map[word] = true;
+                    });
+            }
+            if (settings.stopWords.isDefaultStopWords) {
+                WordCloud.StopWords
+                    .forEach((word: string) => {
+                        word = word.toLocaleLowerCase();
+                        if (!map[word]) map[word] = true;
+                    });
+            }
+            return map;
+        }
+
+        private static getExcludes(excluded: PrimitiveValue[], settings: WordCloudSettings): WordMap {
+            const map: WordMap = Object.create(null);
+            excluded.forEach((item: PrimitiveValue) => {
+                if (typeof item !== "string" && typeof item !== "number") return;
+                // Filters should keep the same rules that target words
+                this.CleanAndSplit(item.toString(), settings).forEach((word: string) => {
+                    word = word.toLocaleLowerCase();
+                    if (!map[word]) map[word] = true;
+                });
+            });
+
+            return { ...map, ...this.getStopWords(settings) };
         }
 
         private static processText(
             words: WordCloudText[],
-            stopWords: PrimitiveValue[],
-            excludedSet: PrimitiveValue[],
+            excludedWords: WordMap,
             settings: WordCloudSettings): WordCloudText[] {
-            let processedText: WordCloudText[] = [],
-                partOfProcessedText: WordCloudText[] = [],
-                whiteSpaceRegExp: RegExp = /\s/,
-                punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim"),
-                splittedExcludes: PrimitiveValue[] = [];
-
-            excludedSet.forEach((item: PrimitiveValue) => {
-                if (typeof item === "string" || typeof item === "number") {
-                    let splittedExclude: string[] = [];
-
-                    // Filters should keep the same rules that target words
-                    splittedExclude = this.CleanAndSplit(item.toString(), settings, punctuationRegExp, whiteSpaceRegExp);
-                    splittedExcludes = splittedExcludes.concat(splittedExclude);
-                }
-            });
+            const processedText: WordCloudText[] = [];
 
             words.forEach((item: WordCloudText) => {
-                if (typeof item.text === "string") {
-                    let splittedWords: string[] = [];
-
-                    splittedWords = this.CleanAndSplit(item.text, settings, punctuationRegExp, whiteSpaceRegExp);
-
-                    const splittedWordsOriginalLength: number = splittedWords.length;
-
-                    splittedWords = WordCloud.getFilteredWords(splittedWords, stopWords, splittedExcludes, settings);
-                    partOfProcessedText = settings.general.isBrokenText
-                        ? WordCloud.getBrokenWords(splittedWords, item, whiteSpaceRegExp)
-                        : WordCloud.getFilteredSentences(splittedWords, item, splittedWordsOriginalLength, settings, punctuationRegExp);
-
-                    processedText.push(...partOfProcessedText);
-                } else {
+                if (typeof item.text !== "string") {
                     processedText.push(item);
+                    return;
                 }
+                let splittedWords: string[] = this.CleanAndSplit(item.text, settings);
+
+                splittedWords = this.getFilteredWords(splittedWords, excludedWords);
+
+                processedText.push(...settings.general.isBrokenText
+                    ? WordCloud.getBrokenWords(splittedWords, item)
+                    : WordCloud.getFilteredSentences(splittedWords, item, settings)
+                );
             });
 
             return processedText;
@@ -599,23 +617,16 @@ module powerbi.extensibility.visual {
 
         private static getBrokenWords(
             splittedWords: string[],
-            item: WordCloudText,
-            whiteSpaceRegExp: RegExp): WordCloudText[] {
+            item: WordCloudText): WordCloudText[] {
 
-            let brokenStrings: WordCloudText[] = [];
+            const brokenStrings: WordCloudText[] = [];
 
             splittedWords.forEach((splittedWord: string) => {
-                if (splittedWord.length === 0 || whiteSpaceRegExp.test(splittedWord)) {
-                    return;
-                }
+                if (splittedWord.length === 0 || this.whiteSpaceRegExp.test(splittedWord)) return;
 
                 brokenStrings.push({
-                    text: splittedWord,
-                    textGroup: item.textGroup,
-                    count: item.count,
-                    index: item.index,
-                    selectionId: item.selectionId,
-                    color: item.color
+                    ...item,
+                    text: splittedWord
                 });
             });
 
@@ -625,19 +636,12 @@ module powerbi.extensibility.visual {
         private static getFilteredSentences(
             splittedWords: string[],
             item: WordCloudText,
-            splittedWordsOriginalLength: number,
-            settings: WordCloudSettings,
-            punctuationRegExp: RegExp): WordCloudText[] {
-
-            let whiteSpaceRegExp: RegExp = /\s/;
+            settings: WordCloudSettings): WordCloudText[] {
+            if (splittedWords.length === 0) return [];
 
             if (!settings.general.isPunctuationsCharacters) {
                 item.text = item.text
-                    .replace(punctuationRegExp, " ");
-            }
-
-            if (splittedWords.length === 0) {
-                return [];
+                    .replace(this.punctuationRegExp, " ");
             }
 
             return [item];
@@ -645,41 +649,22 @@ module powerbi.extensibility.visual {
 
         private static getFilteredWords(
             words: string[],
-            stopWords: PrimitiveValue[],
-            splittedExcludes: PrimitiveValue[],
-            settings: WordCloudSettings) {
-
-            words = words.filter((value: string) => {
-                return value.length > 0 && !splittedExcludes.some((removeWord: string) => {
-                    return value.toLocaleLowerCase() === removeWord.toLocaleLowerCase();
-                });
-            });
-
-            if (!settings.stopWords.show || !stopWords.length) {
-                return words;
-            }
-
-            return words.filter((value: string) => {
-                return value.length > 0 && !stopWords.some((removeWord: string) => {
-                    return value.toLocaleLowerCase() === removeWord.toLocaleLowerCase();
-                });
-            });
+            excluded: WordMap) {
+            return words.filter((value: string) => value.length > 0 && !excluded[value.toLocaleLowerCase()]);
         }
 
         private static getDataPoints(
-            textGroups: WordCloudText[][],
+            textGroups: WordCloudGroup[],
             settings: WordCloudSettings): WordCloudDataPoint[] {
 
             if (_.isEmpty(textGroups)) {
                 return [];
             }
 
-            const returnValues: WordCloudDataPoint[] = textGroups.map((values: WordCloudText[], index: number) => {
+            const returnValues: WordCloudDataPoint[] = textGroups.map((group: WordCloudGroup, index: number) => {
                 return {
-                    text: values[0].text,
                     x: WordCloud.DefaultX,
                     y: WordCloud.DefaultY,
-                    rotate: WordCloud.getAngle(settings, index),
                     padding: WordCloud.DefaultPadding,
                     width: WordCloud.DefaultWidth,
                     height: WordCloud.DefaultHeight,
@@ -689,20 +674,20 @@ module powerbi.extensibility.visual {
                     y0: WordCloud.DefaultY0,
                     x1: WordCloud.DefaultX1,
                     y1: WordCloud.DefaultY1,
-                    color: values[0].color,
-                    selectionIds: values.map((text: WordCloudText) => text.selectionId),
-                    wordIndex: values[0].index,
-                    count: _.sumBy(values, (text: WordCloudText) => text.count)
+                    text: group.text,
+                    rotate: WordCloud.getAngle(settings, index),
+                    color: group.color,
+                    selectionIds: group.selectionIds,
+                    wordIndex: group.wordIndex,
+                    count: group.count
                 } as WordCloudDataPoint;
-            });
+            }).sort((a, b) => b.count - a.count);
 
-            const minValue: number = _.minBy(returnValues, (dataPoint: WordCloudDataPoint) => dataPoint.count).count,
-                maxValue: number = _.maxBy(returnValues, (dataPoint: WordCloudDataPoint) => dataPoint.count).count,
-                texts: WordCloudText[] = textGroups.map((textGroup: WordCloudText[]) => textGroup[0]);
+            const minValue: number = returnValues[returnValues.length - 1].count,
+                maxValue: number = returnValues[0].count;
 
             returnValues.forEach((dataPoint: WordCloudDataPoint) => {
                 dataPoint.size = WordCloud.getWordFontSize(
-                    texts,
                     settings,
                     dataPoint.count,
                     minValue,
@@ -715,7 +700,6 @@ module powerbi.extensibility.visual {
         }
 
         private static getWordFontSize(
-            texts: WordCloudText[],
             settings: WordCloudSettings,
             value: number,
             minValue: number,
@@ -726,10 +710,6 @@ module powerbi.extensibility.visual {
                 fontSize: number,
                 minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageFactor,
                 maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageFactor;
-
-            if (texts.length <= RotateTextSettings.MinNumberOfWords) {
-                return maxFontSize;
-            }
 
             weight = WordCloud.getWeightByScaleType(value, scaleType);
 

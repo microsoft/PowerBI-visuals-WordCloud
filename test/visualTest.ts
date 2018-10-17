@@ -127,6 +127,16 @@ module powerbi.extensibility.visual.test {
                 let receivedNum = VisualClass.getFromCycledSequence(targetArr, -3, -3);
                 expect(receivedNum).toBeUndefined();
             });
+
+            it("Filter by count of items", () => {
+                dataView.metadata.objects = {
+                    general: {
+                        minRepetitionsToDisplay: 200
+                    }
+                };
+                const data = VisualClass.converter(dataView, createColorPalette(), visualBuilder.visualHost);
+                expect(data.dataPoints.length).toEqual(74);
+            });
         });
 
         describe("DOM tests", () => {

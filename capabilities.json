@@ -88,6 +88,13 @@
                         "numeric": true
                     }
                 },
+                "minRepetitionsToDisplay": {
+                    "displayName": "Minimum number of repetitions to display",
+                    "displayNameKey": "Visual_WordCloud_minRepetitionsToDisplay",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "minFontSize": {
                     "displayName": "Min font size",
                     "displayNameKey": "Visual_MinFontSize",

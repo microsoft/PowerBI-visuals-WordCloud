@@ -40,6 +40,7 @@ module powerbi.extensibility.visual {
         public static FontSizePercentageFactor: number = 1;
         public static MinFontSize: number = 1;
 
+        public minRepetitionsToDisplay: number = 1;
         public maxNumberOfWords: number = 200;
         public minFontSize: number = 20 / GeneralSettings.FontSizePercentageFactor;
         public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageFactor;
