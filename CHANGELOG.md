@@ -1,3 +1,6 @@
+## 1.7.1
+* Implements minimum repetition to appear on cloud [#35]
+
 ## 1.7.0
 * High contrast mode
 * API 1.13.0
