@@ -30,7 +30,7 @@
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-WordCloud#readme",
   "dependencies": {
     "d3": "3.5.5",
-    "lodash": "4.17.4",
+    "lodash": "4.17.5",
     "powerbi-visuals-utils-colorutils": "^1.1.0",
     "powerbi-visuals-utils-dataviewutils": "^1.2.0",
     "powerbi-visuals-utils-formattingutils": "^2.0.0",
