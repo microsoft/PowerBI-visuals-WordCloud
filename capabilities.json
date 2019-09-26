@@ -51,7 +51,6 @@
                             }
                         }
                     ],
-
                     "dataReductionAlgorithm": {
                         "top": {
                             "count": 2500
@@ -242,5 +241,6 @@
                 }
             }
         }
-    }
+    },
+    "supportsMultiVisualSelection": true
 }
