@@ -24,14 +24,12 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    export module wordCloudUtils {
-        export function getRandomColor(): string {
-            const red: number = Math.floor(Math.random() * 255),
-                green: number = Math.floor(Math.random() * 255),
-                blue: number = Math.floor(Math.random() * 255);
+export module wordCloudUtils {
+    export function getRandomColor(): string {
+        const red: number = Math.floor(Math.random() * 255),
+            green: number = Math.floor(Math.random() * 255),
+            blue: number = Math.floor(Math.random() * 255);
 
-            return `rgb(${red},${green},${blue})`;
-        }
+        return `rgb(${red},${green},${blue})`;
     }
 }

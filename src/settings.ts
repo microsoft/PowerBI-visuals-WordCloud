@@ -24,55 +24,54 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    // powerbi.extensibility.utils.dataview
-    import DataViewObjectsParser = powerbi.extensibility.utils.dataview.DataViewObjectsParser;
+// powerbi.extensibility.utils.dataview
+import { dataViewObjectsParser } from "powerbi-visuals-utils-dataviewutils";
+import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 
-    export class WordCloudSettings extends DataViewObjectsParser {
-        public general: GeneralSettings = new GeneralSettings();
-        public dataPoint: DataPointSettings = new DataPointSettings();
-        public stopWords: StopWordsSettings = new StopWordsSettings();
-        public rotateText: RotateTextSettings = new RotateTextSettings();
-        public performance: PerformanceSettings = new PerformanceSettings();
-    }
+export class WordCloudSettings extends DataViewObjectsParser {
+    public general: GeneralSettings = new GeneralSettings();
+    public dataPoint: DataPointSettings = new DataPointSettings();
+    public stopWords: StopWordsSettings = new StopWordsSettings();
+    public rotateText: RotateTextSettings = new RotateTextSettings();
+    public performance: PerformanceSettings = new PerformanceSettings();
+}
 
-    export class GeneralSettings {
-        public static FontSizePercentageFactor: number = 1;
-        public static MinFontSize: number = 1;
+export class GeneralSettings {
+    public static FontSizePercentageFactor: number = 1;
+    public static MinFontSize: number = 1;
 
-        public minRepetitionsToDisplay: number = 1;
-        public maxNumberOfWords: number = 200;
-        public minFontSize: number = 20 / GeneralSettings.FontSizePercentageFactor;
-        public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageFactor;
-        public isBrokenText: boolean = true;
-        public isPunctuationsCharacters: boolean = false;
-    }
+    public minRepetitionsToDisplay: number = 1;
+    public maxNumberOfWords: number = 200;
+    public minFontSize: number = 20 / GeneralSettings.FontSizePercentageFactor;
+    public maxFontSize: number = 100 / GeneralSettings.FontSizePercentageFactor;
+    public isBrokenText: boolean = true;
+    public isPunctuationsCharacters: boolean = false;
+}
 
-    export class DataPointSettings {
-        defaultColor: string = null;
-    }
+export class DataPointSettings {
+    defaultColor: string = null;
+}
 
-    export class StopWordsSettings {
-        public show: boolean = true;
-        public isDefaultStopWords: boolean = false;
-        public words: string = null;
-    }
+export class StopWordsSettings {
+    public show: boolean = true;
+    public isDefaultStopWords: boolean = false;
+    public words: string = null;
+}
 
-    export class RotateTextSettings {
-        public static MinAngle: number = -180;
-        public static MaxAngle: number = 180;
+export class RotateTextSettings {
+    public static MinAngle: number = -180;
+    public static MaxAngle: number = 180;
 
-        public static MinNumberOfWords: number = 1;
-        public static MaxNumberOfWords: number = 2500;
+    public static MinNumberOfWords: number = 1;
+    public static MaxNumberOfWords: number = 2500;
 
-        public show: boolean = true;
-        public minAngle: number = -60;
-        public maxAngle: number = 90;
-        public maxNumberOfOrientations: number = 2;
-    }
+    public show: boolean = true;
+    public minAngle: number = -60;
+    public maxAngle: number = 90;
+    public maxNumberOfOrientations: number = 2;
+}
 
-    export class PerformanceSettings {
-        public preestimate: boolean = false;
-        public quality: number = 40;
-    }
+export class PerformanceSettings {
+    public preestimate: boolean = false;
+    public quality: number = 40;
 }

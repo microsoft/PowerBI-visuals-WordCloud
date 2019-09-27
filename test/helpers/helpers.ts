@@ -24,14 +24,13 @@
  *  THE SOFTWARE.
  */
 
-/// <reference path="../_references.ts"/>
+import * as _ from "lodash";
 
-module powerbi.extensibility.visual.test.helpers {
-    // powerbi.extensibility.utils.test
-    import RgbColor = powerbi.extensibility.utils.test.helpers.color.RgbColor;
-    import getRandomNumber = powerbi.extensibility.utils.test.helpers.getRandomNumber;
-    import parseColorString = powerbi.extensibility.utils.test.helpers.color.parseColorString;
+// powerbi.extensibility.utils.test
+import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
+import { getRandomNumber } from "powerbi-visuals-utils-testutils";
 
+export module helpers {
     const MinColorValue: number = 0;
     const MaxColorValue: number = 16777216;
 

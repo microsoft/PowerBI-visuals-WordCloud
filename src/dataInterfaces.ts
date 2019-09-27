@@ -23,61 +23,63 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+// powerbi.visuals
+import powerbi from "powerbi-visuals-api";
+import DataView = powerbi.DataView;
+import ISelectionId = powerbi.visuals.ISelectionId;
 
-module powerbi.extensibility.visual {
-    // powerbi.visuals
-    import ISelectionId = powerbi.visuals.ISelectionId;
+// powerbi.extensibility.utils.svg
+import { shapesInterfaces } from "powerbi-visuals-utils-svgutils";
+import IPoint = shapesInterfaces.IPoint;
 
-    // powerbi.extensibility.utils.svg
-    import IPoint = powerbi.extensibility.utils.svg.shapes.IPoint;
+import { WordCloudSettings } from "./settings";
 
-    export interface WordCloudText {
-        text: string;
-        textGroup: string;
-        count: number;
-        index: number;
-        selectionId: ISelectionId;
-        color: string;
-    }
+export interface WordCloudText {
+    text: string;
+    textGroup: string;
+    count: number;
+    index: number;
+    selectionId: ISelectionId;
+    color: string;
+}
 
-    export interface WordCloudGroup {
-        text: string;
-        count: number;
-        wordIndex: number;
-        selectionIds: ISelectionId[];
-        color: string;
-    }
+export interface WordCloudGroup {
+    text: string;
+    count: number;
+    wordIndex: number;
+    selectionIds: ISelectionId[];
+    color: string;
+}
 
-    export interface WordCloudDataPoint extends IPoint {
-        text: string;
-        xOff: number;
-        yOff: number;
-        rotate?: number;
-        size?: number;
-        padding: number;
-        width: number;
-        height: number;
-        sprite?: number[];
-        x0: number;
-        y0: number;
-        x1: number;
-        y1: number;
-        color: string;
-        selectionIds: ISelectionId[];
-        wordIndex: number;
-        getWidthOfWord?: () => number;
-        count: number;
-        widthOfWord?: number;
-    }
+export interface WordCloudDataPoint extends IPoint {
+    text: string;
+    xOff: number;
+    yOff: number;
+    rotate?: number;
+    size?: number;
+    padding: number;
+    width: number;
+    height: number;
+    sprite?: number[];
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+    color: string;
+    selectionIds: ISelectionId[];
+    wordIndex: number;
+    getWidthOfWord?: () => number;
+    count: number;
+    widthOfWord?: number;
+}
 
-    export interface WordCloudData {
-        dataView: DataView;
-        settings: WordCloudSettings;
-        texts: WordCloudText[];
-        dataPoints: WordCloudDataPoint[];
-    }
+export interface WordCloudData {
+    dataView: DataView;
+    settings: WordCloudSettings;
+    texts: WordCloudText[];
+    dataPoints: WordCloudDataPoint[];
+}
 
-    export interface WordCloudDataView {
-        data: WordCloudDataPoint[];
-    }
+export interface WordCloudDataView {
+    data: WordCloudDataPoint[];
 }
