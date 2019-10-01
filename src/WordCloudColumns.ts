@@ -26,7 +26,7 @@
 
 // powerbi
 import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
+import * as lodash from "lodash";
 
 import DataView = powerbi.DataView;
 import DataViewValueColumns = powerbi.DataViewValueColumns;
@@ -43,9 +43,9 @@ export class WordCloudColumns<T> {
             values: DataViewValueColumns = <DataViewValueColumns>(categorical && categorical.values || []),
             series: PrimitiveValue[] = categorical && values.source && this.GET_SERIES_VALUES(dataView);
 
-        return categorical && _.mapValues(<any>new this<DataViewCategoryColumn[]>(), (n: any, key: string) => {
-            return (<any[]>_.toArray(categories))
-                .concat(<any[]>_.toArray(values))
+        return categorical && lodash.mapValues(<any>new this<DataViewCategoryColumn[]>(), (n: any, key: string) => {
+            return (<any[]>lodash.toArray(categories))
+                .concat(<any[]>lodash.toArray(values))
                 .filter((column: DataViewCategoryColumn) => column.source.roles && column.source.roles[key])
                 .map((column: DataViewCategoryColumn) => column.values)[0]
                 || values.source
@@ -71,7 +71,7 @@ export class WordCloudColumns<T> {
             categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
             values: DataViewValueColumns = <DataViewValueColumns>(categorical && categorical.values || []);
 
-        return categorical && _.mapValues(<any>(new this<DataViewCategoryColumn>()), (n: any, key: string) => {
+        return categorical && lodash.mapValues(<any>(new this<DataViewCategoryColumn>()), (n: any, key: string) => {
             return categories.filter((column: DataViewCategoryColumn) => column.source.roles && column.source.roles[key])[0]
                 || values.source
                 && values.source.roles

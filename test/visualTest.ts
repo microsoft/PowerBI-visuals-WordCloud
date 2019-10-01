@@ -302,25 +302,30 @@ describe("WordCloud", () => {
 
         it("Word returns after word stop property is changed back", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(grep(visualBuilder.wordText.toArray()).length)
-                    .toBeGreaterThan(0);
+                const stopWord = "Afghanistan";
+                let texts = visualBuilder.wordText.toArray();
+                expect(texts.length).toBeGreaterThan(0);
 
                 dataView.metadata.objects = {
                     stopWords: {
                         show: true,
-                        words: "Afghanistan"
+                        words: stopWord
                     }
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(grep(visualBuilder.wordText.toArray()).length)
-                        .toBe(0);
+                    texts = visualBuilder.wordText.toArray();
+                    let withStopWord = texts.map(t => t.textContent).filter(t => t.includes(stopWord));
+                    expect(withStopWord.length).toBe(0);
+                    expect(texts.length).toBeGreaterThan(0);
 
                     (dataView.metadata.objects as any).stopWords.show = false;
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(grep(visualBuilder.wordText.toArray()).length)
-                            .toBeGreaterThan(0);
+                        texts = visualBuilder.wordText.toArray();
+                        withStopWord = texts.map(t => t.textContent).filter(t => t.includes(stopWord));
+                        expect(withStopWord.length).toBeGreaterThan(0);
+                        expect(texts.length).toBeGreaterThan(0);
 
                         done();
                     }, 700);
@@ -578,17 +583,19 @@ describe("WordCloud", () => {
             });
 
             function checkStopWords(done) {
+                const stopWord = "Afghanistan";
                 (dataView.metadata.objects as any).stopWords.words = "";
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(visualBuilder.wordText.toArray().length)
                         .toBeGreaterThan(0);
 
-                    (dataView.metadata.objects as any).stopWords.words = "Afghanistan";
+                    (dataView.metadata.objects as any).stopWords.words = stopWord;
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(grep(visualBuilder.wordText.toArray()).length)
-                            .toBe(0);
+                        const texts = visualBuilder.wordText.toArray();
+                        const withStopWord = texts.map(t => t.textContent).filter(t => t.includes(stopWord));
+                        expect(withStopWord.length).toBe(0);
                         done();
                     }, 500);
                 }, 500);
@@ -611,11 +618,13 @@ describe("WordCloud", () => {
                     visualBuilder.words
                         .toArray()
                         .forEach((element: Element) => {
-                            const transform = d3.select(element).attr("transform", "translate");
-                            // const rotate: number = <number>transform.getAttribute("rotate");
+                            const translateNode = <any>d3.select(element).node();
+                            const matrix = translateNode.transform.baseVal.consolidate().matrix;
+                            let { a, b } = matrix;
+                            const rotate: number = Math.atan2(b, a) * 180 / Math.PI;
 
-                            // expect(rotate).toBeGreaterThan(minAngle);
-                            // expect(rotate).toBeLessThan(maxAngle);
+                            expect(rotate).toBeGreaterThan(minAngle);
+                            expect(rotate).toBeLessThan(maxAngle);
                         });
 
                     done();

@@ -26,9 +26,10 @@
 
 export module wordCloudUtils {
     export function getRandomColor(): string {
-        const red: number = Math.floor(Math.random() * 255),
-            green: number = Math.floor(Math.random() * 255),
-            blue: number = Math.floor(Math.random() * 255);
+        const randomColorsArray = crypto.getRandomValues(new Uint8Array(3))
+        const red: number = randomColorsArray[0],
+            green: number = randomColorsArray[1],
+            blue: number = randomColorsArray[2];
 
         return `rgb(${red},${green},${blue})`;
     }

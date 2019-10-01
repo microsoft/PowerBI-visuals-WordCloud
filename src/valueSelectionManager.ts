@@ -25,7 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
+import * as lodash from "lodash";
 
 // powerbi.extensibility
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
@@ -65,8 +65,8 @@ export class ValueSelectionManager<T> {
             });
         });
 
-        this.getSelectionIds = (value: T | T[]) => _.isArray(value)
-            ? <ISelectionId[]>_.flatten((<T[]>value).map((valueElement: T) => {
+        this.getSelectionIds = (value: T | T[]) => lodash.isArray(value)
+            ? <ISelectionId[]>lodash.flatten((<T[]>value).map((valueElement: T) => {
                 return getSelectionIds(valueElement);
             }))
             : getSelectionIds(value);
@@ -94,7 +94,7 @@ export class ValueSelectionManager<T> {
     }
 
     public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): void {
-        const values: T[] = _.isArray(value)
+        const values: T[] = lodash.isArray(value)
             ? value
             : [value];
 
@@ -104,7 +104,7 @@ export class ValueSelectionManager<T> {
     }
 
     public isSelected(selectionId: T[] | T): boolean {
-        const values: T[] = _.isArray(selectionId)
+        const values: T[] = lodash.isArray(selectionId)
             ? selectionId
             : [selectionId];
 
