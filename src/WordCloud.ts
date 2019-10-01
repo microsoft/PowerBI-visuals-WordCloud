@@ -49,6 +49,7 @@ import CustomVisualOpaqueIdentity = powerbi.visuals.CustomVisualOpaqueIdentity;
 
 import IColorPalette = powerbi.extensibility.IColorPalette;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
 
 // powerbi.visuals
 import ISelectionId = powerbi.visuals.ISelectionId;
@@ -90,6 +91,8 @@ import { WordCloudSettings, GeneralSettings, RotateTextSettings } from "./settin
 import { VisualLayout } from "./VisualLayout";
 import { WordCloudColumns } from "./WordCloudColumns";
 
+const getEvent = () => require("d3-selection").event;
+
 type WordMap = { [word: string]: boolean };
 
 enum WordCloudScaleType {
@@ -102,6 +105,7 @@ export class WordCloud implements IVisual {
     private static ClassName: string = "wordCloud";
     private tooltipService: ITooltipServiceWrapper;
     private eventService: IVisualEventService;
+    private selectionManager: ISelectionManager;
     private static Words: ClassAndSelector = createClassAndSelector("words");
     private static WordGroup: ClassAndSelector = createClassAndSelector("word");
     private static StopWordsDelimiter: string = " ";
@@ -385,13 +389,13 @@ export class WordCloud implements IVisual {
     private root: Selection<any>;
     private main: Selection<any>;
     private wordsContainerSelection: Selection<any>;
-    private wordsGroupUpdateSelection: Selection<WordCloudDataPoint>;
+    private wordsGroupSelection: Selection<WordCloudDataPoint>;
     private wordsTextUpdateSelection: Selection<WordCloudDataPoint>;
     public canvasContext: CanvasRenderingContext2D;
     private fontFamily: string;
     private layout: VisualLayout;
     private visualHost: IVisualHost;
-    private selectionManager: ValueSelectionManager<string>;
+    private valueSelectionManager: ValueSelectionManager<string>;
     private visualUpdateOptions: VisualUpdateOptions;
     private isUpdating: boolean = false;
     private incomingUpdateOptions: VisualUpdateOptions;
@@ -556,7 +560,8 @@ export class WordCloud implements IVisual {
             }
         });
 
-        for (let key in combinedMap) {
+        const combinedMapKeys = Object.keys(combinedMap);
+        for (let key of combinedMapKeys) {
             if (settings.general.minRepetitionsToDisplay <= combinedMap[key].count) {
                 result.push(combinedMap[key]);
             }
@@ -790,12 +795,25 @@ export class WordCloud implements IVisual {
         return settings.rotateText.minAngle + angle;
     }
 
+    public handleContextMenu() {
+        this.root.on('contextmenu', () => {
+            const mouseEvent: MouseEvent = getEvent();
+            const eventTarget: EventTarget = mouseEvent.target;
+            let dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
+                x: mouseEvent.clientX,
+                y: mouseEvent.clientY
+            });
+            mouseEvent.preventDefault();
+        });
+    }
+
     constructor(options: VisualConstructorOptions) {
         this.init(options);
+        this.handleContextMenu();
     }
 
     public init(options: VisualConstructorOptions): void {
-        debugger;
         this.root = d3.select(options.element).append("svg");
         this.eventService = options.host.eventService;
         this.tooltipService = createTooltipServiceWrapper(
@@ -805,7 +823,7 @@ export class WordCloud implements IVisual {
         this.colorPalette = options.host.colorPalette;
         this.visualHost = options.host;
 
-        this.selectionManager = new ValueSelectionManager<string>(
+        this.valueSelectionManager = new ValueSelectionManager<string>(
             this.visualHost,
             (text: string): ISelectionId[] => {
                 const dataPoints: WordCloudDataPoint[] = this.data
@@ -857,6 +875,8 @@ export class WordCloud implements IVisual {
             return;
         }
 
+        this.eventService.renderingStarted(visualUpdateOptions);
+
         if (visualUpdateOptions !== this.visualUpdateOptions) {
             this.incomingUpdateOptions = visualUpdateOptions;
         }
@@ -890,6 +910,8 @@ export class WordCloud implements IVisual {
                 this.render(wordCloudDataView);
             });
         }
+
+        this.eventService.renderingFinished(visualUpdateOptions);
     }
 
     private clear(): void {
@@ -1220,21 +1242,27 @@ export class WordCloud implements IVisual {
         }
     }
 
+    private calculatePosition(shift: number, point: IPoint, dx: number, dy: number) {
+        point = this.archimedeanSpiral(shift);
+        dx = Math.floor(point.x);
+        dy = Math.floor(point.y);
+    }
+
     private findPosition(surface: number[], word: WordCloudDataPoint, borders: IPoint[], index: number): boolean {
         let startPoint: IPoint = { x: word.x, y: word.y },
             delta: number = Math.sqrt(this.specialViewport.width * this.specialViewport.width
                 + this.specialViewport.height * this.specialViewport.height),
-            point: IPoint,
             dt: number = WordCloud.GET_FROM_CYCLED_SEQUENCE(WordCloud.PreparedRandoms, index) < WordCloud.AdditionalRandomValue
                 ? WordCloud.DefaultDT
-                : -WordCloud.DefaultDT,
-            shift: number = -dt,
-            dx: number,
-            dy: number;
+                : -WordCloud.DefaultDT;
+
+        let shift: number = -dt, point: IPoint, dx: number, dy: number;
+
+        //this.calculatePosition(shift, point, dx, dy);
 
         while (true) {
             shift += dt;
-
+            //this.calculatePosition(shift, point, dx, dy);
             point = this.archimedeanSpiral(shift);
 
             dx = Math.floor(point.x);
@@ -1411,15 +1439,15 @@ export class WordCloud implements IVisual {
 
         this.scaleMainView(wordCloudDataView);
 
-        this.wordsGroupUpdateSelection = this.main
+        this.wordsGroupSelection = this.main
             .select(WordCloud.Words.selectorName)
             .selectAll("g")
             .data(wordCloudDataView.data);
 
-        let wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupUpdateSelection
+        let wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
             .enter()
             .append("svg:g")
-            .merge(this.wordsGroupUpdateSelection)
+            .merge(this.wordsGroupSelection)
             .classed(WordCloud.WordGroup.className, true);
 
         wordGroupSelectionMerged
@@ -1428,7 +1456,7 @@ export class WordCloud implements IVisual {
         wordGroupSelectionMerged
             .append("svg:rect");
 
-        this.wordsGroupUpdateSelection
+        this.wordsGroupSelection
             .exit()
             .remove();
 
@@ -1450,7 +1478,7 @@ export class WordCloud implements IVisual {
             .style("font-size", ((item: WordCloudDataPoint): string => PixelConverter.toString(item.size)))
             .style("fill", ((item: WordCloudDataPoint): string => item.color));
 
-        this.wordsGroupUpdateSelection
+        wordGroupSelectionMerged
             .selectAll("rect")
             .data((dataPoint: WordCloudDataPoint) => [dataPoint])
             .attr("x", (dataPoint: WordCloudDataPoint) => -dataPoint.getWidthOfWord() * WordCloud.XOffsetPosition)
@@ -1492,13 +1520,13 @@ export class WordCloud implements IVisual {
         this.oldIdentityKeys = identityKeys;
 
         if (oldIdentityKeys && oldIdentityKeys.length > identityKeys.length) {
-            this.selectionManager.clear(false);
+            this.valueSelectionManager.clear(false);
 
             return;
         }
 
         if (!_.isEmpty(identityKeys)) {
-            let incorrectValues: SelectionIdValues<string>[] = this.selectionManager
+            let incorrectValues: SelectionIdValues<string>[] = this.valueSelectionManager
                 .getSelectionIdValues
                 .filter((idValue: SelectionIdValues<string>) => {
                     return idValue.selectionId.some((selectionId: ISelectionId) => {
@@ -1507,9 +1535,9 @@ export class WordCloud implements IVisual {
                 });
 
             incorrectValues.forEach((value: SelectionIdValues<string>) => {
-                this.selectionManager
+                this.valueSelectionManager
                     .selectedValues
-                    .splice(this.selectionManager
+                    .splice(this.valueSelectionManager
                         .selectedValues
                         .indexOf(value.value), 1);
             });
@@ -1523,13 +1551,13 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        this.selectionManager
+        this.valueSelectionManager
             .selectAndSendSelection(dataPoint.text, (<MouseEvent>d3.event).ctrlKey);
         this.renderSelection();
     }
 
     private clearSelection(): void {
-        this.selectionManager
+        this.valueSelectionManager
             .clear(true);
         this.renderSelection();
     }
@@ -1586,7 +1614,7 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        if (!this.selectionManager.hasSelection) {
+        if (!this.valueSelectionManager.hasSelection) {
             this.setOpacity(this.wordsTextUpdateSelection, WordCloud.MaxOpacity);
 
             return;
@@ -1594,7 +1622,7 @@ export class WordCloud implements IVisual {
 
         const selectedColumns: Selection<WordCloudDataPoint> = this.wordsTextUpdateSelection
             .filter((dataPoint: WordCloudDataPoint) => {
-                return this.selectionManager.isSelected(dataPoint.text);
+                return this.valueSelectionManager.isSelected(dataPoint.text);
             });
 
         this.setOpacity(this.wordsTextUpdateSelection, WordCloud.MinOpacity);
