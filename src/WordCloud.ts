@@ -1242,12 +1242,6 @@ export class WordCloud implements IVisual {
         }
     }
 
-    private calculatePosition(shift: number, point: IPoint, dx: number, dy: number) {
-        point = this.archimedeanSpiral(shift);
-        dx = Math.floor(point.x);
-        dy = Math.floor(point.y);
-    }
-
     private findPosition(surface: number[], word: WordCloudDataPoint, borders: IPoint[], index: number): boolean {
         let startPoint: IPoint = { x: word.x, y: word.y },
             delta: number = Math.sqrt(this.specialViewport.width * this.specialViewport.width
@@ -1257,18 +1251,17 @@ export class WordCloud implements IVisual {
                 : -WordCloud.DefaultDT;
 
         let shift: number = -dt, point: IPoint, dx: number, dy: number;
+        let exitRequired = false;
 
-        //this.calculatePosition(shift, point, dx, dy);
-
-        while (true) {
+        while (!exitRequired) {
             shift += dt;
-            //this.calculatePosition(shift, point, dx, dy);
             point = this.archimedeanSpiral(shift);
 
             dx = Math.floor(point.x);
             dy = Math.floor(point.y);
 
-            if (Math.min(Math.abs(dx), Math.abs(dy)) >= delta) {
+            exitRequired = Math.min(Math.abs(dx), Math.abs(dy)) >= delta;
+            if (exitRequired) {
                 break;
             }
 
