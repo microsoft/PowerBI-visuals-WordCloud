@@ -24,26 +24,26 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
+import powerbiVisualsApi from "powerbi-visuals-api";
 import * as d3 from "d3";
-import * as _ from "lodash";
+import * as lodash from "lodash";
 import * as $ from "jquery";
 
 // d3
 type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 
 // powerbi
-import DataView = powerbi.DataView;
-import ISelectionId = powerbi.visuals.ISelectionId;
-import PrimitiveValue = powerbi.PrimitiveValue;
-import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import IColorInfo = powerbi.IColorInfo;
+import DataView = powerbiVisualsApi.DataView;
+import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
+import PrimitiveValue = powerbiVisualsApi.PrimitiveValue;
+import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
+import IColorInfo = powerbiVisualsApi.IColorInfo;
 
 // powerbi.extensibility.utils.test
 import { createColorPalette, renderTimeout, MockISelectionManager, d3Click } from "powerbi-visuals-utils-testutils";
 
-import { WordCloudData } from "./visualData";
-import { WordCloudBuilder } from "./visualBuilder";
+import { WordCloudData } from "./WordCloudData";
+import { WordCloudBuilder } from "./WordCloudBuilder";
 import { helpers } from "./helpers/helpers";
 import areColorsEqual = helpers.areColorsEqual;
 
@@ -163,7 +163,7 @@ describe("WordCloud", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let boundedElements: any[] = [];
 
-                const isIntersected = function (firstBounded: ClientRect, secondBounded: ClientRect): boolean {
+                const isIntersected = (firstBounded: ClientRect, secondBounded: ClientRect) => {
                     const leftBorder: number = Math.max(firstBounded.left, secondBounded.left);
                     const rightBorder: number = Math.min(firstBounded.right, secondBounded.right);
                     const topBorder: number = Math.max(firstBounded.top, secondBounded.top);
@@ -319,7 +319,7 @@ describe("WordCloud", () => {
                     expect(withStopWord.length).toBe(0);
                     expect(texts.length).toBeGreaterThan(0);
 
-                    (dataView.metadata.objects as any).stopWords.show = false;
+                    (<any>dataView.metadata.objects).stopWords.show = false;
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         texts = visualBuilder.wordText.toArray();
@@ -379,7 +379,7 @@ describe("WordCloud", () => {
                     .toArray()
                     .map((element: Element) => $(element).text());
 
-                expect(texts.length).toEqual(_.difference(texts).length);
+                expect(texts.length).toEqual(lodash.difference(texts).length);
 
                 done();
             }, 100);
@@ -506,7 +506,7 @@ describe("WordCloud", () => {
     describe("Format settings test", () => {
         describe("Data color", () => {
             it("colors", (done) => {
-                const mockColorPallete: powerbi.extensibility.IColorPalette = createColorPalette();
+                const mockColorPallete: powerbiVisualsApi.extensibility.IColorPalette = createColorPalette();
                 let category: DataViewCategoryColumn;
                 let colors: string[] = [];
 
@@ -555,12 +555,12 @@ describe("WordCloud", () => {
             });
 
             it("show", done => {
-                (dataView.metadata.objects as any).stopWords.words = "Afghanistan";
+                (<any>dataView.metadata.objects).stopWords.words = "Afghanistan";
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(grep(visualBuilder.wordText.toArray()).length).toBe(0);
 
-                    (dataView.metadata.objects as any).stopWords.show = false;
+                    (<any>dataView.metadata.objects).stopWords.show = false;
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         expect(grep(visualBuilder.wordText.toArray()).length).toBeGreaterThan(0);
@@ -575,7 +575,7 @@ describe("WordCloud", () => {
             });
 
             it("words when word-breaking option is disabled", done => {
-                (dataView.metadata.objects as any).general = {
+                (<any>dataView.metadata.objects).general = {
                     isBrokenText: false
                 };
 
@@ -584,13 +584,13 @@ describe("WordCloud", () => {
 
             function checkStopWords(done) {
                 const stopWord = "Afghanistan";
-                (dataView.metadata.objects as any).stopWords.words = "";
+                (<any>dataView.metadata.objects).stopWords.words = "";
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(visualBuilder.wordText.toArray().length)
                         .toBeGreaterThan(0);
 
-                    (dataView.metadata.objects as any).stopWords.words = stopWord;
+                    (<any>dataView.metadata.objects).stopWords.words = stopWord;
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         const texts = visualBuilder.wordText.toArray();
@@ -664,7 +664,8 @@ describe("WordCloud", () => {
             let jsonData = getJSONFixture("capabilities.json");
 
             let objectsChecker: Function = (obj) => {
-                for (let property in obj) {
+                const objKeys = Object.keys(obj);
+                for (let property of objKeys) {
                     let value: any = obj[property];
 
                     if (value.displayName) {

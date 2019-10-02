@@ -24,8 +24,8 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
-import DataView = powerbi.DataView;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import DataView = powerbiVisualsApi.DataView;
 
 // powerbi.extensibility.utils.type
 import { valueType } from "powerbi-visuals-utils-typeutils";

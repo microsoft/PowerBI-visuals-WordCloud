@@ -29,36 +29,36 @@ import "./../style/visual.less";
 import * as d3 from "d3";
 import * as lodash from "lodash";
 
-import powerbi from "powerbi-visuals-api";
+import powerbiVisualsApi from "powerbi-visuals-api";
 
 // d3
 type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 type Transition<T1, T2 = T1> = d3.Transition<any, T1, any, T2>;
 
 // powerbi
-import DataView = powerbi.DataView;
-import IViewport = powerbi.IViewport;
-import PrimitiveValue = powerbi.PrimitiveValue;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
-import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
-import CustomVisualOpaqueIdentity = powerbi.visuals.CustomVisualOpaqueIdentity;
+import DataView = powerbiVisualsApi.DataView;
+import IViewport = powerbiVisualsApi.IViewport;
+import PrimitiveValue = powerbiVisualsApi.PrimitiveValue;
+import VisualObjectInstance = powerbiVisualsApi.VisualObjectInstance;
+import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
+import VisualObjectInstanceEnumeration = powerbiVisualsApi.VisualObjectInstanceEnumeration;
+import EnumerateVisualObjectInstancesOptions = powerbiVisualsApi.EnumerateVisualObjectInstancesOptions;
+import VisualObjectInstanceEnumerationObject = powerbiVisualsApi.VisualObjectInstanceEnumerationObject;
+import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier;
+import CustomVisualOpaqueIdentity = powerbiVisualsApi.visuals.CustomVisualOpaqueIdentity;
 
-import IColorPalette = powerbi.extensibility.IColorPalette;
-import IVisualEventService = powerbi.extensibility.IVisualEventService;
-import ISelectionManager = powerbi.extensibility.ISelectionManager;
+import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
+import IVisualEventService = powerbiVisualsApi.extensibility.IVisualEventService;
+import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
 // powerbi.visuals
-import ISelectionId = powerbi.visuals.ISelectionId;
-import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
+import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
+import ISelectionIdBuilder = powerbiVisualsApi.visuals.ISelectionIdBuilder;
 
-import IVisual = powerbi.extensibility.IVisual;
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import IVisual = powerbiVisualsApi.extensibility.IVisual;
+import IVisualHost = powerbiVisualsApi.extensibility.visual.IVisualHost;
+import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
+import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";

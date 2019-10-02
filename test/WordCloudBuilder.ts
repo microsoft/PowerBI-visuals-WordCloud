@@ -24,9 +24,9 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import * as lodash from "lodash";
+import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.test
 import { VisualBuilderBase, ClickEventType, d3Click } from "powerbi-visuals-utils-testutils";
@@ -73,7 +73,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
                 return $(element).children("text").text() === text;
             });
 
-        if (_.isEmpty(elements)) {
+        if (lodash.isEmpty(elements)) {
             return;
         }
 

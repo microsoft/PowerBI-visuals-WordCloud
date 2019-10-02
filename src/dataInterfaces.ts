@@ -24,9 +24,9 @@
  *  THE SOFTWARE.
  */
 // powerbi.visuals
-import powerbi from "powerbi-visuals-api";
-import DataView = powerbi.DataView;
-import ISelectionId = powerbi.visuals.ISelectionId;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import DataView = powerbiVisualsApi.DataView;
+import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 
 // powerbi.extensibility.utils.svg
 import { shapesInterfaces } from "powerbi-visuals-utils-svgutils";

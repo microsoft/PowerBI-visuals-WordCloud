@@ -25,16 +25,16 @@
  */
 
 // powerbi
-import powerbi from "powerbi-visuals-api";
+import powerbiVisualsApi from "powerbi-visuals-api";
 import * as lodash from "lodash";
 
-import DataView = powerbi.DataView;
-import DataViewValueColumns = powerbi.DataViewValueColumns;
-import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import DataViewCategorical = powerbi.DataViewCategorical;
-import PrimitiveValue = powerbi.PrimitiveValue;
-import DataViewValueColumn = powerbi.DataViewValueColumn;
-import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
+import DataView = powerbiVisualsApi.DataView;
+import DataViewValueColumns = powerbiVisualsApi.DataViewValueColumns;
+import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
+import DataViewCategorical = powerbiVisualsApi.DataViewCategorical;
+import PrimitiveValue = powerbiVisualsApi.PrimitiveValue;
+import DataViewValueColumn = powerbiVisualsApi.DataViewValueColumn;
+import DataViewCategoricalColumn = powerbiVisualsApi.DataViewCategoricalColumn;
 
 export class WordCloudColumns<T> {
     public static GET_CATEGORICAL_VALUES(dataView: DataView): WordCloudColumns<DataViewCategoryColumn[]> {

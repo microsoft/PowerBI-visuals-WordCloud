@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import * as _ from "lodash";
+import * as lodash from "lodash";
 
 // powerbi.extensibility.utils.test
 import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
@@ -59,7 +59,7 @@ export module helpers {
         const hexColor: string = value.toString(16).toUpperCase(),
             color: string = hexColor.length === 6
                 ? hexColor
-                : `${_.range(0, 6 - hexColor.length, 0).join("")}${hexColor}`;
+                : `${lodash.range(0, 6 - hexColor.length, 0).join("")}${hexColor}`;
 
         return `#${color}`;
     }

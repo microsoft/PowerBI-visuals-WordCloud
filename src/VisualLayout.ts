@@ -24,10 +24,10 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
+import powerbiVisualsApi from "powerbi-visuals-api";
 import * as _ from "lodash";
 
-import IViewport = powerbi.IViewport;
+import IViewport = powerbiVisualsApi.IViewport;
 
 // powerbi.extensibility.utils.svg
 import { IMargin } from "powerbi-visuals-utils-svgutils";

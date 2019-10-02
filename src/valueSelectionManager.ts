@@ -24,17 +24,17 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
+import powerbiVisualsApi from "powerbi-visuals-api";
 import * as lodash from "lodash";
 
 // powerbi.extensibility
-import ISelectionManager = powerbi.extensibility.ISelectionManager;
+import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
 // powerbi.extensibility.visual
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import IVisualHost = powerbiVisualsApi.extensibility.visual.IVisualHost;
 
 // powerbi.visuals
-import ISelectionId = powerbi.visuals.ISelectionId;
+import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 
 import { WordCloudDataPoint } from "./dataInterfaces";
 
