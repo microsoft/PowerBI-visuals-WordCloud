@@ -64,7 +64,7 @@
     "karma-typescript-preprocessor": "0.4.0",
     "karma-webpack": "4.0.2",
     "less": "3.10.2",
-    "powerbi-visuals-api": "^2.6.1",
+    "powerbi-visuals-api": "~2.6.1",
     "powerbi-visuals-tools": "3.1.5",
     "powerbi-visuals-utils-testutils": "2.2.1",
     "puppeteer": "^1.5.0",
