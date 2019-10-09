@@ -24,133 +24,133 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    // powerbi.data
-    import Selector = powerbi.data.Selector;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import * as lodash from "lodash";
 
-    // powerbi.extensibility
-    import ISelectionManager = powerbi.extensibility.ISelectionManager;
+// powerbi.extensibility
+import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
-    // powerbi.extensibility.visual
-    import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+// powerbi.extensibility.visual
+import IVisualHost = powerbiVisualsApi.extensibility.visual.IVisualHost;
 
-    // powerbi.visuals
-    import ISelectionId = powerbi.visuals.ISelectionId;
+// powerbi.visuals
+import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 
-    export interface SelectionIdValues<T> {
-        value: T;
-        selectionId: ISelectionId[];
-    }
+import { WordCloudDataPoint } from "./dataInterfaces";
 
-    export class ValueSelectionManager<T> {
-        private selectedValuesValue: T[] = [];
-        private visualHost: IVisualHost;
-        private getSelectionIds: (value: T | T[]) => ISelectionId[];
-        private selectionManager: ISelectionManager;
+export interface SelectionIdValues<T> {
+    value: T;
+    selectionId: ISelectionId[];
+}
 
-        public constructor(visualHost: IVisualHost, getSelectionIds: (value: T) => ISelectionId[], getDataPoints: () => WordCloudDataPoint[], renderSelection: () => void) {
-            this.visualHost = visualHost;
-            this.selectionManager = visualHost.createSelectionManager();
+export class ValueSelectionManager<T> {
+    private selectedValuesValue: T[] = [];
+    private visualHost: IVisualHost;
+    private getSelectionIds: (value: T | T[]) => ISelectionId[];
+    private selectionManager: ISelectionManager;
 
-            this.selectionManager.registerOnSelectCallback((ids: ISelectionId[]) => {
-                this.clear(false);
-                ids.forEach( (selection: ISelectionId ) => {
-                    getDataPoints().forEach( (dataPoint: WordCloudDataPoint) => {
-                        if (selection.includes(dataPoint.selectionIds[0])) {
-                            this.selectedValues.push(dataPoint.text as any);
-                            renderSelection();
-                        }
-                    });
+    public constructor(visualHost: IVisualHost, getSelectionIds: (value: T) => ISelectionId[], getDataPoints: () => WordCloudDataPoint[], renderSelection: () => void) {
+        this.visualHost = visualHost;
+        this.selectionManager = visualHost.createSelectionManager();
+
+        this.selectionManager.registerOnSelectCallback((ids: ISelectionId[]) => {
+            this.clear(false);
+            ids.forEach((selection: ISelectionId) => {
+                getDataPoints().forEach((dataPoint: WordCloudDataPoint) => {
+                    if (selection.includes(dataPoint.selectionIds[0])) {
+                        this.selectedValues.push(<any>dataPoint.text);
+                        renderSelection();
+                    }
                 });
             });
+        });
 
-            this.getSelectionIds = (value: T | T[]) => _.isArray(value)
-                ? <ISelectionId[]>_.flatten((value as T[]).map((valueElement: T) => {
-                    return getSelectionIds(valueElement);
-                }))
-                : getSelectionIds(value);
-        }
+        this.getSelectionIds = (value: T | T[]) => lodash.isArray(value)
+            ? <ISelectionId[]>lodash.flatten((<T[]>value).map((valueElement: T) => {
+                return getSelectionIds(valueElement);
+            }))
+            : getSelectionIds(value);
+    }
 
-        public get selectedValues(): T[] {
-            return this.selectedValuesValue;
-        }
+    public get selectedValues(): T[] {
+        return this.selectedValuesValue;
+    }
 
-        public get selectionIds(): ISelectionId[] {
-            return this.getSelectionIds(this.selectedValues);
-        }
+    public get selectionIds(): ISelectionId[] {
+        return this.getSelectionIds(this.selectedValues);
+    }
 
-        public get hasSelection(): boolean {
-            return this.selectedValues.length > 0;
-        }
+    public get hasSelection(): boolean {
+        return this.selectedValues.length > 0;
+    }
 
-        public get getSelectionIdValues(): SelectionIdValues<T>[] {
-            return this.selectedValues.map((value: T) => {
-                return {
-                    value,
-                    selectionId: this.getSelectionIds(value)
-                };
-            });
-        }
+    public get getSelectionIdValues(): SelectionIdValues<T>[] {
+        return this.selectedValues.map((value: T) => {
+            return {
+                value,
+                selectionId: this.getSelectionIds(value)
+            };
+        });
+    }
 
-        public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): void {
-            const values: T[] = _.isArray(value)
-                ? value
-                : [value];
+    public selectAndSendSelection(value: T[] | T, multiSelect: boolean = false): void {
+        const values: T[] = lodash.isArray(value)
+            ? value
+            : [value];
 
-            this.selectInternal(values, multiSelect);
+        this.selectInternal(values, multiSelect);
 
+        this.sendSelection();
+    }
+
+    public isSelected(selectionId: T[] | T): boolean {
+        const values: T[] = lodash.isArray(selectionId)
+            ? selectionId
+            : [selectionId];
+
+        return values.every((value: T) => this.selectedValues.some((selectedValue: T) => {
+            return selectedValue === value;
+        }));
+    }
+
+    public sendSelection(): void {
+        this.sendSelectionToHost(this.selectionIds);
+    }
+
+    public clear(sendToHost: boolean): void {
+        this.selectedValues.length = 0;
+
+        if (sendToHost) {
             this.sendSelection();
         }
+    }
 
-        public isSelected(selectionId: T[] | T): boolean {
-            const values: T[] = _.isArray(selectionId)
-                ? selectionId
-                : [selectionId];
+    private selectInternal(values: T[], multiSelect: boolean): void {
+        let resultValues: T[];
 
-            return values.every((value: T) => this.selectedValues.some((selectedValue: T) => {
-                return selectedValue === value;
-            }));
+        if (this.isSelected(values)) {
+            resultValues = multiSelect
+                ? this.selectedValues.filter((selectedValue: T) => {
+                    return !values.some((value: T) => value === selectedValue);
+                })
+                : this.selectedValues.length === values.length ? [] : values;
+        } else {
+            resultValues = multiSelect
+                ? values.filter((value: T) => {
+                    return !this.isSelected(value);
+                }).concat(this.selectedValues)
+                : values;
         }
 
-        public sendSelection(): void {
-            this.sendSelectionToHost(this.selectionIds);
-        }
+        this.selectedValues.length = 0;
 
-        public clear(sendToHost: boolean): void {
-            this.selectedValues.length = 0;
+        resultValues.forEach((value: T) => {
+            this.selectedValues.push(value);
+        });
+    }
 
-            if (sendToHost) {
-                this.sendSelection();
-            }
-        }
+    private sendSelectionToHost(ids: ISelectionId[]): void {
+        (<any>this.selectionManager).sendSelectionToHost(ids);
 
-        private selectInternal(values: T[], multiSelect: boolean): void {
-            let resultValues: T[];
-
-            if (this.isSelected(values)) {
-                resultValues = multiSelect
-                    ? this.selectedValues.filter((selectedValue: T) => {
-                        return !values.some((value: T) => value === selectedValue);
-                    })
-                    : this.selectedValues.length === values.length ? [] : values;
-            } else {
-                resultValues = multiSelect
-                    ? values.filter((value: T) => {
-                        return !this.isSelected(value);
-                    }).concat(this.selectedValues)
-                    : values;
-            }
-
-            this.selectedValues.length = 0;
-
-            resultValues.forEach((value: T) => {
-                this.selectedValues.push(value);
-            });
-        }
-
-        private sendSelectionToHost(ids: ISelectionId[]): void {
-            (<any>this.selectionManager).sendSelectionToHost(ids);
-
-        }
     }
 }
