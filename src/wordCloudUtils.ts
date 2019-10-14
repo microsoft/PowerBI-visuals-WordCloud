@@ -26,6 +26,7 @@
 
 export module wordCloudUtils {
     export function getRandomColor(): string {
+        const crypto = window.crypto || (<any>window).msCrypto;
         const randomColorsArray = crypto.getRandomValues(new Uint8Array(3))
         const red: number = randomColorsArray[0],
             green: number = randomColorsArray[1],
