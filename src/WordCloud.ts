@@ -809,6 +809,10 @@ export class WordCloud implements IVisual {
     }
 
     constructor(options: VisualConstructorOptions) {
+        if (window.location !== window.parent.location) {
+            require("core-js/stable");
+        }
+
         this.init(options);
         this.handleContextMenu();
     }
@@ -844,11 +848,11 @@ export class WordCloud implements IVisual {
 
         this.layout = new VisualLayout(null, WordCloud.DefaultMargin);
 
-        this.root.classed(WordCloud.ClassName, true);
-
-        this.root.on("click", () => {
-            this.clearSelection();
-        });
+        this.root
+            .classed(WordCloud.ClassName, true)
+            .on("click", () => {
+                this.clearSelection();
+            });
 
         this.fontFamily = this.root.style("font-family");
 
