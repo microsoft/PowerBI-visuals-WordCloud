@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import "regenerator-runtime/runtime.js";
 import "./../style/visual.less";
 
 import * as d3 from "d3";
@@ -59,6 +60,7 @@ import IVisual = powerbiVisualsApi.extensibility.IVisual;
 import IVisualHost = powerbiVisualsApi.extensibility.visual.IVisualHost;
 import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
+import VisualEnumerationInstanceKinds = powerbiVisualsApi.VisualEnumerationInstanceKinds;
 
 // powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
@@ -74,9 +76,8 @@ import translateAndScale = manipulation.translateAndScale;
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 
 // powerbi.extensibility.utils.formatting
-import { textMeasurementService as tms, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
+import { textMeasurementService, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = ValueFormatter.IValueFormatter;
-import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.color
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
@@ -90,6 +91,7 @@ import { wordCloudUtils } from "./wordCloudUtils";
 import { WordCloudSettings, GeneralSettings, RotateTextSettings } from "./settings";
 import { VisualLayout } from "./VisualLayout";
 import { WordCloudColumns } from "./WordCloudColumns";
+import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 
 const getEvent = () => require("d3-selection").event;
 
@@ -100,7 +102,6 @@ enum WordCloudScaleType {
     sqrt,
     value
 }
-
 export class WordCloud implements IVisual {
     private static ClassName: string = "wordCloud";
     private tooltipService: ITooltipServiceWrapper;
@@ -402,7 +403,6 @@ export class WordCloud implements IVisual {
     private oldIdentityKeys: string[];
     private static punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
     private static whiteSpaceRegExp: RegExp = /\s/;
-
 
     public static CONVERTER(
         dataView: DataView,
@@ -1483,10 +1483,11 @@ export class WordCloud implements IVisual {
             .attr("y", (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition)
             .attr("height", (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition)
             .attr("fill", () => WordCloud.TextFillColor)
-            .on("click", (dataPoint: WordCloudDataPoint) => {
-                (<MouseEvent>d3.event).stopPropagation();
+            .on("click", (event: MouseEvent, dataPoint: WordCloudDataPoint) => {
+                debugger;
+                event.stopPropagation();
 
-                this.setSelection(dataPoint);
+                this.setSelection(dataPoint, event.ctrlKey);
             });
 
         this.clearIncorrectSelection(this.data.dataView);
@@ -1541,7 +1542,7 @@ export class WordCloud implements IVisual {
         }
     }
 
-    private setSelection(dataPoint: WordCloudDataPoint): void {
+    private setSelection(dataPoint: WordCloudDataPoint, ctrlKey: boolean): void {
         if (!dataPoint) {
             this.clearSelection();
 
@@ -1549,7 +1550,7 @@ export class WordCloud implements IVisual {
         }
 
         this.valueSelectionManager
-            .selectAndSendSelection(dataPoint.text, (<MouseEvent>d3.event).ctrlKey);
+            .selectAndSendSelection(dataPoint.text, ctrlKey);
         this.renderSelection();
     }
 
@@ -1644,14 +1645,42 @@ export class WordCloud implements IVisual {
 
         let instanceEnumeration: VisualObjectInstanceEnumeration =
             WordCloudSettings.enumerateObjectInstances(settings, options);
-        switch (options.objectName) {
+        let objectName = options.objectName;
+        let objectEnumeration: VisualObjectInstance[] = [];
+console.log('111', this.data.dataPoints, objectName);
+        switch (objectName) {
             case "dataPoint": {
                 if (this.data && this.data.dataPoints) {
                     this.enumerateDataPoint(options, instanceEnumeration);
                 }
-
                 break;
             }
+            case 'defaultColor':
+                for (let wordCloudDataPoint of this.data.dataPoints) {
+                    console.log('222', this.data.dataPoints, wordCloudDataPoint);
+                    objectEnumeration.push({
+                        objectName: objectName,
+                        displayName: wordCloudDataPoint.text,
+                        properties: {
+                            fill: {
+                                solid: {
+                                    color: wordCloudDataPoint.color
+                                }
+                            }
+                        },
+        
+                        // Define whether the conditional formatting will apply to instances, totals, or both
+                        selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals),
+        
+                        // Add this property with the value previously defined for the selector property
+                        altConstantValueSelector: wordCloudDataPoint.selectionIds[0].getSelector(),
+        
+                        propertyInstanceKind: { 
+                            fill: VisualEnumerationInstanceKinds.ConstantOrRule
+                        }
+                    });
+                }
+                break;
         }
 
         return instanceEnumeration || [];
