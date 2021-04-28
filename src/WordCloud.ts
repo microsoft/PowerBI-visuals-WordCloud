@@ -1645,42 +1645,14 @@ export class WordCloud implements IVisual {
 
         let instanceEnumeration: VisualObjectInstanceEnumeration =
             WordCloudSettings.enumerateObjectInstances(settings, options);
-        let objectName = options.objectName;
-        let objectEnumeration: VisualObjectInstance[] = [];
-console.log('111', this.data.dataPoints, objectName);
-        switch (objectName) {
+        switch (options.objectName) {
             case "dataPoint": {
                 if (this.data && this.data.dataPoints) {
                     this.enumerateDataPoint(options, instanceEnumeration);
                 }
+
                 break;
             }
-            case 'defaultColor':
-                for (let wordCloudDataPoint of this.data.dataPoints) {
-                    console.log('222', this.data.dataPoints, wordCloudDataPoint);
-                    objectEnumeration.push({
-                        objectName: objectName,
-                        displayName: wordCloudDataPoint.text,
-                        properties: {
-                            fill: {
-                                solid: {
-                                    color: wordCloudDataPoint.color
-                                }
-                            }
-                        },
-        
-                        // Define whether the conditional formatting will apply to instances, totals, or both
-                        selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals),
-        
-                        // Add this property with the value previously defined for the selector property
-                        altConstantValueSelector: wordCloudDataPoint.selectionIds[0].getSelector(),
-        
-                        propertyInstanceKind: { 
-                            fill: VisualEnumerationInstanceKinds.ConstantOrRule
-                        }
-                    });
-                }
-                break;
         }
 
         return instanceEnumeration || [];
