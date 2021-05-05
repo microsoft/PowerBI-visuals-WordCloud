@@ -1484,7 +1484,6 @@ export class WordCloud implements IVisual {
             .attr("height", (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition)
             .attr("fill", () => WordCloud.TextFillColor)
             .on("click", (event: MouseEvent, dataPoint: WordCloudDataPoint) => {
-                debugger;
                 event.stopPropagation();
 
                 this.setSelection(dataPoint, event.ctrlKey);
