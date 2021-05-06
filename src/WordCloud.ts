@@ -796,8 +796,7 @@ export class WordCloud implements IVisual {
     }
 
     public handleContextMenu() {
-        this.root.on('contextmenu', () => {
-            const mouseEvent: MouseEvent = getEvent();
+        this.root.on('contextmenu', (mouseEvent: MouseEvent) => {
             const eventTarget: EventTarget = mouseEvent.target;
             let dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
             this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
@@ -820,6 +819,7 @@ export class WordCloud implements IVisual {
     public init(options: VisualConstructorOptions): void {
         this.root = d3.select(options.element).append("svg");
         this.eventService = options.host.eventService;
+        this.selectionManager = options.host.createSelectionManager();
         this.tooltipService = createTooltipServiceWrapper(
             options.host.tooltipService,
             options.element);
@@ -1728,10 +1728,10 @@ export class WordCloud implements IVisual {
             });
         }
 
-        this.tooltipService.addTooltip(selection, (tooltipEvent: TooltipEventArgs<WordCloudDataPoint>) => {
-            let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.data.count) : tooltipEvent.data.count;
+        this.tooltipService.addTooltip(selection, (tooltipEvent: any) => {
+            let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.count) : tooltipEvent?.count;
             return [{
-                displayName: tooltipEvent.data.text,
+                displayName: tooltipEvent.text,
                 value: item.toString()
             }];
         });
