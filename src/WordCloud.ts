@@ -28,14 +28,14 @@ import "regenerator-runtime/runtime.js";
 import "./../style/visual.less";
 
 import * as d3 from "d3";
-import isEmpty from 'lodash-es/isEmpty';
-import isString from 'lodash-es/isString';
-import sortBy from 'lodash/sortBy';
-import uniqBy from 'lodash/uniqBy';
-import maxBy from 'lodash/maxBy';
-import minBy from 'lodash/minBy';
-import includes from 'lodash/includes';
-import range from 'lodash/range';
+import isEmpty from 'lodash.isEmpty';
+import isString from 'lodash.isString';
+import sortBy from 'lodash.sortBy';
+import uniqBy from 'lodash.uniqBy';
+import maxBy from 'lodash.maxBy';
+import minBy from 'lodash.minBy';
+import includes from 'lodash.includes';
+import range from 'lodash.range';
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 
