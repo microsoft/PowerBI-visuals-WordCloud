@@ -27,7 +27,8 @@
 import "regenerator-runtime/runtime.js";
 import "./../style/visual.less";
 
-import * as d3 from "d3";
+import { select, Selection, BaseType, TransitionLike } from 'd3-selection';
+import { Transition } from 'd3-transition';
 import isEmpty from 'lodash.isEmpty';
 import isString from 'lodash.isString';
 import sortBy from 'lodash.sortBy';
@@ -40,8 +41,9 @@ import range from 'lodash.range';
 import powerbiVisualsApi from "powerbi-visuals-api";
 
 // d3
-type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
-type Transition<T1, T2 = T1> = d3.Transition<any, T1, any, T2>;
+type WordCloudTransition = Transition<any, any, any, any>;
+type WordCloudSelection = Selection<any, any, any, any>;
+type WordCloudTransitionLike = TransitionLike<any, any>;
 
 // powerbi
 import DataView = powerbiVisualsApi.DataView;
@@ -391,11 +393,11 @@ export class WordCloud implements IVisual {
         height: 2048
     };
 
-    private root: Selection<any>;
-    private main: Selection<any>;
-    private wordsContainerSelection: Selection<any>;
-    private wordsGroupSelection: Selection<WordCloudDataPoint>;
-    private wordsTextUpdateSelection: Selection<WordCloudDataPoint>;
+    private root: WordCloudSelection;
+    private main: WordCloudSelection;
+    private wordsContainerSelection: WordCloudSelection;
+    private wordsGroupSelection: WordCloudSelection;
+    private wordsTextUpdateSelection: WordCloudSelection;
     public canvasContext: CanvasRenderingContext2D;
     private fontFamily: string;
     private layout: VisualLayout;
@@ -802,7 +804,7 @@ export class WordCloud implements IVisual {
     public handleContextMenu() {
         this.root.on('contextmenu', (mouseEvent: MouseEvent) => {
             const eventTarget: EventTarget = mouseEvent.target;
-            let dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
+            let dataPoint: any = select(<BaseType>eventTarget);
             this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
                 x: mouseEvent.clientX,
                 y: mouseEvent.clientY
@@ -821,7 +823,7 @@ export class WordCloud implements IVisual {
     }
 
     public init(options: VisualConstructorOptions): void {
-        this.root = d3.select(options.element).append("svg");
+        this.root = select(options.element).append("svg");
         this.eventService = options.host.eventService;
         this.selectionManager = options.host.createSelectionManager();
         this.tooltipService = createTooltipServiceWrapper(
@@ -1445,7 +1447,7 @@ export class WordCloud implements IVisual {
             .selectAll("g")
             .data(wordCloudDataView.data);
 
-        let wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
+        let wordGroupSelectionMerged: Selection<any, WordCloudDataPoint, any, any> = this.wordsGroupSelection
             .enter()
             .append("svg:g")
             .merge(this.wordsGroupSelection)
@@ -1621,7 +1623,7 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        const selectedColumns: Selection<WordCloudDataPoint> = this.wordsTextUpdateSelection
+        const selectedColumns: WordCloudSelection = this.wordsTextUpdateSelection
             .filter((dataPoint: WordCloudDataPoint) => {
                 return this.valueSelectionManager.isSelected(dataPoint.text);
             });
@@ -1630,7 +1632,7 @@ export class WordCloud implements IVisual {
         this.setOpacity(selectedColumns, WordCloud.MaxOpacity);
     }
 
-    private setOpacity(element: Selection<any>, opacityValue: number): void {
+    private setOpacity(element: WordCloudSelection, opacityValue: number): void {
         element.style("fill-opacity", opacityValue);
 
         if (this.main) { // Note: This construction fixes bug #6343.
@@ -1710,11 +1712,11 @@ export class WordCloud implements IVisual {
         }
     }
 
-    private animateSelection<T extends Selection<any>>(
+    private animateSelection<T extends WordCloudSelection>(
         element: T,
         duration: number = 0,
         delay: number = 0,
-        callback?: (data: any, index: number) => void): Transition<any> {
+        callback?: (data: any, index: number) => void): WordCloudTransition {
 
         return element
             .transition()
@@ -1722,7 +1724,7 @@ export class WordCloud implements IVisual {
             .duration(duration)
             .on("end", callback);
     }
-    private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
+    private renderTooltip(selection: WordCloudSelection): void {
         let categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(this.incomingUpdateOptions.dataViews[0]),
             wordValueFormatter: IValueFormatter = null;
 
