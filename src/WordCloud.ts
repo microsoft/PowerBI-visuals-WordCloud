@@ -1717,7 +1717,7 @@ export class WordCloud implements IVisual {
         duration: number = 0,
         delay: number = 0,
         callback?: (data: any, index: number) => void): WordCloudTransition {
-
+debugger;
         return element
             .transition()
             .delay(delay)

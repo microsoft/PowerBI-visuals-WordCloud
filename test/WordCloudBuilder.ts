@@ -48,28 +48,35 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get mainElement() {
-        return this.element.children("svg.wordCloud");
+        return this.element.querySelector("svg.wordCloud");
     }
 
     public get words() {
         return this.mainElement
-            .children("g")
-            .children("g.words")
-            .children("g.word");
+            .querySelector("g")
+            .querySelector("g.words")
+            .querySelectorAll("g.word");
     }
 
     public get wordText() {
-        return this.words.children("text");
+        let wordTextArray = [];
+        for(let i = 0; i < Array.from(this.words).length; i++) {
+            wordTextArray.push(Array.from(this.words)[i].querySelector("text"));
+        }
+        return wordTextArray;
     }
 
     public get wordRects() {
-        return this.words.children("rect");
+        let wordRectsArray = [];
+        for(let i = 0; i < Array.from(this.words).length; i++) {
+            wordRectsArray.push(Array.from(this.words)[i].querySelector("rect"));
+        }
+        return wordRectsArray;
     }
 
     public wordClick(text: string, ctrl = false) {
-        const elements: Element[] = this.words
-            .toArray()
-            .filter((element: HTMLElement) => {
+        const elements: Element[] = Array.from(this.words)
+            .filter((element: Element, index: number, array: Element[]) => {
                 return $(element).children("text").text() === text;
             });
 
@@ -89,7 +96,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get selectedWords() {
-        return this.wordText.filter((i: number, element: Element) => {
+        return this.wordText.filter((element: Element) => {
             return parseFloat($(element).css("fill-opacity")) === WordCloudBuilder.MaxOpacity;
         });
     }
