@@ -56,94 +56,95 @@ MockISelectionManager.prototype["sendSelectionToHost"] = function (selectionIds:
     this.select(selectionIds);
 };
 
-// describe("WordCloud", () => {
-//     let visualBuilder: WordCloudBuilder,
-//         defaultDataViewBuilder: WordCloudData,
-//         dataView: DataView;
+describe("WordCloud", () => {
+    let visualBuilder: WordCloudBuilder,
+        defaultDataViewBuilder: WordCloudData,
+        dataView: DataView;
 
-//     beforeEach(() => {
-//         visualBuilder = new WordCloudBuilder(1000, 500);
-//         defaultDataViewBuilder = new WordCloudData();
+    beforeEach(() => {
+        visualBuilder = new WordCloudBuilder(1000, 500);
+        defaultDataViewBuilder = new WordCloudData();
 
-//         dataView = defaultDataViewBuilder.getDataView();
-//     });
+        dataView = defaultDataViewBuilder.getDataView();
+    });
 
-//     // function that uses grep to filter DOM elements
-//     function grep(elements: HTMLElement[], text: string = "Afghanistan"): Element[] {
-//         return elements.filter((element: Element) => {
-//             return element.innerHTML === "" || element.textContent === text;
-//         });
-//     }
+    // function that uses grep to filter DOM elements
+    function grep(elements: HTMLElement[], text: string = "Afghanistan"): Element[] {
+        return elements.filter((element: Element) => {
+            return element.innerHTML === "" || element.textContent === text;
+        });
+    }
 
-//     describe("Unit tests", () => {
-//         it("getFromCycledSequence returns array item by exact index", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 3);
-//             expect(receivedNum).toEqual(5);
-//         });
+    describe("Unit tests", () => {
+        it("getFromCycledSequence returns array item by exact index", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 3);
+            expect(receivedNum).toEqual(5);
+        });
 
-//         it("getFromCycledSequence returns array item by exact index with offset", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 1, 2);
-//             expect(receivedNum).toEqual(5);
-//         });
+        it("getFromCycledSequence returns array item by exact index with offset", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 1, 2);
+            expect(receivedNum).toEqual(5);
+        });
 
-//         it("getFromCycledSequence returns array item by exceeded index", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 9);
-//             expect(receivedNum).toEqual(5);
-//             receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 21);
-//             expect(receivedNum).toEqual(5);
-//         });
+        it("getFromCycledSequence returns array item by exceeded index", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 9);
+            expect(receivedNum).toEqual(5);
+            receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 21);
+            expect(receivedNum).toEqual(5);
+        });
 
-//         it("getFromCycledSequence returns array item by exceeded index with offset", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 4, 5);
-//             expect(receivedNum).toEqual(5);
-//             receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 14, 7);
-//             expect(receivedNum).toEqual(5);
-//             receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 7, 14);
-//             expect(receivedNum).toEqual(5);
-//         });
+        it("getFromCycledSequence returns array item by exceeded index with offset", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 4, 5);
+            expect(receivedNum).toEqual(5);
+            receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 14, 7);
+            expect(receivedNum).toEqual(5);
+            receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 7, 14);
+            expect(receivedNum).toEqual(5);
+        });
 
-//         it("getFromCycledSequence returns array item by negative index", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2);
-//             expect(receivedNum).toBeUndefined();
-//         });
+        it("getFromCycledSequence returns array item by negative index", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2);
+            expect(receivedNum).toBeUndefined();
+        });
 
-//         it("getFromCycledSequence returns array item by negative index and positive offset", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2, 5);
-//             expect(receivedNum).toEqual(5);
-//             receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2, 1);
-//             expect(receivedNum).toBeUndefined();
-//         });
+        it("getFromCycledSequence returns array item by negative index and positive offset", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2, 5);
+            expect(receivedNum).toEqual(5);
+            receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2, 1);
+            expect(receivedNum).toBeUndefined();
+        });
 
-//         it("getFromCycledSequence returns array item by positive index and negative offset", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 3, -4);
-//             expect(receivedNum).toBeUndefined();
-//             receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 5, -2);
-//             expect(receivedNum).toEqual(5);
-//         });
+        it("getFromCycledSequence returns array item by positive index and negative offset", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 3, -4);
+            expect(receivedNum).toBeUndefined();
+            receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 5, -2);
+            expect(receivedNum).toEqual(5);
+        });
 
-//         it("getFromCycledSequence returns array item by negative index and negative offset", () => {
-//             let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-//             let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -3, -3);
-//             expect(receivedNum).toBeUndefined();
-//         });
+        it("getFromCycledSequence returns array item by negative index and negative offset", () => {
+            let targetArr: number[] = [4, 4, 4, 5, 4, 4];
+            let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -3, -3);
+            expect(receivedNum).toBeUndefined();
+        });
 
-//         it("Filter by count of items", () => {
-//             dataView.metadata.objects = {
-//                 general: {
-//                     minRepetitionsToDisplay: 200
-//                 }
-//             };
-//             const data = VisualClass.CONVERTER(dataView, createColorPalette(), visualBuilder.visualHost);
-//             expect(data.dataPoints.length).toEqual(74);
-//         });
-//     });
+        it("Filter by count of items", () => {
+            dataView.metadata.objects = {
+                general: {
+                    minRepetitionsToDisplay: 200
+                }
+            };
+            const data = VisualClass.CONVERTER(dataView, createColorPalette(), visualBuilder.visualHost);
+            expect(data.dataPoints.length).toEqual(74);
+        });
+    });
+});
 
 //     describe("DOM tests", () => {
 //         it("svg element created", () => {
