@@ -27,8 +27,8 @@
 import "regenerator-runtime/runtime.js";
 import "./../style/visual.less";
 
-import { select, Selection, BaseType, TransitionLike } from 'd3-selection';
-import { Transition } from 'd3-transition';
+import { select, Selection } from 'd3-selection';
+import { transition, Transition } from 'd3-transition';
 import isEmpty from 'lodash.isEmpty';
 import isString from 'lodash.isString';
 import sortBy from 'lodash.sortBy';
@@ -43,7 +43,6 @@ import powerbiVisualsApi from "powerbi-visuals-api";
 // d3
 type WordCloudTransition = Transition<any, any, any, any>;
 type WordCloudSelection = Selection<any, any, any, any>;
-type WordCloudTransitionLike = TransitionLike<any, any>;
 
 // powerbi
 import DataView = powerbiVisualsApi.DataView;
@@ -54,7 +53,7 @@ import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import VisualObjectInstanceEnumeration = powerbiVisualsApi.VisualObjectInstanceEnumeration;
 import EnumerateVisualObjectInstancesOptions = powerbiVisualsApi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumerationObject = powerbiVisualsApi.VisualObjectInstanceEnumerationObject;
-import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier;
+import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier; 
 import CustomVisualOpaqueIdentity = powerbiVisualsApi.visuals.CustomVisualOpaqueIdentity;
 
 import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
@@ -802,14 +801,13 @@ export class WordCloud implements IVisual {
     }
 
     public handleContextMenu() {
-        this.root.on('contextmenu', (mouseEvent: MouseEvent) => {
-            const eventTarget: EventTarget = mouseEvent.target;
-            let dataPoint: any = select(<BaseType>eventTarget);
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
-                x: mouseEvent.clientX,
-                y: mouseEvent.clientY
+        this.root.on('contextmenu', (event) => {
+            let dataPoint: any = select(event.target).datum();
+            this.selectionManager.showContextMenu((dataPoint && dataPoint.selectionIds && dataPoint.selectionIds[0]) ? dataPoint.selectionIds[0] : {}, {​​
+                x: event.clientX,
+                y: event.clientY
             });
-            mouseEvent.preventDefault();
+            event.preventDefault();
         });
     }
 
@@ -1637,9 +1635,7 @@ export class WordCloud implements IVisual {
 
         if (this.main) { // Note: This construction fixes bug #6343.
             this.main.style("line-height", WordCloud.TheThirdLineHeight);
-
             this.animateSelection(this.main, 0, this.durationAnimations)
-                .style("line-height", WordCloud.TheFourthLineHeight);
         }
     }
 
@@ -1716,13 +1712,15 @@ export class WordCloud implements IVisual {
         element: T,
         duration: number = 0,
         delay: number = 0,
-        callback?: (data: any, index: number) => void): T {
+        callback?: (data: any, index: number) => void): WordCloudTransition {
 
-        return element;
-            // .transition()
-            // .delay(delay)
-            // .duration(duration)
-            // .on("end", callback);
+        let t = transition()
+        .duration(duration)
+        .delay(delay)
+
+        return element
+            .transition(t)
+            .on("end", callback);
     }
     private renderTooltip(selection: WordCloudSelection): void {
         let categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(this.incomingUpdateOptions.dataViews[0]),
