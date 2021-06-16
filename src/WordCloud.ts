@@ -29,7 +29,7 @@ import "./../style/visual.less";
 
 import { select, Selection } from 'd3-selection';
 import { transition, Transition } from 'd3-transition';
-import lodashIsEmpty from 'lodash.isEmpty';
+import lodashIsEmpty from 'lodash.isempty';
 import lodashIsString from 'lodash.isString';
 import lodashSortBy from 'lodash.sortBy';
 import lodashUniqBy from 'lodash.uniqBy';
