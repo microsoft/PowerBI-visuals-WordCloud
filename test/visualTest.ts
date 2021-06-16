@@ -26,7 +26,7 @@
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 import { select } from 'd3-selection';
-import difference from 'lodash.difference';
+import lodashDifference from 'lodash.difference';
 
 // powerbi
 import DataView = powerbiVisualsApi.DataView;
@@ -370,7 +370,7 @@ describe("WordCloud", () => {
                 const texts: string[] = Array.from(visualBuilder.wordText)
                     .map((element: Element) => element.textContent);
 
-                expect(texts.length).toEqual(difference(texts).length);
+                expect(texts.length).toEqual(lodashDifference(texts).length);
 
                 done();
             }, 100);
