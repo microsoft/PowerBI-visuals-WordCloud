@@ -29,7 +29,7 @@ import "./../style/visual.less";
 
 import { select, Selection } from 'd3-selection';
 import { transition, Transition } from 'd3-transition';
-import lodashIsEmpty from 'lodash.isempty';
+import lodashIsempty from 'lodash.isempty';
 import lodashIsString from 'lodash.isString';
 import lodashSortBy from 'lodash.sortBy';
 import lodashUniqBy from 'lodash.uniqBy';
@@ -416,7 +416,7 @@ export class WordCloud implements IVisual {
     ): WordCloudData {
         const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(dataView);
 
-        if (!categorical || !categorical.Category || lodashIsEmpty(categorical.Category.values)) {
+        if (!categorical || !categorical.Category || lodashIsempty(categorical.Category.values)) {
             return null;
         }
 
@@ -433,7 +433,7 @@ export class WordCloud implements IVisual {
             format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
         });
 
-        const excludedSet: PrimitiveValue[] = !categorical.Excludes || lodashIsEmpty(categorical.Excludes.values)
+        const excludedSet: PrimitiveValue[] = !categorical.Excludes || lodashIsempty(categorical.Excludes.values)
             ? []
             : categorical.Excludes.values;
 
@@ -683,7 +683,7 @@ export class WordCloud implements IVisual {
         textGroups: WordCloudGroup[],
         settings: WordCloudSettings): WordCloudDataPoint[] {
 
-        if (lodashIsEmpty(textGroups)) {
+        if (lodashIsempty(textGroups)) {
             return [];
         }
 
@@ -952,7 +952,7 @@ export class WordCloud implements IVisual {
     private computePositions(onPositionsComputed: (WordCloudDataView) => void): void {
         const words: WordCloudDataPoint[] = this.data.dataPoints;
 
-        if (lodashIsEmpty(words)) {
+        if (lodashIsempty(words)) {
             this.clear();
 
             return;
@@ -1526,7 +1526,7 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        if (!lodashIsEmpty(identityKeys)) {
+        if (!lodashIsempty(identityKeys)) {
             let incorrectValues: SelectionIdValues<string>[] = this.valueSelectionManager
                 .getSelectionIdValues
                 .filter((idValue: SelectionIdValues<string>) => {
@@ -1576,7 +1576,7 @@ export class WordCloud implements IVisual {
             };
         });
 
-        if (lodashIsEmpty(rectangles)) {
+        if (lodashIsempty(rectangles)) {
             return;
         }
 
