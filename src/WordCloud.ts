@@ -30,11 +30,11 @@ import "./../style/visual.less";
 import { select, Selection } from 'd3-selection';
 import { transition, Transition } from 'd3-transition';
 import lodashIsempty from 'lodash.isempty';
-import lodashIsString from 'lodash.isString';
-import lodashSortBy from 'lodash.sortBy';
-import lodashUniqBy from 'lodash.uniqBy';
-import lodashMaxBy from 'lodash.maxBy';
-import lodashMinBy from 'lodash.minBy';
+import lodashIsString from 'lodash.isstring';
+import lodashSortBy from 'lodash.sortby';
+import lodashUniqBy from 'lodash.uniqby';
+import lodashMaxBy from 'lodash.maxby';
+import lodashMinBy from 'lodash.minby';
 import lodashIncludes from 'lodash.includes';
 import lodashRange from 'lodash.range';
 
