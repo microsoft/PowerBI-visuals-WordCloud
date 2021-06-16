@@ -30,11 +30,11 @@ import "./../style/visual.less";
 import { select, Selection } from 'd3-selection';
 import { transition, Transition } from 'd3-transition';
 import lodashIsempty from 'lodash.isempty';
-import lodashIsString from 'lodash.isstring';
-import lodashSortBy from 'lodash.sortby';
-import lodashUniqBy from 'lodash.uniqby';
-import lodashMaxBy from 'lodash.maxby';
-import lodashMinBy from 'lodash.minby';
+import lodashIsstring from 'lodash.isstring';
+import lodashSortby from 'lodash.sortby';
+import lodashUniqby from 'lodash.uniqby';
+import lodashMaxby from 'lodash.maxby';
+import lodashMinby from 'lodash.minby';
 import lodashIncludes from 'lodash.includes';
 import lodashRange from 'lodash.range';
 
@@ -585,7 +585,7 @@ export class WordCloud implements IVisual {
     private static getStopWords(settings: WordCloudSettings): WordMap {
         const map: WordMap = Object.create(null);
         if (!settings.stopWords.show) return map;
-        if (!!settings.stopWords.words && lodashIsString(settings.stopWords.words)) {
+        if (!!settings.stopWords.words && lodashIsstring(settings.stopWords.words)) {
             settings.stopWords.words
                 .split(WordCloud.StopWordsDelimiter)
                 .forEach((word: string) => {
@@ -930,7 +930,7 @@ export class WordCloud implements IVisual {
     }
 
     private estimatePossibleWordsToDraw(words: WordCloudDataPoint[], viewport: IViewport, quality: number = 40): number {
-        let sortedWords: WordCloudDataPoint[] = lodashSortBy(words, "size");
+        let sortedWords: WordCloudDataPoint[] = lodashSortby(words, "size");
         let square: number = viewport.height * viewport.width;
         let wordCount: number = 0;
 
@@ -1581,10 +1581,10 @@ export class WordCloud implements IVisual {
         }
 
         const rectangle: ClientRect = <ClientRect>{
-            left: lodashMinBy(rectangles, (rect: ClientRect) => rect.left).left,
-            top: lodashMinBy(rectangles, (rect: ClientRect) => rect.top).top,
-            right: lodashMaxBy(rectangles, (rect: ClientRect) => rect.right).right,
-            bottom: lodashMaxBy(rectangles, (rect: ClientRect) => rect.bottom).bottom
+            left: lodashMinby(rectangles, (rect: ClientRect) => rect.left).left,
+            top: lodashMinby(rectangles, (rect: ClientRect) => rect.top).top,
+            right: lodashMaxby(rectangles, (rect: ClientRect) => rect.right).right,
+            bottom: lodashMaxby(rectangles, (rect: ClientRect) => rect.bottom).bottom
         };
 
         const rectWidth: number = rectangle.right - rectangle.left,
@@ -1663,7 +1663,7 @@ export class WordCloud implements IVisual {
         options: EnumerateVisualObjectInstancesOptions,
         instanceEnumeration: VisualObjectInstanceEnumeration): void {
 
-        let uniqueDataPoints: WordCloudDataPoint[] = lodashUniqBy(
+        let uniqueDataPoints: WordCloudDataPoint[] = lodashUniqby(
             this.data.dataPoints,
             (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
 
