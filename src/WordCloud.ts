@@ -29,14 +29,14 @@ import "./../style/visual.less";
 
 import { select, Selection } from 'd3-selection';
 import { transition, Transition } from 'd3-transition';
-import isEmpty from 'lodash.isEmpty';
-import isString from 'lodash.isString';
-import sortBy from 'lodash.sortBy';
-import uniqBy from 'lodash.uniqBy';
-import maxBy from 'lodash.maxBy';
-import minBy from 'lodash.minBy';
-import includes from 'lodash.includes';
-import range from 'lodash.range';
+import lodashIsEmpty from 'lodash.isEmpty';
+import lodashIsString from 'lodash.isString';
+import lodashSortBy from 'lodash.sortBy';
+import lodashUniqBy from 'lodash.uniqBy';
+import lodashMaxBy from 'lodash.maxBy';
+import lodashMinBy from 'lodash.minBy';
+import lodashIncludes from 'lodash.includes';
+import lodashRange from 'lodash.range';
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 
@@ -416,7 +416,7 @@ export class WordCloud implements IVisual {
     ): WordCloudData {
         const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(dataView);
 
-        if (!categorical || !categorical.Category || isEmpty(categorical.Category.values)) {
+        if (!categorical || !categorical.Category || lodashIsEmpty(categorical.Category.values)) {
             return null;
         }
 
@@ -433,7 +433,7 @@ export class WordCloud implements IVisual {
             format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
         });
 
-        const excludedSet: PrimitiveValue[] = !categorical.Excludes || isEmpty(categorical.Excludes.values)
+        const excludedSet: PrimitiveValue[] = !categorical.Excludes || lodashIsEmpty(categorical.Excludes.values)
             ? []
             : categorical.Excludes.values;
 
@@ -585,7 +585,7 @@ export class WordCloud implements IVisual {
     private static getStopWords(settings: WordCloudSettings): WordMap {
         const map: WordMap = Object.create(null);
         if (!settings.stopWords.show) return map;
-        if (!!settings.stopWords.words && isString(settings.stopWords.words)) {
+        if (!!settings.stopWords.words && lodashIsString(settings.stopWords.words)) {
             settings.stopWords.words
                 .split(WordCloud.StopWordsDelimiter)
                 .forEach((word: string) => {
@@ -683,7 +683,7 @@ export class WordCloud implements IVisual {
         textGroups: WordCloudGroup[],
         settings: WordCloudSettings): WordCloudDataPoint[] {
 
-        if (isEmpty(textGroups)) {
+        if (lodashIsEmpty(textGroups)) {
             return [];
         }
 
@@ -930,7 +930,7 @@ export class WordCloud implements IVisual {
     }
 
     private estimatePossibleWordsToDraw(words: WordCloudDataPoint[], viewport: IViewport, quality: number = 40): number {
-        let sortedWords: WordCloudDataPoint[] = sortBy(words, "size");
+        let sortedWords: WordCloudDataPoint[] = lodashSortBy(words, "size");
         let square: number = viewport.height * viewport.width;
         let wordCount: number = 0;
 
@@ -952,14 +952,14 @@ export class WordCloud implements IVisual {
     private computePositions(onPositionsComputed: (WordCloudDataView) => void): void {
         const words: WordCloudDataPoint[] = this.data.dataPoints;
 
-        if (isEmpty(words)) {
+        if (lodashIsEmpty(words)) {
             this.clear();
 
             return;
         }
 
         requestAnimationFrame(() => {
-            let surface: number[] = range(
+            let surface: number[] = lodashRange(
                 WordCloud.MinViewport.width,
                 (this.specialViewport.width >> WordCloud.WidthOffset) * this.specialViewport.height,
                 WordCloud.MinViewport.width);
@@ -1526,12 +1526,12 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        if (!isEmpty(identityKeys)) {
+        if (!lodashIsEmpty(identityKeys)) {
             let incorrectValues: SelectionIdValues<string>[] = this.valueSelectionManager
                 .getSelectionIdValues
                 .filter((idValue: SelectionIdValues<string>) => {
                     return idValue.selectionId.some((selectionId: ISelectionId) => {
-                        return includes(identityKeys, selectionId.getKey());
+                        return lodashIncludes(identityKeys, selectionId.getKey());
                     });
                 });
 
@@ -1576,15 +1576,15 @@ export class WordCloud implements IVisual {
             };
         });
 
-        if (isEmpty(rectangles)) {
+        if (lodashIsEmpty(rectangles)) {
             return;
         }
 
         const rectangle: ClientRect = <ClientRect>{
-            left: minBy(rectangles, (rect: ClientRect) => rect.left).left,
-            top: minBy(rectangles, (rect: ClientRect) => rect.top).top,
-            right: maxBy(rectangles, (rect: ClientRect) => rect.right).right,
-            bottom: maxBy(rectangles, (rect: ClientRect) => rect.bottom).bottom
+            left: lodashMinBy(rectangles, (rect: ClientRect) => rect.left).left,
+            top: lodashMinBy(rectangles, (rect: ClientRect) => rect.top).top,
+            right: lodashMaxBy(rectangles, (rect: ClientRect) => rect.right).right,
+            bottom: lodashMaxBy(rectangles, (rect: ClientRect) => rect.bottom).bottom
         };
 
         const rectWidth: number = rectangle.right - rectangle.left,
@@ -1663,7 +1663,7 @@ export class WordCloud implements IVisual {
         options: EnumerateVisualObjectInstancesOptions,
         instanceEnumeration: VisualObjectInstanceEnumeration): void {
 
-        let uniqueDataPoints: WordCloudDataPoint[] = uniqBy(
+        let uniqueDataPoints: WordCloudDataPoint[] = lodashUniqBy(
             this.data.dataPoints,
             (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
 
