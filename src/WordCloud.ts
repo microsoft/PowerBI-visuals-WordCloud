@@ -1445,7 +1445,7 @@ export class WordCloud implements IVisual {
             .selectAll("g")
             .data(wordCloudDataView.data);
 
-        let wordGroupSelectionMerged: Selection<any, WordCloudDataPoint, any, any> = this.wordsGroupSelection
+        let wordGroupSelectionMerged: WordCloudSelection = this.wordsGroupSelection
             .enter()
             .append("svg:g")
             .merge(this.wordsGroupSelection)
@@ -1732,7 +1732,7 @@ export class WordCloud implements IVisual {
             });
         }
 
-        this.tooltipService.addTooltip(selection, (tooltipEvent: any) => {
+        this.tooltipService.addTooltip(selection, (tooltipEvent: WordCloudDataPoint) => {
             let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.count) : tooltipEvent?.count;
             return [{
                 displayName: tooltipEvent.text,

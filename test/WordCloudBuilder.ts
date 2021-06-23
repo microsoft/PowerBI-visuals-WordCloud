@@ -51,53 +51,47 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
         return this.element.querySelector("svg.wordCloud");
     }
 
-    public get words() {
+    public get words(): NodeList {
         return this.mainElement
             .querySelector("g")
             .querySelector("g.words")
             .querySelectorAll("g.word");
     }
 
-    public get wordText() {
-        let wordTextArray = [];
-        for(let i = 0; i < Array.from(this.words).length; i++) {
-            wordTextArray.push(Array.from(this.words)[i].querySelector("text"));
-        }
-        return wordTextArray;
+    public get wordText(): NodeList {
+        return this.mainElement
+            .querySelectorAll("text");
     }
 
-    public get wordRects() {
-        let wordRectsArray = [];
-        for(let i = 0; i < Array.from(this.words).length; i++) {
-            wordRectsArray.push(Array.from(this.words)[i].querySelector("rect"));
-        }
-        return wordRectsArray;
+    public get wordRects(): NodeListOf<Element> {
+        return this.mainElement
+            .querySelectorAll("rect") as NodeListOf<Element>;
     }
 
     public wordClick(text: string, ctrl = false) {
-        const elements: Element[] = Array.from(this.words)
-            .filter((element: Element, index: number, array: Element[]) => {
-                return $(element).children("text").text() === text;
+        const elements: Node[] = Array.from(this.words)
+            .filter((element: Node, index: number, array: Node[]) => {
+                return element.parentElement.querySelector("text").textContent === text;
             });
 
         if (lodash.isEmpty(elements)) {
             return;
         }
 
-        const element: JQuery<any> = $(elements[0]).children("rect");
+        const element: any = elements[0].parentElement.querySelector("rect");
 
         d3Click(
             element,
-            parseFloat(element.attr("x")),
-            parseFloat(element.attr("y")),
+            parseFloat(element.getAttribute("x")),
+            parseFloat(element.getAttribute("y")),
             ctrl
                 ? ClickEventType.CtrlKey
                 : undefined);
     }
 
     public get selectedWords() {
-        return this.wordText.filter((element: Element) => {
-            return parseFloat($(element).css("fill-opacity")) === WordCloudBuilder.MaxOpacity;
+        return [...this.wordText].filter((element: Node) => {
+            return parseFloat(window.getComputedStyle(element as Element).getPropertyValue("fill-opacity")) === WordCloudBuilder.MaxOpacity;
         });
     }
 }
