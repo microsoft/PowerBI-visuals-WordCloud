@@ -331,7 +331,7 @@ describe("WordCloud", () => {
             visualBuilder.update(dataView);
 
             secondVisualBuilder.updateRenderTimeout(dataView, () => {
-                const firstWord: HTMLElement = visualBuilder.wordText[0] as any;
+                const firstWord: HTMLElement = <any>visualBuilder.wordText[0];
 
 
                 d3Click(
@@ -340,7 +340,7 @@ describe("WordCloud", () => {
                     parseInt(firstWord.getAttribute("y"), 10));
 
                 setTimeout(() => {
-                    const secondWord: HTMLElement = secondVisualBuilder.wordText[0] as any;
+                    const secondWord: HTMLElement = <any>secondVisualBuilder.wordText[0];
 
                     d3Click(
                         secondWord,
@@ -468,7 +468,7 @@ describe("WordCloud", () => {
             };
 
             visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-                Array.from(visualBuilder.wordText)
+                (Array.from(visualBuilder.wordText) as SVGElement[])
                     .forEach((element: Node) => {
                         const text = element.textContent;
                         expect(defaultDataViewBuilder.valuesCategoryValues.some((value: any[]) => {
@@ -524,7 +524,7 @@ describe("WordCloud", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     Array.from(visualBuilder.wordText)
                         .forEach((element: Node) => {
-                            const fillColor: string = (element as HTMLElement).style["fill"];
+                            const fillColor: string = (<HTMLElement>element).style["fill"];
                             expect(colors.some((color: string) => {
                                 return fillColor === color;
                             }));
@@ -548,12 +548,12 @@ describe("WordCloud", () => {
                 (<any>dataView.metadata.objects).stopWords.words = "Afghanistan";
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(grep(Array.from(visualBuilder.wordText) as Element[]).length).toBe(0);
+                    expect(grep(<Element[]>Array.from(visualBuilder.wordText)).length).toBe(0);
 
                     (<any>dataView.metadata.objects).stopWords.show = false;
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(grep(Array.from(visualBuilder.wordText) as Element[]).length).toBeGreaterThan(0);
+                        expect(grep(<Element[]>Array.from(visualBuilder.wordText)).length).toBeGreaterThan(0);
 
                         done();
                     }, 500);
@@ -606,7 +606,7 @@ describe("WordCloud", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.words.forEach((element: Node) => {
-                            const translateNode = <any>select(element as Element).node();
+                            const translateNode = <any>select(<Element>element).node();
                             const matrix = translateNode.transform.baseVal.consolidate().matrix;
                             let { a, b } = matrix;
                             const rotate: number = Math.atan2(b, a) * 180 / Math.PI;
@@ -682,7 +682,7 @@ describe("WordCloud", () => {
 
             it("should render all of render with foreground color applied", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    const words: SVGElement[] = Array.from(visualBuilder.wordText) as SVGElement[];
+                    const words: SVGElement[] = <SVGElement[]>Array.from(visualBuilder.wordText);
 
                     expect(isColorAppliedToElements(words, foregroundColor, "fill"));
 

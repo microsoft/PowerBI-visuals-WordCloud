@@ -65,7 +65,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
 
     public get wordRects(): NodeListOf<Element> {
         return this.mainElement
-            .querySelectorAll("rect") as NodeListOf<Element>;
+            .querySelectorAll("rect");
     }
 
     public wordClick(text: string, ctrl = false) {
@@ -91,7 +91,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
 
     public get selectedWords() {
         return [...this.wordText].filter((element: Node) => {
-            return parseFloat(window.getComputedStyle(element as Element).getPropertyValue("fill-opacity")) === WordCloudBuilder.MaxOpacity;
+            return parseFloat(window.getComputedStyle(<Element>element).getPropertyValue("fill-opacity")) === WordCloudBuilder.MaxOpacity;
         });
     }
 }
