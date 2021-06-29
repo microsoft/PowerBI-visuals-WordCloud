@@ -468,7 +468,7 @@ describe("WordCloud", () => {
             };
 
             visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-                (Array.from(visualBuilder.wordText) as SVGElement[])
+                (<SVGElement[]>Array.from(visualBuilder.wordText))
                     .forEach((element: Node) => {
                         const text = element.textContent;
                         expect(defaultDataViewBuilder.valuesCategoryValues.some((value: any[]) => {
