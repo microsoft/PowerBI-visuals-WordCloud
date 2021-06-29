@@ -146,9 +146,9 @@ describe("WordCloud", () => {
     });
 
     describe("DOM tests", () => {
-        // it("svg element created", () => {
-        //     expect(visualBuilder.mainElement[0]).toBeInDOM();
-        // });
+        it("svg element created", () => {
+            expect(visualBuilder.mainElement[0]).toBeInDOM();
+        });
 
         it("words mustn't intersect each other (rotation is disabled)", (done) => {
             let originalPreparedRandom: number[] = VisualClass.PreparedRandoms;
