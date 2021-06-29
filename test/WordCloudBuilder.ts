@@ -51,7 +51,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
         return this.element.querySelector("svg.wordCloud");
     }
 
-    public get words(): NodeList {
+    public get words(): NodeListOf<SVGElement> {
         return this.mainElement
             .querySelector("g")
             .querySelector("g.words")
@@ -69,16 +69,16 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public wordClick(text: string, ctrl = false) {
-        const elements: Node[] = Array.from(this.words)
-            .filter((element: Node, index: number, array: Node[]) => {
-                return element.parentElement.querySelector("text").textContent === text;
+        const elements: SVGElement[] = Array.from(this.words)
+            .filter((element: SVGElement , index: number, array: Node[]) => {
+                return element.querySelector("text").textContent === text;
             });
 
-        if (lodash.isEmpty(elements)) {
+        if (elements.length === 0) {
             return;
         }
 
-        const element: any = elements[0].parentElement.querySelector("rect");
+        const element: any = elements[0].querySelector("rect");
 
         d3Click(
             element,
