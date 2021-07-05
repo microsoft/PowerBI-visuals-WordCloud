@@ -1457,6 +1457,12 @@ export class WordCloud implements IVisual {
         wordGroupSelectionMerged
             .append("svg:rect");
 
+        wordGroupSelectionMerged.selectAll("text").each((d, i)=>{
+            if(i > 0) {
+                wordGroupSelectionMerged.remove();
+            }
+        });
+
         this.wordsGroupSelection
             .exit()
             .remove();
