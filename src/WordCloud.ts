@@ -1451,17 +1451,11 @@ export class WordCloud implements IVisual {
             .merge(this.wordsGroupSelection)
             .classed(WordCloud.WordGroup.className, true);
 
-        wordGroupSelectionMerged
-            .append("svg:text")
-            .style("font-size", WordCloud.DefaultTextFontSize);
-        wordGroupSelectionMerged
-            .append("svg:rect");
-
-        wordGroupSelectionMerged.selectAll("text").each((d, i)=>{
-            if(i > 0) {
-                wordGroupSelectionMerged.exit().remove();
-            }
-        });
+        // wordGroupSelectionMerged
+        //     .append("svg:text")
+        //     .style("font-size", WordCloud.DefaultTextFontSize);
+        // wordGroupSelectionMerged
+        //     .append("svg:rect");
 
         this.wordsGroupSelection
             .exit()
@@ -1477,7 +1471,10 @@ export class WordCloud implements IVisual {
 
         this.wordsTextUpdateSelection = wordGroupSelectionMerged
             .selectAll("text")
-            .data((dataPoint: WordCloudDataPoint) => [dataPoint]);
+            .data((dataPoint: WordCloudDataPoint) => [dataPoint])
+            .enter()
+            .append("svg:text")
+            .style("font-size", WordCloud.DefaultTextFontSize);
 
         this.wordsTextUpdateSelection.text((dataPoint: WordCloudDataPoint) => dataPoint.text);
 
@@ -1488,6 +1485,8 @@ export class WordCloud implements IVisual {
         wordGroupSelectionMerged
             .selectAll("rect")
             .data((dataPoint: WordCloudDataPoint) => [dataPoint])
+            .enter()
+            .append("svg:rect")
             .attr("x", (dataPoint: WordCloudDataPoint) => -dataPoint.getWidthOfWord() * WordCloud.XOffsetPosition)
             .attr("width", (dataPoint: WordCloudDataPoint) => dataPoint.getWidthOfWord())
             .attr("y", (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition)
