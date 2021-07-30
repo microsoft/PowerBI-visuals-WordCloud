@@ -4,7 +4,7 @@ const webpack = require("webpack");
 module.exports = {
     devtool: 'source-map',
     mode: 'development',
-    optimization: {
+    optimization : {
         minimize: false
     },
     module: {
@@ -56,7 +56,8 @@ module.exports = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            'powerbi-visuals-api': null
+            'powerbi-visuals-api': null,
+            process: "process/browser",
         })
     ]
 };

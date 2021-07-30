@@ -24,16 +24,25 @@
  *  THE SOFTWARE.
  */
 
+import "regenerator-runtime/runtime.js";
 import "./../style/visual.less";
 
-import * as d3 from "d3";
-import * as lodash from "lodash";
+import { select, Selection } from 'd3-selection';
+import { transition, Transition } from 'd3-transition';
+import lodashIsempty from 'lodash.isempty';
+import lodashIsstring from 'lodash.isstring';
+import lodashSortby from 'lodash.sortby';
+import lodashUniqby from 'lodash.uniqby';
+import lodashMaxby from 'lodash.maxby';
+import lodashMinby from 'lodash.minby';
+import lodashIncludes from 'lodash.includes';
+import lodashRange from 'lodash.range';
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 
 // d3
-type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
-type Transition<T1, T2 = T1> = d3.Transition<any, T1, any, T2>;
+type WordCloudTransition = Transition<any, any, any, any>;
+type WordCloudSelection = Selection<any, any, any, any>;
 
 // powerbi
 import DataView = powerbiVisualsApi.DataView;
@@ -44,7 +53,7 @@ import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import VisualObjectInstanceEnumeration = powerbiVisualsApi.VisualObjectInstanceEnumeration;
 import EnumerateVisualObjectInstancesOptions = powerbiVisualsApi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumerationObject = powerbiVisualsApi.VisualObjectInstanceEnumerationObject;
-import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier;
+import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier; 
 import CustomVisualOpaqueIdentity = powerbiVisualsApi.visuals.CustomVisualOpaqueIdentity;
 
 import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
@@ -59,6 +68,7 @@ import IVisual = powerbiVisualsApi.extensibility.IVisual;
 import IVisualHost = powerbiVisualsApi.extensibility.visual.IVisualHost;
 import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
+import VisualEnumerationInstanceKinds = powerbiVisualsApi.VisualEnumerationInstanceKinds;
 
 // powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
@@ -74,9 +84,8 @@ import translateAndScale = manipulation.translateAndScale;
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 
 // powerbi.extensibility.utils.formatting
-import { textMeasurementService as tms, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
+import { textMeasurementService, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = ValueFormatter.IValueFormatter;
-import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.color
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
@@ -91,8 +100,6 @@ import { WordCloudSettings, GeneralSettings, RotateTextSettings } from "./settin
 import { VisualLayout } from "./VisualLayout";
 import { WordCloudColumns } from "./WordCloudColumns";
 
-const getEvent = () => require("d3-selection").event;
-
 type WordMap = { [word: string]: boolean };
 
 enum WordCloudScaleType {
@@ -100,7 +107,6 @@ enum WordCloudScaleType {
     sqrt,
     value
 }
-
 export class WordCloud implements IVisual {
     private static ClassName: string = "wordCloud";
     private tooltipService: ITooltipServiceWrapper;
@@ -386,11 +392,11 @@ export class WordCloud implements IVisual {
         height: 2048
     };
 
-    private root: Selection<any>;
-    private main: Selection<any>;
-    private wordsContainerSelection: Selection<any>;
-    private wordsGroupSelection: Selection<WordCloudDataPoint>;
-    private wordsTextUpdateSelection: Selection<WordCloudDataPoint>;
+    private root: WordCloudSelection;
+    private main: WordCloudSelection;
+    private wordsContainerSelection: WordCloudSelection;
+    private wordsGroupSelection: WordCloudSelection;
+    private wordsTextUpdateSelection: WordCloudSelection;
     public canvasContext: CanvasRenderingContext2D;
     private fontFamily: string;
     private layout: VisualLayout;
@@ -403,7 +409,6 @@ export class WordCloud implements IVisual {
     private static punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
     private static whiteSpaceRegExp: RegExp = /\s/;
 
-
     public static CONVERTER(
         dataView: DataView,
         colorPalette: IColorPalette,
@@ -411,7 +416,7 @@ export class WordCloud implements IVisual {
     ): WordCloudData {
         const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(dataView);
 
-        if (!categorical || !categorical.Category || lodash.isEmpty(categorical.Category.values)) {
+        if (!categorical || !categorical.Category || lodashIsempty(categorical.Category.values)) {
             return null;
         }
 
@@ -428,7 +433,7 @@ export class WordCloud implements IVisual {
             format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
         });
 
-        const excludedSet: PrimitiveValue[] = !categorical.Excludes || lodash.isEmpty(categorical.Excludes.values)
+        const excludedSet: PrimitiveValue[] = !categorical.Excludes || lodashIsempty(categorical.Excludes.values)
             ? []
             : categorical.Excludes.values;
 
@@ -580,7 +585,7 @@ export class WordCloud implements IVisual {
     private static getStopWords(settings: WordCloudSettings): WordMap {
         const map: WordMap = Object.create(null);
         if (!settings.stopWords.show) return map;
-        if (!!settings.stopWords.words && lodash.isString(settings.stopWords.words)) {
+        if (!!settings.stopWords.words && lodashIsstring(settings.stopWords.words)) {
             settings.stopWords.words
                 .split(WordCloud.StopWordsDelimiter)
                 .forEach((word: string) => {
@@ -678,7 +683,7 @@ export class WordCloud implements IVisual {
         textGroups: WordCloudGroup[],
         settings: WordCloudSettings): WordCloudDataPoint[] {
 
-        if (lodash.isEmpty(textGroups)) {
+        if (lodashIsempty(textGroups)) {
             return [];
         }
 
@@ -796,15 +801,13 @@ export class WordCloud implements IVisual {
     }
 
     public handleContextMenu() {
-        this.root.on('contextmenu', () => {
-            const mouseEvent: MouseEvent = getEvent();
-            const eventTarget: EventTarget = mouseEvent.target;
-            let dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
-                x: mouseEvent.clientX,
-                y: mouseEvent.clientY
+        this.root.on('contextmenu', (event) => {
+            let dataPoint: any = select(event.target).datum();
+            this.selectionManager.showContextMenu((dataPoint && dataPoint.selectionIds && dataPoint.selectionIds[0]) ? dataPoint.selectionIds[0] : {}, {​​
+                x: event.clientX,
+                y: event.clientY
             });
-            mouseEvent.preventDefault();
+            event.preventDefault();
         });
     }
 
@@ -818,8 +821,9 @@ export class WordCloud implements IVisual {
     }
 
     public init(options: VisualConstructorOptions): void {
-        this.root = d3.select(options.element).append("svg");
+        this.root = select(options.element).append("svg");
         this.eventService = options.host.eventService;
+        this.selectionManager = options.host.createSelectionManager();
         this.tooltipService = createTooltipServiceWrapper(
             options.host.tooltipService,
             options.element);
@@ -926,7 +930,7 @@ export class WordCloud implements IVisual {
     }
 
     private estimatePossibleWordsToDraw(words: WordCloudDataPoint[], viewport: IViewport, quality: number = 40): number {
-        let sortedWords: WordCloudDataPoint[] = lodash.sortBy(words, "size");
+        let sortedWords: WordCloudDataPoint[] = lodashSortby(words, "size");
         let square: number = viewport.height * viewport.width;
         let wordCount: number = 0;
 
@@ -948,14 +952,14 @@ export class WordCloud implements IVisual {
     private computePositions(onPositionsComputed: (WordCloudDataView) => void): void {
         const words: WordCloudDataPoint[] = this.data.dataPoints;
 
-        if (lodash.isEmpty(words)) {
+        if (lodashIsempty(words)) {
             this.clear();
 
             return;
         }
 
         requestAnimationFrame(() => {
-            let surface: number[] = lodash.range(
+            let surface: number[] = lodashRange(
                 WordCloud.MinViewport.width,
                 (this.specialViewport.width >> WordCloud.WidthOffset) * this.specialViewport.height,
                 WordCloud.MinViewport.width);
@@ -1441,17 +1445,17 @@ export class WordCloud implements IVisual {
             .selectAll("g")
             .data(wordCloudDataView.data);
 
-        let wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
+        let wordGroupSelectionMerged: WordCloudSelection = this.wordsGroupSelection
             .enter()
             .append("svg:g")
             .merge(this.wordsGroupSelection)
             .classed(WordCloud.WordGroup.className, true);
 
-        wordGroupSelectionMerged
-            .append("svg:text")
-            .style("font-size", WordCloud.DefaultTextFontSize);
-        wordGroupSelectionMerged
-            .append("svg:rect");
+        // wordGroupSelectionMerged
+        //     .append("svg:text")
+        //     .style("font-size", WordCloud.DefaultTextFontSize);
+        // wordGroupSelectionMerged
+        //     .append("svg:rect");
 
         this.wordsGroupSelection
             .exit()
@@ -1467,7 +1471,10 @@ export class WordCloud implements IVisual {
 
         this.wordsTextUpdateSelection = wordGroupSelectionMerged
             .selectAll("text")
-            .data((dataPoint: WordCloudDataPoint) => [dataPoint]);
+            .data((dataPoint: WordCloudDataPoint) => [dataPoint])
+            .enter()
+            .append("svg:text")
+            .style("font-size", WordCloud.DefaultTextFontSize);
 
         this.wordsTextUpdateSelection.text((dataPoint: WordCloudDataPoint) => dataPoint.text);
 
@@ -1478,15 +1485,17 @@ export class WordCloud implements IVisual {
         wordGroupSelectionMerged
             .selectAll("rect")
             .data((dataPoint: WordCloudDataPoint) => [dataPoint])
+            .enter()
+            .append("svg:rect")
             .attr("x", (dataPoint: WordCloudDataPoint) => -dataPoint.getWidthOfWord() * WordCloud.XOffsetPosition)
             .attr("width", (dataPoint: WordCloudDataPoint) => dataPoint.getWidthOfWord())
             .attr("y", (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition)
             .attr("height", (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition)
             .attr("fill", () => WordCloud.TextFillColor)
-            .on("click", (dataPoint: WordCloudDataPoint) => {
-                (<MouseEvent>d3.event).stopPropagation();
+            .on("click", (event: MouseEvent, dataPoint: WordCloudDataPoint) => {
+                event.stopPropagation();
 
-                this.setSelection(dataPoint);
+                this.setSelection(dataPoint, event.ctrlKey);
             });
 
         this.clearIncorrectSelection(this.data.dataView);
@@ -1522,12 +1531,12 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        if (!lodash.isEmpty(identityKeys)) {
+        if (!lodashIsempty(identityKeys)) {
             let incorrectValues: SelectionIdValues<string>[] = this.valueSelectionManager
                 .getSelectionIdValues
                 .filter((idValue: SelectionIdValues<string>) => {
                     return idValue.selectionId.some((selectionId: ISelectionId) => {
-                        return lodash.includes(identityKeys, selectionId.getKey());
+                        return lodashIncludes(identityKeys, selectionId.getKey());
                     });
                 });
 
@@ -1541,7 +1550,7 @@ export class WordCloud implements IVisual {
         }
     }
 
-    private setSelection(dataPoint: WordCloudDataPoint): void {
+    private setSelection(dataPoint: WordCloudDataPoint, ctrlKey: boolean): void {
         if (!dataPoint) {
             this.clearSelection();
 
@@ -1549,7 +1558,7 @@ export class WordCloud implements IVisual {
         }
 
         this.valueSelectionManager
-            .selectAndSendSelection(dataPoint.text, (<MouseEvent>d3.event).ctrlKey);
+            .selectAndSendSelection(dataPoint.text, ctrlKey);
         this.renderSelection();
     }
 
@@ -1572,15 +1581,15 @@ export class WordCloud implements IVisual {
             };
         });
 
-        if (lodash.isEmpty(rectangles)) {
+        if (lodashIsempty(rectangles)) {
             return;
         }
 
         const rectangle: ClientRect = <ClientRect>{
-            left: lodash.minBy(rectangles, (rect: ClientRect) => rect.left).left,
-            top: lodash.minBy(rectangles, (rect: ClientRect) => rect.top).top,
-            right: lodash.maxBy(rectangles, (rect: ClientRect) => rect.right).right,
-            bottom: lodash.maxBy(rectangles, (rect: ClientRect) => rect.bottom).bottom
+            left: lodashMinby(rectangles, (rect: ClientRect) => rect.left).left,
+            top: lodashMinby(rectangles, (rect: ClientRect) => rect.top).top,
+            right: lodashMaxby(rectangles, (rect: ClientRect) => rect.right).right,
+            bottom: lodashMaxby(rectangles, (rect: ClientRect) => rect.bottom).bottom
         };
 
         const rectWidth: number = rectangle.right - rectangle.left,
@@ -1617,7 +1626,7 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        const selectedColumns: Selection<WordCloudDataPoint> = this.wordsTextUpdateSelection
+        const selectedColumns: WordCloudSelection = this.wordsTextUpdateSelection
             .filter((dataPoint: WordCloudDataPoint) => {
                 return this.valueSelectionManager.isSelected(dataPoint.text);
             });
@@ -1626,14 +1635,12 @@ export class WordCloud implements IVisual {
         this.setOpacity(selectedColumns, WordCloud.MaxOpacity);
     }
 
-    private setOpacity(element: Selection<any>, opacityValue: number): void {
+    private setOpacity(element: WordCloudSelection, opacityValue: number): void {
         element.style("fill-opacity", opacityValue);
 
         if (this.main) { // Note: This construction fixes bug #6343.
             this.main.style("line-height", WordCloud.TheThirdLineHeight);
-
             this.animateSelection(this.main, 0, this.durationAnimations)
-                .style("line-height", WordCloud.TheFourthLineHeight);
         }
     }
 
@@ -1661,7 +1668,7 @@ export class WordCloud implements IVisual {
         options: EnumerateVisualObjectInstancesOptions,
         instanceEnumeration: VisualObjectInstanceEnumeration): void {
 
-        let uniqueDataPoints: WordCloudDataPoint[] = lodash.uniqBy(
+        let uniqueDataPoints: WordCloudDataPoint[] = lodashUniqby(
             this.data.dataPoints,
             (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
 
@@ -1706,19 +1713,21 @@ export class WordCloud implements IVisual {
         }
     }
 
-    private animateSelection<T extends Selection<any>>(
+    private animateSelection<T extends WordCloudSelection>(
         element: T,
         duration: number = 0,
         delay: number = 0,
-        callback?: (data: any, index: number) => void): Transition<any> {
+        callback?: (data: any, index: number) => void): WordCloudTransition {
+
+        let t = transition()
+        .duration(duration)
+        .delay(delay)
 
         return element
-            .transition()
-            .delay(delay)
-            .duration(duration)
+            .transition(t)
             .on("end", callback);
     }
-    private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
+    private renderTooltip(selection: WordCloudSelection): void {
         let categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(this.incomingUpdateOptions.dataViews[0]),
             wordValueFormatter: IValueFormatter = null;
 
@@ -1728,10 +1737,10 @@ export class WordCloud implements IVisual {
             });
         }
 
-        this.tooltipService.addTooltip(selection, (tooltipEvent: TooltipEventArgs<WordCloudDataPoint>) => {
-            let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.data.count) : tooltipEvent.data.count;
+        this.tooltipService.addTooltip(selection, (tooltipEvent: WordCloudDataPoint) => {
+            let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.count) : tooltipEvent?.count;
             return [{
-                displayName: tooltipEvent.data.text,
+                displayName: tooltipEvent.text,
                 value: item.toString()
             }];
         });
