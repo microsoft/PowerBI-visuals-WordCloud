@@ -105,6 +105,7 @@ enum WordCloudScaleType {
     sqrt,
     value
 }
+
 export class WordCloud implements IVisual {
     private static ClassName: string = "wordCloud";
     private tooltipService: ITooltipServiceWrapper;
@@ -1455,7 +1456,7 @@ export class WordCloud implements IVisual {
         this.wordsGroupSelection
             .exit()
             .remove();
-            
+
         wordGroupSelectionMerged
             .attr("transform", (dataPoint: WordCloudDataPoint) => {
                 return `${translate(dataPoint.x, dataPoint.y)} rotate(${dataPoint.rotate})`;
