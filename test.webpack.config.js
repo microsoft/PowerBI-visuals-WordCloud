@@ -36,10 +36,7 @@ module.exports = {
                         loader: 'css-loader'
                     },
                     {
-                        loader: 'less-loader',
-                        options: {
-                            paths: [path.resolve(__dirname, 'node_modules')]
-                        }
+                        loader: 'less-loader'
                     }
                 ]
             }

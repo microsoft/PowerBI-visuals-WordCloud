@@ -25,7 +25,7 @@
  */
 
 import powerbiVisualsApi from "powerbi-visuals-api";
-import * as lodash from "lodash";
+import lodashIsempty from 'lodash.isempty';
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.test
@@ -52,10 +52,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get words(): NodeListOf<SVGElement> {
-        return this.mainElement
-            .querySelector("g")
-            .querySelector("g.words")
-            .querySelectorAll("g.word");
+        return this.mainElement.querySelectorAll("g > g.words > g.word");
     }
 
     public get wordText(): NodeList {
@@ -70,11 +67,11 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
 
     public wordClick(text: string, ctrl = false) {
         const elements: SVGElement[] = Array.from(this.words)
-            .filter((element: SVGElement , index: number, array: Node[]) => {
+            .filter((element: SVGElement) => {
                 return element.querySelector("text").textContent === text;
             });
 
-        if (elements.length === 0) {
+        if (lodashIsempty(elements)) {
             return;
         }
 
@@ -90,8 +87,8 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get selectedWords() {
-        return [...this.wordText].filter((element: Node) => {
-            return parseFloat(window.getComputedStyle(<Element>element).getPropertyValue("fill-opacity")) === WordCloudBuilder.MaxOpacity;
-        });
+        return [...this.wordText].filter((element: Node) => 
+            parseFloat(window.getComputedStyle(<Element>element).getPropertyValue("fill-opacity")) === WordCloudBuilder.MaxOpacity
+        );
     }
 }

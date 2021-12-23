@@ -75,13 +75,6 @@ describe("WordCloud", () => {
     dataView = defaultDataViewBuilder.getDataView();
   });
 
-  // function that uses grep to filter DOM elements
-  function grep(elements: Element[], text: string = "Afghanistan"): Element[] {
-    return elements.filter((element: Element) => {
-      return element.innerHTML === "" || element.textContent === text;
-    });
-  }
-
   describe("Unit tests", () => {
     it("getFromCycledSequence returns array item by exact index", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
@@ -710,8 +703,15 @@ describe("WordCloud", () => {
         };
       });
 
+      // function that uses grep to filter DOM elements
+      const grep = (elements: Element[], text: string = "Afghanistan"): Element[] => {
+        return elements.filter((element: Element) => {
+          return element.innerHTML === "" || element.textContent === text;
+        });
+      }
+
       it("show", (done) => {
-        (<any>dataView.metadata.objects).stopWords.words = "Afghanistan";
+        dataView.metadata.objects.stopWords.words = "Afghanistan";
 
         visualBuilder.updateRenderTimeout(
           dataView,
@@ -720,7 +720,7 @@ describe("WordCloud", () => {
               grep(<Element[]>Array.from(visualBuilder.wordText)).length
             ).toBe(0);
 
-            (<any>dataView.metadata.objects).stopWords.show = false;
+            dataView.metadata.objects.stopWords.show = false;
 
             visualBuilder.updateRenderTimeout(
               dataView,
@@ -738,30 +738,18 @@ describe("WordCloud", () => {
         );
       });
 
-      it("words", (done) => {
-        checkStopWords(done);
-      });
-
-      it("words when word-breaking option is disabled", (done) => {
-        (<any>dataView.metadata.objects).general = {
-          isBrokenText: false,
-        };
-
-        checkStopWords(done);
-      });
-
-      function checkStopWords(done) {
-        const stopWord = "Afghanistan";
-        (<any>dataView.metadata.objects).stopWords.words = "";
+      const checkStopWords = (done) => {
+        dataView.metadata.objects.stopWords.words = "";
 
         visualBuilder.updateRenderTimeout(
           dataView,
           () => {
-            expect(Array.from(visualBuilder.wordText).length).toBeGreaterThan(
+            expect(visualBuilder.wordText.length).toBeGreaterThan(
               0
             );
 
-            (<any>dataView.metadata.objects).stopWords.words = stopWord;
+            const stopWord = "Afghanistan";
+            dataView.metadata.objects.stopWords.words = stopWord;
 
             visualBuilder.updateRenderTimeout(
               dataView,
@@ -779,6 +767,18 @@ describe("WordCloud", () => {
           500
         );
       }
+
+      it("default", (done) => {
+        checkStopWords(done);
+      });
+
+      it("with word-breaking option is disabled", (done) => {
+        dataView.metadata.objects.general = {
+          isBrokenText: false,
+        };
+
+        checkStopWords(done);
+      });
     });
 
     describe("Rotate text", () => {
