@@ -82,8 +82,9 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
             parseFloat(element.getAttribute("x")),
             parseFloat(element.getAttribute("y")),
             ctrl
-                ? ClickEventType.CtrlKey
-                : undefined);
+            ? ClickEventType.CtrlKey
+            : undefined
+        );
     }
 
     public get selectedWords() {

@@ -801,10 +801,15 @@ export class WordCloud implements IVisual {
     public handleContextMenu() {
         this.root.on('contextmenu', (event) => {
             let dataPoint: any = select(event.target).datum();
-            this.selectionManager.showContextMenu((dataPoint && dataPoint.selectionIds && dataPoint.selectionIds[0]) ? dataPoint.selectionIds[0] : {}, {
-                x: event.clientX,
-                y: event.clientY
-            });
+            this.selectionManager.showContextMenu(
+                (dataPoint && dataPoint.selectionIds && dataPoint.selectionIds[0]) 
+                ? dataPoint.selectionIds[0] 
+                : {},
+                {
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            );
             event.preventDefault();
         });
     }
@@ -839,9 +844,11 @@ export class WordCloud implements IVisual {
                         return dataPoint.text === text;
                     });
 
-                return dataPoints && dataPoints[0] && dataPoints[0].selectionIds
+                return (
+                    dataPoints && dataPoints[0] && dataPoints[0].selectionIds
                     ? dataPoints[0].selectionIds
-                    : [];
+                    : []
+                );
             },
             () => {
                 return this.data.dataPoints;
@@ -1726,11 +1733,15 @@ export class WordCloud implements IVisual {
         }
 
         this.tooltipService.addTooltip(selection, (tooltipEvent: WordCloudDataPoint) => {
-            let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.count) : tooltipEvent?.count;
-            return [{
-                displayName: tooltipEvent.text,
-                value: item.toString()
-            }];
+            let item = wordValueFormatter !== null 
+                ? wordValueFormatter.format(tooltipEvent.count) 
+                : tooltipEvent?.count;
+            return [
+                {
+                    displayName: tooltipEvent.text,
+                    value: item.toString()
+                }
+            ];
         });
     }
 

@@ -638,7 +638,11 @@ describe("WordCloud", () => {
       dataView.categorical.categories[0].values =
         dataView.categorical.categories[0].values.map(
           (value: PrimitiveValue, index: number) => {
-            return index % 2 === 0 ? null : value;
+            return (
+              index % 2 === 0 
+              ? null 
+              : value
+            );
           }
         );
 
