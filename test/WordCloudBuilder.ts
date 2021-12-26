@@ -25,7 +25,7 @@
  */
 
 import powerbiVisualsApi from "powerbi-visuals-api";
-import lodashIsempty from "lodash.isempty";
+import lodashIsEmpty from "lodash.isempty";
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.test
@@ -71,7 +71,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
                 return element.querySelector("text").textContent === text;
             });
 
-        if (lodashIsempty(elements)) {
+        if (lodashIsEmpty(elements)) {
             return;
         }
 
