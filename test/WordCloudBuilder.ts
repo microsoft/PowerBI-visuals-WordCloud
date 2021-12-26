@@ -25,7 +25,7 @@
  */
 
 import powerbiVisualsApi from "powerbi-visuals-api";
-import isEmpty from "lodash/isempty";
+import isEmpty from "lodash/isEmpty";
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.test

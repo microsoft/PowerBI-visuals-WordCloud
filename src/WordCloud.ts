@@ -30,7 +30,7 @@ import { select, Selection } from 'd3-selection';
 import { Transition } from 'd3-transition';
 import isEmpty from 'lodash/isEmpty';
 import isString from 'lodash/isString';
-import sortBy from 'lodash/sortby';
+import sortBy from 'lodash/sortBy';
 import uniqBy from 'lodash/uniqBy';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
