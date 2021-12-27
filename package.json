@@ -45,8 +45,7 @@
     "powerbi-visuals-utils-formattingutils": "^4.7.1",
     "powerbi-visuals-utils-svgutils": "^2.3.2",
     "powerbi-visuals-utils-tooltiputils": "^2.5.2",
-    "powerbi-visuals-utils-typeutils": "^2.3.1",
-    "regenerator-runtime": "^0.13.9"
+    "powerbi-visuals-utils-typeutils": "^2.3.1"
   },
   "devDependencies": {
     "@types/d3-selection": "3.0.2",
