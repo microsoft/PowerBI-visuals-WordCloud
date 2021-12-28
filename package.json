@@ -48,8 +48,7 @@
     "powerbi-visuals-utils-typeutils": "^2.3.1"
   },
   "devDependencies": {
-    "@types/d3-selection": "3.0.2",
-    "@types/d3-transition": "3.0.1",
+    "@types/d3": "7.1.0",
     "@types/jasmine": "3.10.2",
     "@types/jasmine-jquery": "1.5.34",
     "@types/karma": "^6.3.1",

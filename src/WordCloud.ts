@@ -28,6 +28,8 @@ import "./../style/visual.less";
 
 import { select, Selection } from 'd3-selection';
 import { Transition } from 'd3-transition';
+import 'd3-transition';
+
 import isEmpty from 'lodash/isEmpty';
 import isString from 'lodash/isString';
 import sortBy from 'lodash/sortBy';
