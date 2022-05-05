@@ -36,12 +36,11 @@ const coverageFolder = "coverage";
 
 process.env.CHROME_BIN = require("puppeteer").executablePath();
 
-import { Config, ConfigOptions } from "karma";
 
-module.exports = (config: Config) => {
-    config.set(<ConfigOptions>{
+module.exports = (config) => {
+    config.set({
         mode: "development",
-        browserNoActivityTimeout: 100000,
+        browserNoActivityTimeout: 10000,
         browsers: ["ChromeHeadless"],
         colors: true,
         frameworks: ["jasmine"],
@@ -67,19 +66,17 @@ module.exports = (config: Config) => {
             "karma-coverage-istanbul-reporter"
         ],
         files: [
-            "node_modules/jquery/dist/jquery.min.js",
-            "node_modules/jasmine-jquery/lib/jasmine-jquery.js",
+            {
+                pattern: './capabilities.json',
+                watched: false,
+                served: true,
+                included: false
+            },
             testRecursivePath,
             {
                 pattern: srcOriginalRecursivePath,
                 included: false,
                 served: true
-            },
-            {
-                pattern: '**/*.json',
-                watched: true,
-                served: true,
-                included: false
             }
         ],
         preprocessors: {
