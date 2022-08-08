@@ -48,7 +48,7 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get mainElement() {
-        return this.element.children("svg.wordCloud");
+        return $(this.element).children("svg.wordCloud");
     }
 
     public get words() {

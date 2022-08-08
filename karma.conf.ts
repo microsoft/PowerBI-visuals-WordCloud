@@ -44,7 +44,7 @@ module.exports = (config: Config) => {
         browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"],
         colors: true,
-        frameworks: ["jasmine"],
+        frameworks: ["webpack", "jasmine"],
         reporters: [
             "progress",
             "junit",
