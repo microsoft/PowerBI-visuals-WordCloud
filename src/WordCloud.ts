@@ -827,6 +827,8 @@ export class WordCloud implements IVisual {
         this.colorPalette = options.host.colorPalette;
         this.visualHost = options.host;
 
+        this.selectionManager = this.visualHost.createSelectionManager();
+
         this.valueSelectionManager = new ValueSelectionManager<string>(
             this.visualHost,
             (text: string): ISelectionId[] => {

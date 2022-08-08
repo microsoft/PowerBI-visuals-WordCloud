@@ -31,13 +31,13 @@
     "d3": "5.12.0",
     "jquery": "3.4.1",
     "lodash": "4.17.15",
+    "powerbi-models": "^1.0.2",
     "powerbi-visuals-utils-colorutils": "^2.2.1",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1",
     "powerbi-visuals-utils-formattingutils": "^4.4.2",
     "powerbi-visuals-utils-svgutils": "^2.2.1",
     "powerbi-visuals-utils-tooltiputils": "^2.3.1",
-    "powerbi-visuals-utils-typeutils": "^2.2.1",
-    "powerbi-models": "^1.0.2"
+    "powerbi-visuals-utils-typeutils": "^2.2.1"
   },
   "devDependencies": {
     "@types/d3": "5.7.2",
@@ -65,7 +65,7 @@
     "karma-typescript-preprocessor": "0.4.0",
     "karma-webpack": "4.0.2",
     "less": "3.10.2",
-    "powerbi-visuals-api": "~2.6.1",
+    "powerbi-visuals-api": "^3.2.0",
     "powerbi-visuals-tools": "3.1.5",
     "powerbi-visuals-utils-testutils": "2.2.1",
     "puppeteer": "^1.5.0",
