@@ -86,7 +86,7 @@ import { createTooltipServiceWrapper, TooltipEventArgs, ITooltipServiceWrapper }
 
 import { WordCloudText, WordCloudData, WordCloudDataPoint, WordCloudDataView, WordCloudGroup } from "./dataInterfaces";
 import { SelectionIdValues, ValueSelectionManager } from "./valueSelectionManager";
-import { wordCloudUtils } from "./wordCloudUtils";
+import { getRandomColor } from "./wordCloudUtils";
 import { WordCloudSettings, GeneralSettings, RotateTextSettings } from "./settings";
 import { VisualLayout } from "./VisualLayout";
 import { WordCloudColumns } from "./WordCloudColumns";
@@ -418,7 +418,7 @@ export class WordCloud implements IVisual {
         const colorHelper: ColorHelper = new ColorHelper(
             colorPalette,
             WordCloud.DataPointFillProperty,
-            wordCloudUtils.getRandomColor()
+            getRandomColor()
         );
 
         const catValues: WordCloudColumns<any[]> = WordCloudColumns.GET_CATEGORICAL_VALUES(dataView);
@@ -561,7 +561,7 @@ export class WordCloud implements IVisual {
         });
 
         const combinedMapKeys = Object.keys(combinedMap);
-        for (let key of combinedMapKeys) {
+        for (const key of combinedMapKeys) {
             if (settings.general.minRepetitionsToDisplay <= combinedMap[key].count) {
                 result.push(combinedMap[key]);
             }
@@ -727,12 +727,11 @@ export class WordCloud implements IVisual {
         maxValue: number,
         scaleType: WordCloudScaleType = WordCloudScaleType.value) {
 
-        let weight: number,
-            fontSize: number,
-            minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageFactor,
-            maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageFactor;
+        let fontSize: number;
 
-        weight = WordCloud.getWeightByScaleType(value, scaleType);
+        const minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageFactor,
+              maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageFactor,
+              weight = WordCloud.getWeightByScaleType(value, scaleType);
 
         if (weight > minValue) {
             fontSize = (maxValue - minValue) !== WordCloud.MinFontSize
@@ -773,7 +772,7 @@ export class WordCloud implements IVisual {
      */
     public static GET_FROM_CYCLED_SEQUENCE(targetArray: number[], index: number, offset: number = 0): number {
         let currentIndex: number = index + offset;
-        let seqLength = targetArray.length;
+        const seqLength = targetArray.length;
 
         if (currentIndex >= seqLength) {
 
@@ -799,7 +798,7 @@ export class WordCloud implements IVisual {
         this.root.on('contextmenu', () => {
             const mouseEvent: MouseEvent = getEvent();
             const eventTarget: EventTarget = mouseEvent.target;
-            let dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
+            const dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
             this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
                 x: mouseEvent.clientX,
                 y: mouseEvent.clientY
@@ -928,14 +927,14 @@ export class WordCloud implements IVisual {
     }
 
     private estimatePossibleWordsToDraw(words: WordCloudDataPoint[], viewport: IViewport, quality: number = 40): number {
-        let sortedWords: WordCloudDataPoint[] = lodash.sortBy(words, "size");
+        const sortedWords: WordCloudDataPoint[] = lodash.sortBy(words, "size");
         let square: number = viewport.height * viewport.width;
         let wordCount: number = 0;
 
         this.generateSprites(this.canvasContext, words, 0);
 
         sortedWords.some((word: WordCloudDataPoint) => {
-            let wordSquare: number = word.height * word.width * (1 - quality / 100);
+            const wordSquare: number = word.height * word.width * (1 - quality / 100);
             square -= wordSquare;
             if (square < 0) {
                 return true;
@@ -957,7 +956,7 @@ export class WordCloud implements IVisual {
         }
 
         requestAnimationFrame(() => {
-            let surface: number[] = lodash.range(
+            const surface: number[] = lodash.range(
                 WordCloud.MinViewport.width,
                 (this.specialViewport.width >> WordCloud.WidthOffset) * this.specialViewport.height,
                 WordCloud.MinViewport.width);
@@ -976,7 +975,7 @@ export class WordCloud implements IVisual {
             let wordsToDraw: WordCloudDataPoint[] = words;
 
             if (this.settings.performance.preestimate) {
-                let countOfWordsToDraw: number = this.estimatePossibleWordsToDraw(words, this.specialViewport, this.settings.performance.quality);
+                const countOfWordsToDraw: number = this.estimatePossibleWordsToDraw(words, this.specialViewport, this.settings.performance.quality);
                 wordsToDraw = words.slice(0, countOfWordsToDraw);
             }
 
@@ -1000,9 +999,9 @@ export class WordCloud implements IVisual {
         wordsForDraw: WordCloudDataPoint[] = [],
         index: number = 0): void {
 
-        let ratio: number = this.getRatio(words.length);
+        const ratio: number = this.getRatio(words.length);
         while (index < words.length && this.root !== undefined) {
-            let word: WordCloudDataPoint = words[index];
+            const word: WordCloudDataPoint = words[index];
 
             word.x = (this.specialViewport.width / ratio
                 * (WordCloud.GET_FROM_CYCLED_SEQUENCE(WordCloud.PreparedRandoms, index) + WordCloud.AdditionalRandomValue)) >> WordCloud.PositionOffset;
@@ -1056,7 +1055,7 @@ export class WordCloud implements IVisual {
 
     private updateBorders(word: WordCloudDataPoint, borders: IPoint[]): IPoint[] {
         if (borders && borders.length === 2) {
-            let leftBorder: IPoint = borders[0],
+            const leftBorder: IPoint = borders[0],
                 rightBorder: IPoint = borders[1];
 
             if (word.x + word.x0 < leftBorder.x) {
@@ -1105,8 +1104,8 @@ export class WordCloud implements IVisual {
             maxHeight: number = WordCloud.DefaultMaxHeightOfTheWord;
 
         for (let i: number = startIndex, length: number = words.length; i < length; i++) {
-            let currentWordData: WordCloudDataPoint = words[i],
-                widthOfWord: number = currentWordData.getWidthOfWord(),
+            const currentWordData: WordCloudDataPoint = words[i];
+            let widthOfWord: number = currentWordData.getWidthOfWord(),
                 heightOfWord: number = currentWordData.size << WordCloud.PositionOffset;
 
             if (currentWordData.rotate) {
@@ -1178,20 +1177,20 @@ export class WordCloud implements IVisual {
     }
 
     private setSprites(context: CanvasRenderingContext2D, words: WordCloudDataPoint[]): void {
-        let pixels: Uint8ClampedArray,
-            sprites: number[] = [];
+        const sprites: number[] = [];
 
-        pixels = context.getImageData(
+        const pixels: Uint8ClampedArray = context.getImageData(
             WordCloud.ContextStartPosition,
             WordCloud.ContextStartPosition,
             this.canvasViewport.width << WordCloud.WidthOffset,
             this.canvasViewport.height).data;
 
         for (let i: number = words.length - 1; i >= 0; i--) {
-            let currentWordData: WordCloudDataPoint = words[i],
-                width: number = currentWordData.width,
-                width32: number = width >> 5,
-                height: number = currentWordData.y1 - currentWordData.y0,
+            const currentWordData: WordCloudDataPoint = words[i],
+                  width: number = currentWordData.width,
+                  width32: number = width >> 5;
+
+            let height: number = currentWordData.y1 - currentWordData.y0,
                 x: number = 0,
                 y: number = 0,
                 seen: number = 0,
@@ -1249,7 +1248,7 @@ export class WordCloud implements IVisual {
     }
 
     private findPosition(surface: number[], word: WordCloudDataPoint, borders: IPoint[], index: number): boolean {
-        let startPoint: IPoint = { x: word.x, y: word.y },
+        const startPoint: IPoint = { x: word.x, y: word.y },
             delta: number = Math.sqrt(this.specialViewport.width * this.specialViewport.width
                 + this.specialViewport.height * this.specialViewport.height),
             dt: number = WordCloud.GET_FROM_CYCLED_SEQUENCE(WordCloud.PreparedRandoms, index) < WordCloud.AdditionalRandomValue
@@ -1284,26 +1283,26 @@ export class WordCloud implements IVisual {
 
             if (!borders || !this.checkIntersect(word, surface)) {
                 if (!borders || this.checkIntersectOfRectangles(word, borders[0], borders[1])) {
-                    let sprite: number[] = word.sprite,
+                    const sprite: number[] = word.sprite,
                         width: number = word.width >> WordCloud.WidthOffset,
                         shiftWidth: number = this.specialViewport.width >> WordCloud.WidthOffset,
                         lx: number = word.x - (width << WordCloud.LxOffset),
                         sx: number = lx & WordCloud.SxMask,
                         msx: number = WordCloud.TheFirstByteMask - sx,
-                        height: number = word.y1 - word.y0,
-                        x: number = (word.y + word.y0) * shiftWidth + (lx >> WordCloud.WidthOffset);
+                        height: number = word.y1 - word.y0;
+
+                    let x: number = (word.y + word.y0) * shiftWidth + (lx >> WordCloud.WidthOffset);
 
                     for (let i: number = 0; i < height; i++) {
                         let lastSprite: number = 0;
 
                         for (let j: number = 0; j <= width; j++) {
-                            let leftMask: number = lastSprite << msx,
-                                rightMask: number;
+                            const leftMask: number = lastSprite << msx;
 
                             if (j < width)
                                 lastSprite = sprite[i * width + j];
 
-                            rightMask = j < width
+                            const rightMask: number = j < width
                                 ? lastSprite >>> sx
                                 : 0;
 
@@ -1335,24 +1334,24 @@ export class WordCloud implements IVisual {
     }
 
     private checkIntersect(word: WordCloudDataPoint, surface: number[]): boolean {
-        let shiftWidth: number = this.specialViewport.width >> WordCloud.WidthOffset,
+        const shiftWidth: number = this.specialViewport.width >> WordCloud.WidthOffset,
             sprite: number[] = word.sprite,
             widthOfWord: number = word.width >> WordCloud.WidthOffset,
             lx: number = word.x - (widthOfWord << WordCloud.LxOffset),
             sx: number = lx & WordCloud.SxMask,
             msx: number = WordCloud.TheFirstByteMask - sx,
-            heightOfWord: number = word.y1 - word.y0,
-            x: number = (word.y + word.y0) * shiftWidth + (lx >> WordCloud.WidthOffset);
+            heightOfWord: number = word.y1 - word.y0;
+
+        let x: number = (word.y + word.y0) * shiftWidth + (lx >> WordCloud.WidthOffset);
 
         for (let i: number = 0; i < heightOfWord; i++) {
             let lastSprite: number = 0;
 
             for (let j: number = 0; j <= widthOfWord; j++) {
                 let mask: number = 0,
-                    leftMask: number,
                     intersectMask: number = 0;
 
-                leftMask = lastSprite << msx;
+                const leftMask: number = lastSprite << msx;
 
                 if (j < widthOfWord) {
                     lastSprite = sprite[i * widthOfWord + j];
@@ -1409,10 +1408,9 @@ export class WordCloud implements IVisual {
 
     private updateSize(): void {
         let fakeWidth: number,
-            fakeHeight: number,
-            ratio: number;
+            fakeHeight: number;
 
-        ratio = Math.sqrt((this.fakeViewport.width * this.fakeViewport.height)
+        const ratio: number = Math.sqrt((this.fakeViewport.width * this.fakeViewport.height)
             / (this.layout.viewportIn.width * this.layout.viewportIn.height));
 
         if (isNaN(ratio)) {
@@ -1443,7 +1441,7 @@ export class WordCloud implements IVisual {
             .selectAll("g")
             .data(wordCloudDataView.data);
 
-        let wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
+        const wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
             .enter()
             .append("svg:g")
             .merge(this.wordsGroupSelection)
@@ -1503,15 +1501,13 @@ export class WordCloud implements IVisual {
     }
 
     private clearIncorrectSelection(dataView: DataView): void {
-        let categories: DataViewCategoryColumn[],
-            identityKeys: string[],
-            oldIdentityKeys: string[] = this.oldIdentityKeys;
+        const oldIdentityKeys: string[] = this.oldIdentityKeys;
 
-        categories = dataView
+        const categories: DataViewCategoryColumn[] = dataView
             && dataView.categorical
             && dataView.categorical.categories;
 
-        identityKeys = categories
+        const identityKeys: string[] = categories
             && categories[0]
             && categories[0].identity
             && categories[0].identity.map((identity: CustomVisualOpaqueIdentity) => JSON.stringify(identity));
@@ -1525,7 +1521,7 @@ export class WordCloud implements IVisual {
         }
 
         if (!lodash.isEmpty(identityKeys)) {
-            let incorrectValues: SelectionIdValues<string>[] = this.valueSelectionManager
+            const incorrectValues: SelectionIdValues<string>[] = this.valueSelectionManager
                 .getSelectionIdValues
                 .filter((idValue: SelectionIdValues<string>) => {
                     return idValue.selectionId.some((selectionId: ISelectionId) => {
@@ -1644,8 +1640,9 @@ export class WordCloud implements IVisual {
             ? this.settings
             : <WordCloudSettings>WordCloudSettings.getDefault();
 
-        let instanceEnumeration: VisualObjectInstanceEnumeration =
+        const instanceEnumeration: VisualObjectInstanceEnumeration =
             WordCloudSettings.enumerateObjectInstances(settings, options);
+
         switch (options.objectName) {
             case "dataPoint": {
                 if (this.data && this.data.dataPoints) {
@@ -1663,7 +1660,7 @@ export class WordCloud implements IVisual {
         options: EnumerateVisualObjectInstancesOptions,
         instanceEnumeration: VisualObjectInstanceEnumeration): void {
 
-        let uniqueDataPoints: WordCloudDataPoint[] = lodash.uniqBy(
+        const uniqueDataPoints: WordCloudDataPoint[] = lodash.uniqBy(
             this.data.dataPoints,
             (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
 
@@ -1675,13 +1672,11 @@ export class WordCloud implements IVisual {
         options: EnumerateVisualObjectInstancesOptions,
         instanceEnumeration: VisualObjectInstanceEnumeration): void {
 
-        let wordCategoriesIndex: number[] = [];
+        const wordCategoriesIndex: number[] = [];
         dataPoints.forEach((item: WordCloudDataPoint) => {
             if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
-                let instance: VisualObjectInstance;
-
                 wordCategoriesIndex.push(item.wordIndex);
-                instance = {
+                const instance: VisualObjectInstance = {
                     objectName: options.objectName,
                     displayName: this.data.texts[item.wordIndex].text,
                     selector: ColorHelper.normalizeSelector(
@@ -1720,9 +1715,10 @@ export class WordCloud implements IVisual {
             .duration(duration)
             .on("end", callback);
     }
+
     private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
-        let categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(this.incomingUpdateOptions.dataViews[0]),
-            wordValueFormatter: IValueFormatter = null;
+        const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(this.incomingUpdateOptions.dataViews[0]);
+        let wordValueFormatter: IValueFormatter = null;
 
         if (categorical.Values && categorical.Values[0]) {
             wordValueFormatter = ValueFormatter.create({
@@ -1731,7 +1727,7 @@ export class WordCloud implements IVisual {
         }
 
         this.tooltipService.addTooltip(selection, (tooltipEvent: TooltipEventArgs<WordCloudDataPoint>) => {
-            let item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.data.count) : tooltipEvent.data.count;
+            const item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.data.count) : tooltipEvent.data.count;
             return [{
                 displayName: tooltipEvent.data.text,
                 value: item.toString()
