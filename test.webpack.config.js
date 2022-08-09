@@ -19,14 +19,6 @@ module.exports = {
                 loader: 'json-loader'
             },
             {
-                test: /\.tsx?$/i,
-                enforce: 'post',
-                include: /(src)/,
-                exclude: /(node_modules|resources\/js\/vendor)/,
-                loader: "@jsdevtools/coverage-istanbul-loader",
-                options: { esModules: true }
-            },
-            {
                 test: /\.less$/,
                 use: [
                     {
