@@ -95,7 +95,7 @@
     "karma-webpack": "^5.0.0",
     "less": "3.10.2",
     "less-loader": "^11.0.0",
-    "powerbi-visuals-api": "^4.7.0",
+    "powerbi-visuals-api": "~4.7.0",
     "powerbi-visuals-tools": "^4.0.5",
     "powerbi-visuals-utils-testutils": "^2.6.0",
     "regenerator-runtime": "0.13.3",
