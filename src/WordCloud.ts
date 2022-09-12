@@ -91,7 +91,7 @@ import IValueFormatter = ValueFormatter.IValueFormatter;
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.tooltip
-import { createTooltipServiceWrapper, ITooltipServiceWrapper, TooltipEventArgs } from "powerbi-visuals-utils-tooltiputils";
+import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
 
 import { WordCloudText, WordCloudData, WordCloudDataPoint, WordCloudDataView, WordCloudGroup } from "./dataInterfaces";
 import { SelectionIdValues, ValueSelectionManager } from "./valueSelectionManager";
@@ -1724,10 +1724,10 @@ export class WordCloud implements IVisual {
             });
         }
 
-        this.tooltipService.addTooltip(selection, (tooltipEvent: TooltipEventArgs<WordCloudDataPoint>) => {
-            const item = wordValueFormatter !== null ? wordValueFormatter.format(tooltipEvent.data.count) : tooltipEvent.data.count;
+        this.tooltipService.addTooltip(selection, (dataPoint: WordCloudDataPoint) => {
+            const item = wordValueFormatter !== null ? wordValueFormatter.format(dataPoint.count) : dataPoint.count;
             return [{
-                displayName: tooltipEvent.data.text,
+                displayName: dataPoint.text,
                 value: item.toString()
             }];
         });
