@@ -28,14 +28,14 @@
   },
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-WordCloud#readme",
   "dependencies": {
-    "d3": "5.12.0",
+    "d3": "7.6.1",
     "jquery": "3.4.1",
     "lodash": "4.17.15",
     "powerbi-visuals-utils-colorutils": "^2.2.1",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1",
     "powerbi-visuals-utils-formattingutils": "^4.4.2",
-    "powerbi-visuals-utils-svgutils": "^2.2.1",
-    "powerbi-visuals-utils-tooltiputils": "^2.3.1",
+    "powerbi-visuals-utils-svgutils": "^2.3.2",
+    "powerbi-visuals-utils-tooltiputils": "^2.5.2",
     "powerbi-visuals-utils-typeutils": "^2.2.1",
     "powerbi-models": "^1.0.2"
   },
