@@ -25,7 +25,7 @@
  */
 
 import powerbiVisualsApi from "powerbi-visuals-api";
-import isEmpty from "lodash.isEmpty";
+import isEmpty from "lodash.isempty";
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.test
@@ -47,49 +47,51 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
         return this.visual;
     }
 
-    public get mainElement() {
+    public get mainElement(): SVGElement | null {
         return this.element.querySelector("svg.wordCloud");
     }
 
-    public get words(): NodeListOf<SVGElement> {
-        return this.mainElement.querySelectorAll("g > g.words > g.word");
+    public get words(): NodeListOf<SVGElement> | undefined {
+        return this.mainElement?.querySelectorAll("g > g.words > g.word");
     }
 
-    public get wordText(): NodeList {
-        return this.mainElement
-            .querySelectorAll("text");
+    public get wordText(): NodeListOf<SVGElement> | undefined {
+        return this.mainElement?.querySelectorAll("text");
     }
 
-    public get wordRects(): NodeListOf<Element> {
-        return this.mainElement
-            .querySelectorAll("rect");
+    public get wordRects(): NodeListOf<SVGElement> | undefined {
+        return this.mainElement?.querySelectorAll("rect");
     }
 
     public wordClick(text: string, ctrl = false) {
-        const elements: SVGElement[] = Array.from(this.words)
+        const elements: SVGElement[] | undefined = this.words && Array.from(this.words)
             .filter((element: SVGElement) => {
-                return element.querySelector("text").textContent === text;
+                return element.querySelector("text")?.textContent === text;
             });
 
-        if (isEmpty(elements)) {
+        if (!elements || isEmpty(elements)) {
             return;
         }
 
-        const element: any = elements[0].querySelector("rect");
+        const element: SVGRectElement | null = elements[0].querySelector("rect");
 
         d3Click(
             element,
-            parseFloat(element.getAttribute("x")),
-            parseFloat(element.getAttribute("y")),
+            parseFloat(<string>element?.getAttribute("x")),
+            parseFloat(<string>element?.getAttribute("y")),
             ctrl
             ? ClickEventType.CtrlKey
             : undefined
         );
     }
 
-    public get selectedWords() {
-        return [...this.wordText].filter((element: Node) => 
+    public get selectedWords(): SVGElement[] | undefined {
+        const wordText = this.wordText && [...this.wordText];
+
+        const filteredText = wordText?.filter((element: Node) => 
             parseFloat(window.getComputedStyle(<Element>element).getPropertyValue("fill-opacity")) === WordCloudBuilder.MaxOpacity
         );
+
+        return filteredText;
     }
 }

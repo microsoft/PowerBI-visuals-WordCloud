@@ -26,8 +26,8 @@
 
 // powerbi
 import powerbiVisualsApi from "powerbi-visuals-api";
-import mapValues from "lodash.mapValues";
-import toArray from "lodash.toArray";
+import mapValues from "lodash.mapvalues";
+import toArray from "lodash.toarray";
 
 import DataView = powerbiVisualsApi.DataView;
 import DataViewValueColumns = powerbiVisualsApi.DataViewValueColumns;

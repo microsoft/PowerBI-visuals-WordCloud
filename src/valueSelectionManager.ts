@@ -25,7 +25,7 @@
  */
 
 import powerbiVisualsApi from "powerbi-visuals-api";
-import isArray from "lodash.isArray";
+import isArray from "lodash.isarray";
 import flatten from "lodash.flatten";
 
 // powerbi.extensibility
