@@ -30,12 +30,12 @@ import { select as d3Select, Selection as d3Selection } from 'd3-selection';
 import { Transition as d3Transition } from 'd3-transition';
 import 'd3-transition';
 
-import isEmpty from 'lodash.isEmpty';
-import isString from 'lodash.isString';
-import sortBy from 'lodash.sortBy';
-import uniqBy from 'lodash.uniqBy';
-import maxBy from 'lodash.maxBy';
-import minBy from 'lodash.minBy';
+import isEmpty from 'lodash.isempty';
+import isString from 'lodash.isstring';
+import sortBy from 'lodash.sortby';
+import uniqBy from 'lodash.uniqby';
+import maxBy from 'lodash.maxby';
+import minBy from 'lodash.minby';
 import includes from 'lodash.includes';
 import range from 'lodash.range';
 
@@ -799,6 +799,16 @@ export class WordCloud implements IVisual {
         return settings.rotateText.minAngle + angle;
     }
 
+    // private handleContextMenu = () => {
+    //     this.root.on('contextmenu', (event: PointerEvent, dataPoint) => {
+    //         this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
+    //             x: event.clientX,
+    //             y: event.clientY
+    //         });
+    //         event.preventDefault();
+    //     });
+    // }
+
     public handleContextMenu() {
         this.root.on('contextmenu', (event) => {
             const dataPoint: any = d3Select(event.target).datum();
@@ -1002,7 +1012,8 @@ export class WordCloud implements IVisual {
         wordsForDraw: WordCloudDataPoint[] = [],
         index: number = 0): void {
 
-            const ratio: number = this.getRatio(words.length);
+        const ratio: number = this.getRatio(words.length);
+
         while (index < words.length && this.root !== undefined) {
             const word: WordCloudDataPoint = words[index];
 
@@ -1633,6 +1644,7 @@ export class WordCloud implements IVisual {
         if (this.main) { // Note: This construction fixes bug #6343.
             this.main.style("line-height", WordCloud.TheThirdLineHeight);
             this.animateSelection(this.main, 0, this.durationAnimations)
+                .style("line-height", WordCloud.TheFourthLineHeight);
         }
     }
 
@@ -1710,8 +1722,8 @@ export class WordCloud implements IVisual {
         callback?: (data: any, index: number) => void): Transition<any> {
 
         return element.transition()
-            .duration(duration)
             .delay(delay)
+            .duration(duration)
             .on("end", callback);
     }
     private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
