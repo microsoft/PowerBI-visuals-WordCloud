@@ -145,8 +145,8 @@ describe("WordCloud", () => {
 
     it("words mustn't intersect each other (rotation is disabled)", (done) => {
       let originalPreparedRandom: number[] = VisualClass.PreparedRandoms;
-      dataView.categorical.categories[0].values = ["Abracadabra1", "Abracadabra2", "Abracadabra3", "Abracadabra4", "Abracadabra5", "Abracadabra6"];
-      dataView.categorical.values[0].values = [20, 20, 20, 20, 20, 20];
+      dataView.categorical!.categories![0].values = ["Abracadabra1", "Abracadabra2", "Abracadabra3", "Abracadabra4", "Abracadabra5", "Abracadabra6"];
+      dataView.categorical!.values![0].values = [20, 20, 20, 20, 20, 20];
       VisualClass.PreparedRandoms = [1];
 
       visualBuilder.updateRenderTimeout(dataView, () => {
@@ -160,7 +160,7 @@ describe("WordCloud", () => {
             return (rightBorder > leftBorder && botttomBorder > topBorder);
           };
 
-          Array.from(visualBuilder.wordRects).forEach(
+          visualBuilder.wordRects && Array.from(visualBuilder.wordRects).forEach(
             (element: Element, index: number) => {
               const domRect = element.getBoundingClientRect();
               boundedElements.push({ domRect: domRect, id: index });
@@ -179,7 +179,7 @@ describe("WordCloud", () => {
     });
 
     it("apply excludes", (done) => {
-      dataView.categorical.categories[0].values = ["Afganistan", "Angola", "Rwanda", "Uganda", "Fiji", "Papua New Guinea"];
+      dataView.categorical!.categories![0].values = ["Afganistan", "Angola", "Rwanda", "Uganda", "Fiji", "Papua New Guinea"];
 
       dataView.metadata.objects = {
         stopWords: {
@@ -192,14 +192,14 @@ describe("WordCloud", () => {
       // Afganistan, Rwanda, Uganda must be filtered by Excludes
       // Papua New Guinea must be filtered by StopWords option
       visualBuilder.updateRenderTimeout(dataView, () => {
-          let length: number = Array.from(visualBuilder.words).length;
+          let length: number | undefined = visualBuilder.words && Array.from(visualBuilder.words).length;
           expect(length).toEqual(2);
           done();
         }, 500);
     });
 
     it("special characters Off with Word-breaking On", (done) => {
-      dataView.categorical.categories[0].values = ["!!!!", '"""""', "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
+      dataView.categorical!.categories![0].values = ["!!!!", '"""""', "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
 
       dataView.metadata.objects = {
         general: {
@@ -211,21 +211,21 @@ describe("WordCloud", () => {
       let expectedWords: string[] = ["C", "M", "Ms", "special", "characters"];
 
       visualBuilder.updateRenderTimeout(dataView, () => {
-          Array.from(visualBuilder.wordText).forEach((element: Node) => {
+        visualBuilder.wordText && Array.from(visualBuilder.wordText).forEach((element: Node) => {
             const text = element.textContent;
             expect(expectedWords.some((value: string) => {
                 return text === value;
               }));
           });
 
-          let length: number = Array.from(visualBuilder.words).length;
+          let length: number | undefined = visualBuilder.words && Array.from(visualBuilder.words).length;
           expect(length).toEqual(5);
           done();
         }, 500);
     });
 
     it("special characters Off with Word-breaking Off", (done) => {
-      dataView.categorical.categories[0].values = ["!!!!", '"""""', "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
+      dataView.categorical!.categories![0].values = ["!!!!", '"""""', "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
 
       dataView.metadata.objects = {
         general: {
@@ -237,21 +237,21 @@ describe("WordCloud", () => {
       let expectedWords: string[] = ["C", "M Ms", "special characters"];
 
       visualBuilder.updateRenderTimeout(dataView, () => {
-          Array.from(visualBuilder.wordText).forEach((element: Node) => {
+        visualBuilder.wordText && Array.from(visualBuilder.wordText).forEach((element: Node) => {
             const text = element.textContent;
             expect(expectedWords.some((value: string) => {
                 return text === value;
               }));
           });
 
-          let length: number = Array.from(visualBuilder.words).length;
+          let length: number | undefined = visualBuilder.words && Array.from(visualBuilder.words).length;
           expect(length).toEqual(3);
           done();
         }, 500);
     });
 
     it("special characters On", (done) => {
-      dataView.categorical.categories[0].values = ["!!!!", '"""""', "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
+      dataView.categorical!.categories![0].values = ["!!!!", '"""""', "###", "%@@@", "????", ">>>>>", "C$$$", "M&Ms", "special characters"];
 
       dataView.metadata.objects = {
         general: {
@@ -260,14 +260,14 @@ describe("WordCloud", () => {
       };
 
       visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-          Array.from(visualBuilder.wordText).forEach((element: Node) => {
+        visualBuilder.wordText && Array.from(visualBuilder.wordText).forEach((element: Node) => {
             const text = element.textContent;
             expect(defaultDataViewBuilder.valuesCategoryValues.some((value: any[]) => {
                   return text === value[0];
                 }));
           });
 
-          let length: number = Array.from(visualBuilder.words).length;
+          let length: number | undefined = visualBuilder.words && Array.from(visualBuilder.words).length;
           expect(length).toEqual(10);
 
           done();
@@ -276,7 +276,7 @@ describe("WordCloud", () => {
 
     it("basic update", (done) => {
       visualBuilder.updateRenderTimeout(dataView, () => {
-        expect(visualBuilder.wordText.length).toBeGreaterThan(0);
+        expect(visualBuilder.wordText?.length).toBeGreaterThan(0);
         done();
       });
     });
@@ -284,8 +284,8 @@ describe("WordCloud", () => {
     it("Word returns after word stop property is changed back", (done) => {
       visualBuilder.updateRenderTimeout(dataView, () => {
           const stopWord = "Afghanistan";
-          let texts = Array.from(visualBuilder.wordText);
-          expect(texts.length).toBeGreaterThan(0);
+          let texts = visualBuilder.wordText && Array.from(visualBuilder.wordText);
+          expect(texts?.length).toBeGreaterThan(0);
 
           dataView.metadata.objects = {
             stopWords: {
@@ -295,18 +295,18 @@ describe("WordCloud", () => {
           };
 
           visualBuilder.updateRenderTimeout(dataView, () => {
-              texts = Array.from(visualBuilder.wordText);
-              let withStopWord = texts.map(t => t.textContent).filter(t => t.includes(stopWord));
-              expect(withStopWord.length).toBe(0);
-              expect(texts.length).toBeGreaterThan(0);
+              texts = visualBuilder.wordText && Array.from(visualBuilder.wordText);
+              let withStopWord = texts?.map(t => t.textContent).filter(t => t?.includes(stopWord));
+              expect(withStopWord?.length).toBe(0);
+              expect(texts?.length).toBeGreaterThan(0);
 
               (<any>dataView.metadata.objects).stopWords.show = false;
 
               visualBuilder.updateRenderTimeout(dataView, () => {
-                  texts = Array.from(visualBuilder.wordText);
-                  withStopWord = texts.map(t => t.textContent).filter(t => t.includes(stopWord));
-                  expect(withStopWord.length).toBeGreaterThan(0);
-                  expect(texts.length).toBeGreaterThan(0);
+                  texts = visualBuilder.wordText && Array.from(visualBuilder.wordText);
+                  withStopWord = texts?.map(t => t.textContent).filter(t => t?.includes(stopWord));
+                  expect(withStopWord?.length).toBeGreaterThan(0);
+                  expect(texts?.length).toBeGreaterThan(0);
 
                   done();
                 }, 700);
@@ -320,27 +320,25 @@ describe("WordCloud", () => {
       visualBuilder.update(dataView);
 
       secondVisualBuilder.updateRenderTimeout(dataView, () => {
-          const firstWord: HTMLElement = <any>visualBuilder.wordText[0];
+          const firstWord: SVGElement | undefined = visualBuilder.wordText && visualBuilder.wordText[0];
 
           d3Click(
             firstWord,
-            parseInt(firstWord.getAttribute("x"), 10),
-            parseInt(firstWord.getAttribute("y"), 10)
+            parseInt(<string>firstWord?.getAttribute("x"), 10),
+            parseInt(<string>firstWord?.getAttribute("y"), 10)
           );
 
           setTimeout(() => {
-            const secondWord: HTMLElement = <any>(
-              secondVisualBuilder.wordText[0]
-            );
+            const secondWord: SVGElement | undefined = secondVisualBuilder.wordText && secondVisualBuilder.wordText[0];
 
             d3Click(
               secondWord,
-              parseInt(secondWord.getAttribute("x"), 10),
-              parseInt(secondWord.getAttribute("y"), 10)
+              parseInt(<string>secondWord?.getAttribute("x"), 10),
+              parseInt(<string>secondWord?.getAttribute("y"), 10)
             );
 
             setTimeout(() => {
-              expect(secondVisualBuilder.wordText.length).toBe(visualBuilder.wordText.length);
+              expect(secondVisualBuilder.wordText?.length).toBe(visualBuilder.wordText?.length);
 
               done();
             });
@@ -358,10 +356,10 @@ describe("WordCloud", () => {
       dataView = defaultDataViewBuilder.getDataView();
 
       visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-          const texts: string[] = Array.from(visualBuilder.wordText).map(
+          const texts = visualBuilder.wordText && Array.from(visualBuilder.wordText).map(
             (element: Node) => element.textContent);
 
-          expect(texts.length).toEqual(difference(texts).length);
+          expect(texts?.length).toEqual(difference(texts).length);
 
           done();
         }, 100);
@@ -372,12 +370,12 @@ describe("WordCloud", () => {
           visualBuilder.wordClick("Iran");
 
           renderTimeout(() => {
-            expect(visualBuilder.selectedWords.length).toBe(1);
+            expect(visualBuilder.selectedWords?.length).toBe(1);
 
             visualBuilder.wordClick("Albania", true);
 
             renderTimeout(() => {
-              expect(visualBuilder.selectedWords.length).toBe(2);
+              expect(visualBuilder.selectedWords?.length).toBe(2);
 
               done();
             });
@@ -402,7 +400,7 @@ describe("WordCloud", () => {
       };
 
       visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-          expect(visualBuilder.wordText.length).toEqual(maxNumberOfWords);
+          expect(visualBuilder.wordText?.length).toEqual(maxNumberOfWords);
 
           done();
         }, 300);
@@ -419,7 +417,7 @@ describe("WordCloud", () => {
       };
 
       visualBuilder.updateRenderTimeout(dataView, () => {
-          let length: number = Array.from(visualBuilder.words).length;
+          let length: number | undefined = visualBuilder.words && Array.from(visualBuilder.words).length;
           expect(length).toBeLessThanOrEqual(numberOfWords);
           done();
         }, 500);
@@ -428,14 +426,14 @@ describe("WordCloud", () => {
     // Check only Word-breaking, without additional options
     it("Word-breaking option", done => {
       visualBuilder.updateRenderTimeout(dataView, () => {
-          let oldLength: number = Array.from(visualBuilder.words).length;
+          let oldLength = <number>(visualBuilder.words && Array.from(visualBuilder.words).length);
           dataView.metadata.objects = {
             general: {
               isBrokenText: true
             }
           };
           visualBuilder.updateRenderTimeout(dataView, () => {
-              let newLength: number = Array.from(visualBuilder.words).length;
+              let newLength: number | undefined = visualBuilder.words && Array.from(visualBuilder.words).length;
               expect(newLength).toBeLessThanOrEqual(oldLength);
               done();
             }, 500);
@@ -458,7 +456,7 @@ describe("WordCloud", () => {
       };
 
       visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-          (<SVGElement[]>Array.from(visualBuilder.wordText)).forEach(
+          (visualBuilder.wordText && Array.from(visualBuilder.wordText))?.forEach(
             (element: Node) => {
               const text = element.textContent;
               expect(
@@ -473,13 +471,13 @@ describe("WordCloud", () => {
         }, 300);
     });
 
-    it("null word values test", () => {
-      dataView.categorical.categories[0].values =
-        dataView.categorical.categories[0].values.map(
+    it("empty word values test", () => {
+      dataView.categorical!.categories![0].values =
+        dataView.categorical!.categories![0].values.map(
           (value: PrimitiveValue, index: number) => {
             return (
               index % 2 === 0 
-              ? null 
+              ? "" 
               : value
             );
           }
@@ -503,14 +501,14 @@ describe("WordCloud", () => {
 
         dataView = defaultDataViewBuilder.getDataView();
 
-        category = dataView.categorical.categories[0];
+        category = dataView.categorical!.categories![0];
 
         category.objects = category.objects || [];
 
         category.values.forEach((value, index: number) => {
           const color: IColorInfo = mockColorPallete.getColor(index.toString());
           colors.push(color.value);
-          category.objects[index] = {
+          category.objects![index] = {
             dataPoint: {
               fill: color.value
             }
@@ -518,7 +516,7 @@ describe("WordCloud", () => {
         });
 
         visualBuilder.updateRenderTimeout(dataView, () => {
-            Array.from(visualBuilder.wordText).forEach((element: Node) => {
+          visualBuilder.wordText && Array.from(visualBuilder.wordText).forEach((element: Node) => {
               const fillColor: string = (<HTMLElement>element).style["fill"];
               expect(colors.some((color: string) => {
                   return fillColor === color;
@@ -540,22 +538,22 @@ describe("WordCloud", () => {
       });
 
       // function that uses grep to filter DOM elements
-      const grep = (elements: Element[], text: string = "Afghanistan"): Element[] => {
+      const grep = (elements: SVGElement[], text: string = "Afghanistan"): Element[] => {
         return elements.filter((element: Element) => {
           return element.innerHTML === "" || element.textContent === text;
         });
       }
 
       it("show", done => {
-        dataView.metadata.objects.stopWords.words = "Afghanistan";
+        dataView.metadata.objects!.stopWords.words = "Afghanistan";
 
         visualBuilder.updateRenderTimeout(dataView, () => {
-            expect(grep(<Element[]>Array.from(visualBuilder.wordText)).length).toBe(0);
+            expect(grep(<SVGElement[]>(visualBuilder.wordText && Array.from(visualBuilder.wordText))).length).toBe(0);
 
-            dataView.metadata.objects.stopWords.show = false;
+            dataView.metadata.objects!.stopWords.show = false;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(grep(<Element[]>Array.from(visualBuilder.wordText)).length).toBeGreaterThan(0);
+                expect(grep(<SVGElement[]>(visualBuilder.wordText && Array.from(visualBuilder.wordText))).length).toBeGreaterThan(0);
 
                 done();
               }, 500);
@@ -563,18 +561,18 @@ describe("WordCloud", () => {
       });
 
       const checkStopWords = (done) => {
-        dataView.metadata.objects.stopWords.words = "";
+        dataView.metadata.objects!.stopWords.words = "";
 
         visualBuilder.updateRenderTimeout(dataView, () => {
-            expect(visualBuilder.wordText.length).toBeGreaterThan(0);
+            expect(visualBuilder.wordText?.length).toBeGreaterThan(0);
 
             const stopWord = "Afghanistan";
-            dataView.metadata.objects.stopWords.words = stopWord;
+            dataView.metadata.objects!.stopWords.words = stopWord;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                const texts = Array.from(visualBuilder.wordText);
-                const withStopWord = texts.map(t => t.textContent).filter(t => t.includes(stopWord));
-                expect(withStopWord.length).toBe(0);
+                const texts = visualBuilder.wordText && Array.from(visualBuilder.wordText);
+                const withStopWord = texts?.map(t => t.textContent).filter(t => t?.includes(stopWord));
+                expect(withStopWord?.length).toBe(0);
                 done();
               }, 500);
           }, 500);
@@ -585,7 +583,7 @@ describe("WordCloud", () => {
       });
 
       it("with word-breaking option is disabled", done => {
-        dataView.metadata.objects.general = {
+        dataView.metadata.objects!.general = {
           isBrokenText: false,
         };
 
@@ -606,7 +604,7 @@ describe("WordCloud", () => {
         };
 
         visualBuilder.updateRenderTimeout(dataView, () => {
-            visualBuilder.words.forEach((element: Node) => {
+            visualBuilder.words?.forEach((element: Node) => {
               const translateNode = <any>d3Select(<Element>element).node();
               const matrix = translateNode.transform.baseVal.consolidate().matrix;
               let { a, b } = matrix;
@@ -639,10 +637,10 @@ describe("WordCloud", () => {
 
   describe("Selection", () => {
     it("Check index of the data-point after filtering", () => {
-      const item: WordCloudText = VisualClass.CONVERTER(dataView, createColorPalette(), visualBuilder.visualHost)
+      const item: WordCloudText | undefined = VisualClass.CONVERTER(dataView, createColorPalette(), visualBuilder.visualHost)
         .texts
         .find((item: WordCloudText) => item.text === "Angola");
-      expect(item.index).toBe(5);
+      expect(item?.index).toBe(5);
     });
   });
 
@@ -683,7 +681,7 @@ describe("WordCloud", () => {
 
       it("should render all of render with foreground color applied", (done) => {
         visualBuilder.updateRenderTimeout(dataView, () => {
-          const words: SVGElement[] = <SVGElement[]>(Array.from(visualBuilder.wordText));
+          const words = <SVGElement[]>(visualBuilder.wordText && Array.from(visualBuilder.wordText));
 
           expect(isColorAppliedToElements(words, foregroundColor, "fill"));
 

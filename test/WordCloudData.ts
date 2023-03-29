@@ -144,6 +144,6 @@ export class WordCloudData extends TestDataViewBuilder {
                     },
                     values: this.valuesCategoryValues.map((value: any[]) => value[1])
                 }
-            ], columnNames).build();
+            ], columnNames!).build();
     }
 }
