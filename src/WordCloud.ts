@@ -33,7 +33,6 @@ import 'd3-transition';
 import isEmpty from 'lodash.isempty';
 import isString from 'lodash.isstring';
 import sortBy from 'lodash.sortby';
-import uniqBy from 'lodash.uniqby';
 import maxBy from 'lodash.maxby';
 import minBy from 'lodash.minby';
 import includes from 'lodash.includes';
@@ -41,19 +40,10 @@ import range from 'lodash.range';
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 
-// d3
-type Transition<T1, T2 = T1> = d3Transition<any, T1, any, T2>;
-type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
-
-// powerbi
 import DataView = powerbiVisualsApi.DataView;
 import IViewport = powerbiVisualsApi.IViewport;
 import PrimitiveValue = powerbiVisualsApi.PrimitiveValue;
-import VisualObjectInstance = powerbiVisualsApi.VisualObjectInstance;
 import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
-import VisualObjectInstanceEnumeration = powerbiVisualsApi.VisualObjectInstanceEnumeration;
-import EnumerateVisualObjectInstancesOptions = powerbiVisualsApi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstanceEnumerationObject = powerbiVisualsApi.VisualObjectInstanceEnumerationObject;
 import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier; 
 import CustomVisualOpaqueIdentity = powerbiVisualsApi.visuals.CustomVisualOpaqueIdentity;
 
@@ -61,7 +51,6 @@ import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
 import IVisualEventService = powerbiVisualsApi.extensibility.IVisualEventService;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
-// powerbi.visuals
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 import ISelectionIdBuilder = powerbiVisualsApi.visuals.ISelectionIdBuilder;
 
@@ -70,7 +59,6 @@ import IVisualHost = powerbiVisualsApi.extensibility.visual.IVisualHost;
 import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
-// powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 import IMargin = SVGUtil.IMargin;
 import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
@@ -80,25 +68,22 @@ import translate = manipulation.translate;
 import IPoint = SVGUtil.shapesInterfaces.IPoint;
 import translateAndScale = manipulation.translateAndScale;
 
-// powerbi.extensibility.utils.type
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
-
-// powerbi.extensibility.utils.formatting
 import { textMeasurementService, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = ValueFormatter.IValueFormatter;
-
-// powerbi.extensibility.utils.color
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
-
-// powerbi.extensibility.utils.tooltip
 import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
 import { WordCloudText, WordCloudData, WordCloudDataPoint, WordCloudDataView, WordCloudGroup } from "./dataInterfaces";
 import { SelectionIdValues, ValueSelectionManager } from "./valueSelectionManager";
 import { getRandomColor } from "./wordCloudUtils";
-import { WordCloudSettings, GeneralSettings, RotateTextSettings } from "./settings";
+import { GeneralSettings, RotateTextSettings, WordCloudSettings } from "./settings";
 import { VisualLayout } from "./VisualLayout";
 import { WordCloudColumns } from "./WordCloudColumns";
+
+type Transition<T1, T2 = T1> = d3Transition<any, T1, any, T2>;
+type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 type WordMap = { [word: string]: boolean };
 
@@ -106,6 +91,13 @@ enum WordCloudScaleType {
     logn,
     sqrt,
     value
+}
+
+interface Rectangle {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
 }
 
 export class WordCloud implements IVisual {
@@ -373,9 +365,8 @@ export class WordCloud implements IVisual {
 
     private static FontSizePercentage: number = 100;
 
-    private get settings(): WordCloudSettings {
-        return this.data && this.data.settings;
-    }
+    private formattingSettings: WordCloudSettings;
+    private formattingSettingsService: FormattingSettingsService;
 
     private data: WordCloudData;
     private colorPalette: IColorPalette;
@@ -411,6 +402,7 @@ export class WordCloud implements IVisual {
 
     public static CONVERTER(
         dataView: DataView,
+        settings: WordCloudSettings,
         colorPalette: IColorPalette,
         visualHost: IVisualHost
     ): WordCloudData {
@@ -427,7 +419,7 @@ export class WordCloud implements IVisual {
         );
 
         const catValues: WordCloudColumns<any[]> = WordCloudColumns.GET_CATEGORICAL_VALUES(dataView);
-        const settings: WordCloudSettings = WordCloud.PARSE_SETTINGS(dataView, colorHelper);
+        settings = WordCloud.PARSE_SETTINGS(settings, colorHelper);
 
         const wordValueFormatter: IValueFormatter = ValueFormatter.create({
             format: ValueFormatter.getFormatStringByColumn(categorical.Category.source)
@@ -459,7 +451,7 @@ export class WordCloud implements IVisual {
             } else {
                 color = colorHelper.getHighContrastColor(
                     "foreground",
-                    settings.dataPoint.defaultColor || colorPalette.getColor(index.toString()).value
+                    settings.dataPoint.defaultColor.value.value || colorPalette.getColor(index.toString()).value
                 );
             }
 
@@ -498,44 +490,42 @@ export class WordCloud implements IVisual {
         };
     }
 
-    public static PARSE_SETTINGS(dataView: DataView, colorHelper: ColorHelper): WordCloudSettings {
-        const settings: WordCloudSettings = WordCloudSettings.parse<WordCloudSettings>(dataView);
-
-        settings.general.minFontSize = Math.max(
-            settings.general.minFontSize,
+    public static PARSE_SETTINGS(settings: WordCloudSettings, colorHelper: ColorHelper): WordCloudSettings {
+        settings.general.minFontSize.value = Math.max(
+            settings.general.minFontSize.value,
             GeneralSettings.MinFontSize);
 
-        settings.general.maxFontSize = Math.max(
-            settings.general.maxFontSize,
+        settings.general.maxFontSize.value = Math.max(
+            settings.general.maxFontSize.value,
             GeneralSettings.MinFontSize);
 
-        settings.general.maxFontSize = Math.max(
-            settings.general.maxFontSize,
-            settings.general.minFontSize);
+        settings.general.maxFontSize.value = Math.max(
+            settings.general.maxFontSize.value,
+            settings.general.minFontSize.value);
 
-        settings.rotateText.minAngle = Math.max(
-            Math.min(settings.rotateText.minAngle, RotateTextSettings.MaxAngle),
+        settings.rotateText.minAngle.value = Math.max(
+            Math.min(settings.rotateText.minAngle.value, RotateTextSettings.MaxAngle),
             RotateTextSettings.MinAngle);
 
-        settings.rotateText.maxAngle = Math.max(
-            Math.min(settings.rotateText.maxAngle, RotateTextSettings.MaxAngle),
+        settings.rotateText.maxAngle.value = Math.max(
+            Math.min(settings.rotateText.maxAngle.value, RotateTextSettings.MaxAngle),
             RotateTextSettings.MinAngle);
 
-        settings.rotateText.maxAngle = Math.max(
-            settings.rotateText.maxAngle,
-            settings.rotateText.minAngle);
+        settings.rotateText.maxAngle.value = Math.max(
+            settings.rotateText.maxAngle.value,
+            settings.rotateText.minAngle.value);
 
-        settings.general.maxNumberOfWords = Math.max(
-            Math.min(settings.general.maxNumberOfWords, RotateTextSettings.MaxNumberOfWords),
+        settings.general.maxNumberOfWords.value = Math.max(
+            Math.min(settings.general.maxNumberOfWords.value, RotateTextSettings.MaxNumberOfWords),
             RotateTextSettings.MinNumberOfWords);
 
-        settings.rotateText.maxNumberOfOrientations = Math.max(
-            Math.min(settings.rotateText.maxNumberOfOrientations, RotateTextSettings.MaxNumberOfWords),
+        settings.rotateText.maxNumberOfOrientations.value = Math.max(
+            Math.min(settings.rotateText.maxNumberOfOrientations.value, RotateTextSettings.MaxNumberOfWords),
             RotateTextSettings.MinNumberOfWords);
 
-        settings.dataPoint.defaultColor = colorHelper.getHighContrastColor(
+        settings.dataPoint.defaultColor.value.value = colorHelper.getHighContrastColor(
             "foreground",
-            settings.dataPoint.defaultColor,
+            settings.dataPoint.defaultColor.value.value,
         );
 
         return settings;
@@ -567,7 +557,7 @@ export class WordCloud implements IVisual {
 
         const combinedMapKeys = Object.keys(combinedMap);
         for (const key of combinedMapKeys) {
-            if (settings.general.minRepetitionsToDisplay <= combinedMap[key].count) {
+            if (settings.general.minRepetitionsToDisplay.value <= combinedMap[key].count) {
                 result.push(combinedMap[key]);
             }
         }
@@ -576,7 +566,7 @@ export class WordCloud implements IVisual {
     }
 
     private static cleanAndSplit(item: string, settings: WordCloudSettings): string[] {
-        if (!settings.general.isPunctuationsCharacters) {
+        if (!settings.general.isPunctuationsCharacters.value) {
             return item.replace(this.punctuationRegExp, " ").split(this.whiteSpaceRegExp);
         }
         return item.split(WordCloud.whiteSpaceRegExp);
@@ -584,16 +574,16 @@ export class WordCloud implements IVisual {
 
     private static getStopWords(settings: WordCloudSettings): WordMap {
         const map: WordMap = Object.create(null);
-        if (!settings.stopWords.show) return map;
-        if (!!settings.stopWords.words && isString(settings.stopWords.words)) {
-            settings.stopWords.words
+        if (!settings.stopWords.show.value) return map;
+        if (!!settings.stopWords.words.value && isString(settings.stopWords.words.value)) {
+            settings.stopWords.words.value
                 .split(WordCloud.StopWordsDelimiter)
                 .forEach((word: string) => {
                     word = word.toLocaleLowerCase();
                     if (!map[word]) map[word] = true;
                 });
         }
-        if (settings.stopWords.isDefaultStopWords) {
+        if (settings.stopWords.isDefaultStopWords.value) {
             WordCloud.StopWords
                 .forEach((word: string) => {
                     word = word.toLocaleLowerCase();
@@ -632,7 +622,7 @@ export class WordCloud implements IVisual {
 
             splittedWords = this.getFilteredWords(splittedWords, excludedWords);
 
-            processedText.push(...settings.general.isBrokenText
+            processedText.push(...settings.general.isBrokenText.value
                 ? WordCloud.getBrokenWords(splittedWords, item)
                 : WordCloud.getFilteredSentences(splittedWords, item, settings)
             );
@@ -665,7 +655,7 @@ export class WordCloud implements IVisual {
         settings: WordCloudSettings): WordCloudText[] {
         if (splittedWords.length === 0) return [];
 
-        if (!settings.general.isPunctuationsCharacters) {
+        if (!settings.general.isPunctuationsCharacters.value) {
             item.text = item.text
                 .replace(this.punctuationRegExp, " ");
         }
@@ -734,8 +724,8 @@ export class WordCloud implements IVisual {
 
         let fontSize: number;
 
-        const minFontSize: number = settings.general.minFontSize * GeneralSettings.FontSizePercentageFactor,
-              maxFontSize: number = settings.general.maxFontSize * GeneralSettings.FontSizePercentageFactor,
+        const minFontSize: number = settings.general.minFontSize.value * GeneralSettings.FontSizePercentageFactor,
+              maxFontSize: number = settings.general.maxFontSize.value * GeneralSettings.FontSizePercentageFactor,
               weight = WordCloud.getWeightByScaleType(value, scaleType);
 
         if (weight > minValue) {
@@ -788,26 +778,16 @@ export class WordCloud implements IVisual {
     }
 
     private static getAngle(settings: WordCloudSettings, index: number): number {
-        if (!settings.rotateText.show) {
+        if (!settings.rotateText.show.value) {
             return WordCloud.DefaultAngle;
         }
 
-        const angle: number = ((settings.rotateText.maxAngle - settings.rotateText.minAngle)
-            / settings.rotateText.maxNumberOfOrientations)
-            * Math.floor(WordCloud.GET_FROM_CYCLED_SEQUENCE(WordCloud.PreparedRandoms, index) * settings.rotateText.maxNumberOfOrientations);
+        const angle: number = ((settings.rotateText.maxAngle.value - settings.rotateText.minAngle.value)
+            / settings.rotateText.maxNumberOfOrientations.value)
+            * Math.floor(WordCloud.GET_FROM_CYCLED_SEQUENCE(WordCloud.PreparedRandoms, index) * settings.rotateText.maxNumberOfOrientations.value);
 
-        return settings.rotateText.minAngle + angle;
+        return settings.rotateText.minAngle.value + angle;
     }
-
-    // private handleContextMenu = () => {
-    //     this.root.on('contextmenu', (event: PointerEvent, dataPoint) => {
-    //         this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
-    //             x: event.clientX,
-    //             y: event.clientY
-    //         });
-    //         event.preventDefault();
-    //     });
-    // }
 
     public handleContextMenu() {
         this.root.on('contextmenu', (event) => {
@@ -832,6 +812,10 @@ export class WordCloud implements IVisual {
 
     public init(options: VisualConstructorOptions): void {
         this.root = d3Select(options.element).append("svg");
+
+        const localizationManager = options.host.createLocalizationManager();
+        this.formattingSettingsService = new FormattingSettingsService(localizationManager);
+        
         this.eventService = options.host.eventService;
         this.tooltipService = createTooltipServiceWrapper(
             options.host.tooltipService,
@@ -894,6 +878,7 @@ export class WordCloud implements IVisual {
         }
 
         this.eventService.renderingStarted(visualUpdateOptions);
+        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(WordCloudSettings, visualUpdateOptions.dataViews);
 
         if (visualUpdateOptions !== this.visualUpdateOptions) {
             this.incomingUpdateOptions = visualUpdateOptions;
@@ -913,6 +898,7 @@ export class WordCloud implements IVisual {
 
             const data: WordCloudData = WordCloud.CONVERTER(
                 dataView,
+                this.formattingSettings,
                 this.colorPalette,
                 this.visualHost,
             );
@@ -987,8 +973,8 @@ export class WordCloud implements IVisual {
 
             let wordsToDraw: WordCloudDataPoint[] = words;
 
-            if (this.settings.performance.preestimate) {
-                const countOfWordsToDraw: number = this.estimatePossibleWordsToDraw(words, this.specialViewport, this.settings.performance.quality);
+            if (this.formattingSettings.performance.preestimate.value) {
+                const countOfWordsToDraw: number = this.estimatePossibleWordsToDraw(words, this.specialViewport, this.formattingSettings.performance.quality.value);
                 wordsToDraw = words.slice(0, countOfWordsToDraw);
             }
 
@@ -1034,7 +1020,7 @@ export class WordCloud implements IVisual {
                 word.x -= this.specialViewport.width >> WordCloud.PositionOffset;
                 word.y -= this.specialViewport.height >> WordCloud.PositionOffset;
 
-                if (wordsForDraw.length >= this.settings.general.maxNumberOfWords) {
+                if (wordsForDraw.length >= this.formattingSettings.general.maxNumberOfWords.value) {
                     index = words.length - 1;
                 }
             }
@@ -1572,11 +1558,11 @@ export class WordCloud implements IVisual {
     }
 
     private scaleMainView(wordCloudDataView: WordCloudDataView): void {
-        const rectangles: ClientRect[] = wordCloudDataView.data.map((dataPoint: WordCloudDataPoint) => {
+        const rectangles: Rectangle[] = wordCloudDataView.data.map((dataPoint: WordCloudDataPoint) => {
             const hw: number = dataPoint.width / 2,
                 hh: number = dataPoint.height / 2;
 
-            return <ClientRect>{
+            return {
                 left: dataPoint.x - hw,
                 top: dataPoint.y - hh,
                 right: dataPoint.x + hw,
@@ -1588,11 +1574,11 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        const rectangle: ClientRect = <ClientRect>{
-            left: minBy(rectangles, (rect: ClientRect) => rect.left).left,
-            top: minBy(rectangles, (rect: ClientRect) => rect.top).top,
-            right: maxBy(rectangles, (rect: ClientRect) => rect.right).right,
-            bottom: maxBy(rectangles, (rect: ClientRect) => rect.bottom).bottom
+        const rectangle: Rectangle = {
+            left: minBy(rectangles, (rect: Rectangle) => rect.left).left,
+            top: minBy(rectangles, (rect: Rectangle) => rect.top).top,
+            right: maxBy(rectangles, (rect: Rectangle) => rect.right).right,
+            bottom: maxBy(rectangles, (rect: Rectangle) => rect.bottom).bottom
         };
 
         const rectWidth: number = rectangle.right - rectangle.left,
@@ -1648,71 +1634,11 @@ export class WordCloud implements IVisual {
         }
     }
 
-    public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
-        const settings: WordCloudSettings = this.settings
-            ? this.settings
-            : <WordCloudSettings>WordCloudSettings.getDefault();
+    public getFormattingModel(): powerbi.visuals.FormattingModel {
+        this.formattingSettings.initColors(this.data.dataPoints);
 
-        const instanceEnumeration: VisualObjectInstanceEnumeration =
-            WordCloudSettings.enumerateObjectInstances(settings, options);
-        switch (options.objectName) {
-            case "dataPoint": {
-                if (this.data && this.data.dataPoints) {
-                    this.enumerateDataPoint(options, instanceEnumeration);
-                }
-
-                break;
-            }
-        }
-
-        return instanceEnumeration || [];
-    }
-
-    private enumerateDataPoint(
-        options: EnumerateVisualObjectInstancesOptions,
-        instanceEnumeration: VisualObjectInstanceEnumeration): void {
-
-        const uniqueDataPoints: WordCloudDataPoint[] = uniqBy(
-            this.data.dataPoints,
-            (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
-
-        this.enumerateDataPointColor(uniqueDataPoints, options, instanceEnumeration);
-    }
-
-    private enumerateDataPointColor(
-        dataPoints: WordCloudDataPoint[],
-        options: EnumerateVisualObjectInstancesOptions,
-        instanceEnumeration: VisualObjectInstanceEnumeration): void {
-
-        const wordCategoriesIndex: number[] = [];
-        dataPoints.forEach((item: WordCloudDataPoint) => {
-            if (wordCategoriesIndex.indexOf(item.wordIndex) === -1) {
-                wordCategoriesIndex.push(item.wordIndex);
-                const instance: VisualObjectInstance = {
-                    objectName: options.objectName,
-                    displayName: this.data.texts[item.wordIndex].text,
-                    selector: ColorHelper.normalizeSelector(
-                        item.selectionIds[0].getSelector(),
-                        false),
-                    properties: { fill: { solid: { color: item.color } } }
-                };
-                this.addAnInstanceToEnumeration(instanceEnumeration, instance);
-            }
-        });
-
-    }
-
-    private addAnInstanceToEnumeration(
-        instanceEnumeration: VisualObjectInstanceEnumeration,
-        instance: VisualObjectInstance): void {
-
-        if ((<VisualObjectInstanceEnumerationObject>instanceEnumeration).instances) {
-            (<VisualObjectInstanceEnumerationObject>instanceEnumeration)
-                .instances
-                .push(instance);
-        } else {
-            (<VisualObjectInstance[]>instanceEnumeration).push(instance);
-        }
+        const formattingModel = this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
+        return formattingModel;
     }
 
     private animateSelection<T extends Selection<any>>(
@@ -1726,6 +1652,7 @@ export class WordCloud implements IVisual {
             .duration(duration)
             .on("end", callback);
     }
+
     private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
         const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.GET_CATEGORICAL_COLUMNS(this.incomingUpdateOptions.dataViews[0]);
         let wordValueFormatter: IValueFormatter = null;

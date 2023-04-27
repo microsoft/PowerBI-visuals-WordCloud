@@ -46,6 +46,8 @@ import areColorsEqual = helpers.areColorsEqual;
 // WordCloud1447959067750
 import { WordCloud as VisualClass } from "../src/WordCloud";
 import { WordCloudText } from "../src/dataInterfaces";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import { WordCloudSettings } from "../src/settings";
 
 /**
  * Extends the mock of ISelectionManager.
@@ -133,7 +135,10 @@ describe("WordCloud", () => {
           minRepetitionsToDisplay: 200
         }
       };
-      const data = VisualClass.CONVERTER(dataView, createColorPalette(), visualBuilder.visualHost);
+        
+      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
+
+      const data = VisualClass.CONVERTER(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost);
       expect(data.dataPoints.length).toEqual(74);
     });
   });
@@ -637,7 +642,9 @@ describe("WordCloud", () => {
 
   describe("Selection", () => {
     it("Check index of the data-point after filtering", () => {
-      const item: WordCloudText | undefined = VisualClass.CONVERTER(dataView, createColorPalette(), visualBuilder.visualHost)
+      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
+
+      const item: WordCloudText | undefined = VisualClass.CONVERTER(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost)
         .texts
         .find((item: WordCloudText) => item.text === "Angola");
       expect(item?.index).toBe(5);
