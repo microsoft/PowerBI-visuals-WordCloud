@@ -96,7 +96,7 @@
                     }
                 },
                 "minFontSize": {
-                    "displayName": "Min font size",
+                    "displayName": "Min font size (%)",
                     "displayNameKey": "Visual_MinFontSize",
                     "type": {
                         "formatting": {
@@ -105,7 +105,7 @@
                     }
                 },
                 "maxFontSize": {
-                    "displayName": "Max font size",
+                    "displayName": "Max font size (%)",
                     "displayNameKey": "Visual_MaxFontSize",
                     "type": {
                         "formatting": {
@@ -230,7 +230,7 @@
                     }
                 },
                 "quality": {
-                    "displayName": "Quality",
+                    "displayName": "Quality (%)",
                     "displayNameKey": "Visual_Quality",
                     "description": "The value determines the quality of the pre-estimation",
                     "descriptionKey": "Visual_Description_Quality",
