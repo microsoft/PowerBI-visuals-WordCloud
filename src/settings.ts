@@ -44,7 +44,6 @@ export class WordCloudSettings extends FormattingSettingsModel {
 
     public initColors(dataPoints: WordCloudDataPoint[]) {
         const wordCategoriesIndex: number[] = [];
-        const colors: FormattingSettingsSlice[] = [];
 
         const uniqueDataPoints: WordCloudDataPoint[] = uniqBy(dataPoints, (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
         this.dataPoint.slices = [this.dataPoint.slices[0]];
@@ -52,8 +51,8 @@ export class WordCloudSettings extends FormattingSettingsModel {
         uniqueDataPoints.forEach((dataPoint: WordCloudDataPoint) => {
             if (wordCategoriesIndex.indexOf(dataPoint.wordIndex) === -1) {
                 wordCategoriesIndex.push(dataPoint.wordIndex);
-                colors.push(new formattingSettings.ColorPicker({
-                    name: dataPoint.text,
+                this.dataPoint.slices.push(new formattingSettings.ColorPicker({
+                    name: "fill",
                     displayName: dataPoint.text,
                     selector: ColorHelper.normalizeSelector(
                         dataPoint.selectionIds[0].getSelector(),
@@ -63,9 +62,6 @@ export class WordCloudSettings extends FormattingSettingsModel {
                 }));
             }
         });
-
-        colors.forEach(color => this.dataPoint.slices.push(color));
-        //this.dataPoint.slices = colors;
     }
 }
 

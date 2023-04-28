@@ -909,6 +909,7 @@ export class WordCloud implements IVisual {
             }
 
             this.data = data;
+            this.formattingSettings.initColors(this.data.dataPoints);
 
             this.computePositions((wordCloudDataView: WordCloudDataView) => {
                 this.render(wordCloudDataView);
@@ -1635,8 +1636,6 @@ export class WordCloud implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.formattingSettings.initColors(this.data.dataPoints);
-
         const formattingModel = this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
         return formattingModel;
     }
