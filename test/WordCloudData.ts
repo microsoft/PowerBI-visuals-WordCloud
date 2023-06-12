@@ -34,6 +34,8 @@ import ValueType = valueType.ValueType;
 // powerbi.extensibility.utils.test
 import { testDataViewBuilder } from "powerbi-visuals-utils-testutils";
 import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
+import TestDataViewBuilderCategoryColumnOptions = testDataViewBuilder.TestDataViewBuilderCategoryColumnOptions;
+import { DataViewBuilderValuesColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/dataViewBuilder";
 
 export class WordCloudData extends TestDataViewBuilder {
     public static ColumnCategory: string = "Category";
@@ -117,8 +119,24 @@ export class WordCloudData extends TestDataViewBuilder {
         ["France", 966]
     ];
 
-    public getDataView(columnNames?: string[]): DataView {
-        return this.createCategoricalDataViewBuilder([
+    public generateHightLightedValues(valuesArray: number[], hightlightedElementNumber?: number): number[] {
+        let array: any[] = [];
+        const length: number = valuesArray.length;
+        for (let i: number = 0; i < length; i++) {
+            array[i] = null;
+        }
+        if (!hightlightedElementNumber)
+            return array;
+        if (hightlightedElementNumber >= length || hightlightedElementNumber < 0) {
+            array[0] = valuesArray[0];
+        } else {
+            array[hightlightedElementNumber] = valuesArray[hightlightedElementNumber];
+        }
+        return array;
+    }
+
+    public getDataView(columnNames?: string[], withHighlights: boolean = false, hightlightedElementNumber: number = 0): DataView {
+        const categoriesColumn: TestDataViewBuilderCategoryColumnOptions[] = [
             {
                 source: {
                     displayName: WordCloudData.ColumnCategory,
@@ -135,15 +153,25 @@ export class WordCloudData extends TestDataViewBuilder {
                 },
                 values: ["Afganistan", "Something", "\"Rwanda\", \"Uganda\""]
             }
-        ], [
-                {
-                    source: {
-                        displayName: WordCloudData.ColumnValues,
-                        roles: { "Values": true },
-                        type: ValueType.fromDescriptor({ text: true })
-                    },
-                    values: this.valuesCategoryValues.map((value: any[]) => value[1])
-                }
-            ], columnNames!).build();
+        ];
+
+        let columnValues = this.valuesCategoryValues.map((value: any[]) => value[1]);
+
+        let columns: DataViewBuilderValuesColumnOptions[] = [
+            {
+                source: {
+                    displayName: WordCloudData.ColumnValues,
+                    roles: { "Values": true },
+                    type: ValueType.fromDescriptor({ text: true })
+                },
+                values: columnValues
+            }
+        ];
+
+        if (withHighlights) {
+            columns[0].highlights = this.generateHightLightedValues(columnValues, hightlightedElementNumber);
+        }        
+
+        return this.createCategoricalDataViewBuilder(categoriesColumn, [columns[0]], columnNames!).build();
     }
 }
