@@ -23,5 +23,6 @@
     "Visual_PreestimateWordCount": "Pre-estimate words count to draw",
     "Visual_Quality": "Quality (%)",
     "Visual_Performance": "Performance",
-    "Visual_Description_Quality": "The value determines the quality of the pre-estimation"
+    "Visual_Description_Quality": "The value determines the quality of the pre-estimation",
+    "Visual_ShowAll" : "Show all"
 }

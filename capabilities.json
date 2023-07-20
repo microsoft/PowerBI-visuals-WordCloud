@@ -144,6 +144,13 @@
                         }
                     }
                 },
+                "isShowAll": {
+                    "displayName": "Show all",
+                    "displayNameKey": "Visual_ShowAll",
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
                     "displayName": "Fill",
                     "displayNameKey": "Visual_Fill",
@@ -244,5 +251,6 @@
         }
     },
     "supportsMultiVisualSelection": true,
-    "supportsKeyboardFocus": true
+    "supportsKeyboardFocus": true,
+    "supportsHighlight": true
 }

@@ -909,7 +909,8 @@ export class WordCloud implements IVisual {
             }
 
             this.data = data;
-            this.formattingSettings.initColors(this.data.dataPoints);
+            if(this.formattingSettings.dataPoint.isShowAll.value)
+                this.formattingSettings.initColors(this.data.dataPoints);
 
             this.computePositions((wordCloudDataView: WordCloudDataView) => {
                 this.render(wordCloudDataView);
@@ -1612,17 +1613,20 @@ export class WordCloud implements IVisual {
         }
 
         //SupportHighlight Logic
-        let highlightedTexts : PrimitiveValue[] = [];
+        const highlightedTexts : PrimitiveValue[] = [];
         if(categorical)
         {
             const values : powerbi.DataViewValueColumns = categorical.values;
-            const categories : powerbi.DataViewCategoryColumn[] = categorical.categories;
-            for(let idx = 0; idx < values.length; idx ++) {
-                if(!values[idx].highlights)
-                    continue;
-                for(let innerIdx = 0; innerIdx < values[idx].highlights.length; innerIdx ++) {
-                    if(values[idx].highlights[innerIdx])
-                        highlightedTexts.push(categories[0].values[innerIdx]);
+            if(values)
+            {
+                const categories : powerbi.DataViewCategoryColumn[] = categorical.categories;
+                for(let idx = 0; idx < values.length; idx ++) {
+                    if(!values[idx].highlights)
+                        continue;
+                    for(let innerIdx = 0; innerIdx < values[idx].highlights.length; innerIdx ++) {
+                        if(values[idx].highlights[innerIdx])
+                            highlightedTexts.push(categories[0].values[innerIdx]);
+                    }
                 }
             }
         }

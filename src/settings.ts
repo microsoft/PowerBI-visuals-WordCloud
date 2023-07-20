@@ -46,7 +46,7 @@ export class WordCloudSettings extends FormattingSettingsModel {
         const wordCategoriesIndex: number[] = [];
 
         const uniqueDataPoints: WordCloudDataPoint[] = uniqBy(dataPoints, (dataPoint: WordCloudDataPoint) => dataPoint.wordIndex);
-        this.dataPoint.slices = [this.dataPoint.slices[0]];
+        this.dataPoint.slices = [this.dataPoint.slices[0], this.dataPoint.slices[1]];
 
         uniqueDataPoints.forEach((dataPoint: WordCloudDataPoint) => {
             if (wordCategoriesIndex.indexOf(dataPoint.wordIndex) === -1) {
@@ -143,7 +143,13 @@ export class DataPointSettings extends FormattingSettingsCard {
         },
     });
 
-    public slices: FormattingSettingsSlice[] = [this.defaultColor];
+    public isShowAll = new formattingSettings.ToggleSwitch({
+        name: "isShowAll",
+        displayNameKey: "Visual_ShowAll",
+        value: false,
+    });
+
+    public slices: FormattingSettingsSlice[] = [this.defaultColor, this.isShowAll];
 }
 
 export class StopWordsSettings extends FormattingSettingsCard {
