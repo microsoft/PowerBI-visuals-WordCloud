@@ -70,22 +70,26 @@ export class WordCloudSettings extends FormattingSettingsModel {
     public static MinFontSize: number = 1;
 
     public name = "general";
+    public displayName = "General";
     public displayNameKey = "Visual_General";
 
     public minRepetitionsToDisplay = new formattingSettings.NumUpDown({
         name: "minRepetitionsToDisplay",
+        displayName : "Minimum number of repetitions to display",
         displayNameKey: "Visual_WordCloud_minRepetitionsToDisplay",
         value: 1,
     });
 
     public maxNumberOfWords = new formattingSettings.NumUpDown({
         name: "maxNumberOfWords",
+        displayName : "Max number of words",
         displayNameKey: "Visual_WordCloud_MaxNumberWords",
         value: 200,
     });
 
     public minFontSize = new formattingSettings.NumUpDown({
         name: "minFontSize",
+        displayName : "Min font size (%)",
         displayNameKey: "Visual_MinFontSize",
         value: 20 / GeneralSettings.FontSizePercentageFactor,
         options: {
@@ -102,6 +106,7 @@ export class WordCloudSettings extends FormattingSettingsModel {
 
     public maxFontSize = new formattingSettings.NumUpDown({
         name: "maxFontSize",
+        displayName : "Max font size (%)",
         displayNameKey: "Visual_MaxFontSize",
         value: 100 / GeneralSettings.FontSizePercentageFactor,
         options: {
@@ -118,12 +123,14 @@ export class WordCloudSettings extends FormattingSettingsModel {
 
     public isBrokenText = new formattingSettings.ToggleSwitch({
         name: "isBrokenText",
+        displayName : "Word-breaking",
         displayNameKey: "Visual_WordCloud_WordBreaking",
         value: true,
     });
 
     public isPunctuationsCharacters = new formattingSettings.ToggleSwitch({
         name: "isPunctuationsCharacters",
+        displayName : "Special characters",
         displayNameKey: "Visual_WordCloud_SpecialCharacters",
         value: false,
     });
@@ -133,10 +140,12 @@ export class WordCloudSettings extends FormattingSettingsModel {
 
 export class DataPointSettings extends FormattingSettingsCard {
     public name = "dataPoint";
+    public displayName = "Data colors";
     public displayNameKey = "Visual_DataColors";
 
     public defaultColor = new formattingSettings.ColorPicker({
         name: "defaultColor",
+        displayName : "Default color",
         displayNameKey: "Visual_DefaultColor",
         value: {
             value: null
@@ -145,6 +154,7 @@ export class DataPointSettings extends FormattingSettingsCard {
 
     public isShowAll = new formattingSettings.ToggleSwitch({
         name: "isShowAll",
+        displayName : "Show all",
         displayNameKey: "Visual_ShowAll",
         value: false,
     });
@@ -154,10 +164,12 @@ export class DataPointSettings extends FormattingSettingsCard {
 
 export class StopWordsSettings extends FormattingSettingsCard {
     public name = "stopWords";
+    public displayName = "Stop Words";
     public displayNameKey = "Visual_WordCloud_StopWords";
 
     public show = new formattingSettings.ToggleSwitch({
         name: "show",
+        displayName : "Show",
         displayNameKey: "Visual_Show",
         value: true,
         topLevelToggle: true,
@@ -165,12 +177,14 @@ export class StopWordsSettings extends FormattingSettingsCard {
 
     public isDefaultStopWords = new formattingSettings.ToggleSwitch({
         name: "isDefaultStopWords",
+        displayName : "Default Stop Words",
         displayNameKey: "Visual_WordCloud_DefaultStopWords",
         value: false,
     });
 
     public words = new formattingSettings.TextInput({
         name: "words",
+        displayName : "Words",
         displayNameKey: "Visual_WordCloud_Words",
         value: "",
         placeholder: "",
@@ -187,10 +201,12 @@ export class RotateTextSettings extends FormattingSettingsCard {
     public static MaxNumberOfWords: number = 2500;
 
     public name = "rotateText";
+    public displayName = "Rotate Text";
     public displayNameKey = "Visual_RotateText";
 
     public show = new formattingSettings.ToggleSwitch({
         name: "show",
+        displayName : "Show",
         displayNameKey: "Visual_Show",
         value: true,
         topLevelToggle: true,
@@ -198,6 +214,7 @@ export class RotateTextSettings extends FormattingSettingsCard {
 
     public minAngle = new formattingSettings.NumUpDown({
         name: "minAngle",
+        displayName : "Min Angle",
         displayNameKey: "Visual_MinAngle",
         value: -60,
         options: {
@@ -214,6 +231,7 @@ export class RotateTextSettings extends FormattingSettingsCard {
 
     public maxAngle = new formattingSettings.NumUpDown({
         name: "maxAngle",
+        displayName : "Max Angle",
         displayNameKey: "Visual_MaxAngle",
         value: 90,
         options: {
@@ -230,6 +248,7 @@ export class RotateTextSettings extends FormattingSettingsCard {
 
     public maxNumberOfOrientations = new formattingSettings.NumUpDown({
         name: "maxNumberOfOrientations",
+        displayName : "Max number of orientations",
         displayNameKey: "Visual_WordCloud_MaxOrientationNumber",
         value: 2,
     });
@@ -239,17 +258,22 @@ export class RotateTextSettings extends FormattingSettingsCard {
 
 export class PerformanceSettings extends FormattingSettingsCard {
     public name = "performance";
+    public displayName = "Performance";
     public displayNameKey = "Visual_Performance";
 
     public preestimate = new formattingSettings.ToggleSwitch({
         name: "preestimate",
+        displayName : "Pre-estimate words count to draw",
         displayNameKey: "Visual_PreestimateWordCount",
         value: false,
     });
 
     public quality = new formattingSettings.NumUpDown({
         name: "quality",
+        displayName : "Quality (%)",
         displayNameKey: "Visual_Quality",
+        description: "The value determines the quality of the pre-estimation",
+        descriptionKey: "Visual_Description_Quality",
         value: 40,
         options: {
             minValue: {
