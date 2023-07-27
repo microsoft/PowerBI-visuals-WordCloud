@@ -73,59 +73,59 @@ describe("WordCloud", () => {
   describe("Unit tests", () => {
     it("getFromCycledSequence returns array item by exact index", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 3);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, 3);
       expect(receivedNum).toEqual(5);
     });
 
     it("getFromCycledSequence returns array item by exact index with offset", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 1, 2);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, 1, 2);
       expect(receivedNum).toEqual(5);
     });
 
     it("getFromCycledSequence returns array item by exceeded index", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 9);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, 9);
       expect(receivedNum).toEqual(5);
-      receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 21);
+      receivedNum = VisualClass.getFromCycledSequence(targetArr, 21);
       expect(receivedNum).toEqual(5);
     });
 
     it("getFromCycledSequence returns array item by exceeded index with offset", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 4, 5);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, 4, 5);
       expect(receivedNum).toEqual(5);
-      receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 14, 7);
+      receivedNum = VisualClass.getFromCycledSequence(targetArr, 14, 7);
       expect(receivedNum).toEqual(5);
-      receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 7, 14);
+      receivedNum = VisualClass.getFromCycledSequence(targetArr, 7, 14);
       expect(receivedNum).toEqual(5);
     });
 
     it("getFromCycledSequence returns array item by negative index", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, -2);
       expect(receivedNum).toBeUndefined();
     });
 
     it("getFromCycledSequence returns array item by negative index and positive offset", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2, 5);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, -2, 5);
       expect(receivedNum).toEqual(5);
-      receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -2, 1);
+      receivedNum = VisualClass.getFromCycledSequence(targetArr, -2, 1);
       expect(receivedNum).toBeUndefined();
     });
 
     it("getFromCycledSequence returns array item by positive index and negative offset", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 3, -4);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, 3, -4);
       expect(receivedNum).toBeUndefined();
-      receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, 5, -2);
+      receivedNum = VisualClass.getFromCycledSequence(targetArr, 5, -2);
       expect(receivedNum).toEqual(5);
     });
 
     it("getFromCycledSequence returns array item by negative index and negative offset", () => {
       let targetArr: number[] = [4, 4, 4, 5, 4, 4];
-      let receivedNum = VisualClass.GET_FROM_CYCLED_SEQUENCE(targetArr, -3, -3);
+      let receivedNum = VisualClass.getFromCycledSequence(targetArr, -3, -3);
       expect(receivedNum).toBeUndefined();
     });
 
@@ -138,7 +138,7 @@ describe("WordCloud", () => {
         
       const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
 
-      const data = VisualClass.CONVERTER(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost);
+      const data = VisualClass.converter(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost);
       expect(data.dataPoints.length).toEqual(74);
     });
   });
@@ -644,7 +644,7 @@ describe("WordCloud", () => {
     it("Check index of the data-point after filtering", () => {
       const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
 
-      const item: WordCloudText | undefined = VisualClass.CONVERTER(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost)
+      const item: WordCloudText | undefined = VisualClass.converter(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost)
         .texts
         .find((item: WordCloudText) => item.text === "Angola");
       expect(item?.index).toBe(5);

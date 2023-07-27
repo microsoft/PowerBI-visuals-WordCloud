@@ -38,11 +38,11 @@ import DataViewValueColumn = powerbiVisualsApi.DataViewValueColumn;
 import DataViewCategoricalColumn = powerbiVisualsApi.DataViewCategoricalColumn;
 
 export class WordCloudColumns<T> {
-    public static GET_CATEGORICAL_VALUES(dataView: DataView): WordCloudColumns<DataViewCategoryColumn[]> {
+    public static getCategoricalValues(dataView: DataView): WordCloudColumns<DataViewCategoryColumn[]> {
         const categorical: DataViewCategorical = dataView && dataView.categorical,
             categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
             values: DataViewValueColumns = <DataViewValueColumns>(categorical && categorical.values || []),
-            series: PrimitiveValue[] = categorical && values.source && this.GET_SERIES_VALUES(dataView);
+            series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
 
         return categorical && mapValues(<any>new this<DataViewCategoryColumn[]>(), (n: any, key: string) => {
             return (<any[]>toArray(categories))
@@ -56,7 +56,7 @@ export class WordCloudColumns<T> {
         });
     }
 
-    public static GET_SERIES_VALUES(dataView: DataView): PrimitiveValue[] {
+    public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
         return dataView
             && dataView.categorical
             && dataView.categorical.values
@@ -67,7 +67,7 @@ export class WordCloudColumns<T> {
             });
     }
 
-    public static GET_CATEGORICAL_COLUMNS(dataView: DataView): WordCloudColumns<DataViewCategoryColumn> {
+    public static getCategoricalColumns(dataView: DataView): WordCloudColumns<DataViewCategoryColumn> {
         const categorical: DataViewCategorical = dataView && dataView.categorical,
             categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
             values: DataViewValueColumns = <DataViewValueColumns>(categorical && categorical.values || []);

@@ -121,7 +121,7 @@ export class WordCloudSettings extends FormattingSettingsModel {
         },
     });
 
-    public isBrokenText = new formattingSettings.ToggleSwitch({
+    public isWordBreakEnabled = new formattingSettings.ToggleSwitch({
         name: "isBrokenText",
         displayName : "Word-breaking",
         displayNameKey: "Visual_WordCloud_WordBreaking",
@@ -135,7 +135,7 @@ export class WordCloudSettings extends FormattingSettingsModel {
         value: false,
     });
     
-    public slices: FormattingSettingsSlice[] = [this.minRepetitionsToDisplay, this.maxNumberOfWords, this.minFontSize, this.maxFontSize, this.isBrokenText, this.isPunctuationsCharacters]; 
+    public slices: FormattingSettingsSlice[] = [this.minRepetitionsToDisplay, this.maxNumberOfWords, this.minFontSize, this.maxFontSize, this.isWordBreakEnabled, this.isPunctuationsCharacters]; 
 }
 
 export class DataPointSettings extends FormattingSettingsCard {
