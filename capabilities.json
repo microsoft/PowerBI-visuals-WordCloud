@@ -1,4 +1,5 @@
 {
+    "privileges": [],
     "dataRoles": [
         {
             "name": "Category",
@@ -77,26 +78,18 @@
     },
     "objects": {
         "general": {
-            "displayName": "General",
-            "displayNameKey": "Visual_General",
             "properties": {
                 "maxNumberOfWords": {
-                    "displayName": "Max number of words",
-                    "displayNameKey": "Visual_WordCloud_MaxNumberWords",
                     "type": {
                         "numeric": true
                     }
                 },
                 "minRepetitionsToDisplay": {
-                    "displayName": "Minimum number of repetitions to display",
-                    "displayNameKey": "Visual_WordCloud_minRepetitionsToDisplay",
                     "type": {
                         "numeric": true
                     }
                 },
                 "minFontSize": {
-                    "displayName": "Min font size",
-                    "displayNameKey": "Visual_MinFontSize",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -104,8 +97,6 @@
                     }
                 },
                 "maxFontSize": {
-                    "displayName": "Max font size",
-                    "displayNameKey": "Visual_MaxFontSize",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -113,15 +104,11 @@
                     }
                 },
                 "isBrokenText": {
-                    "displayName": "Word-breaking",
-                    "displayNameKey": "Visual_WordCloud_WordBreaking",
                     "type": {
                         "bool": true
                     }
                 },
                 "isPunctuationsCharacters": {
-                    "displayName": "Special characters",
-                    "displayNameKey": "Visual_WordCloud_SpecialCharacters",
                     "type": {
                         "bool": true
                     }
@@ -129,12 +116,8 @@
             }
         },
         "dataPoint": {
-            "displayName": "Data colors",
-            "displayNameKey": "Visual_DataColors",
             "properties": {
                 "defaultColor": {
-                    "displayName": "Default color",
-                    "displayNameKey": "Visual_DefaultColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -143,9 +126,12 @@
                         }
                     }
                 },
+                "isShowAll": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
-                    "displayName": "Fill",
-                    "displayNameKey": "Visual_Fill",
                     "type": {
                         "fill": {
                             "solid": {
@@ -157,26 +143,18 @@
             }
         },
         "stopWords": {
-            "displayName": "Stop Words",
-            "displayNameKey": "Visual_WordCloud_StopWords",
             "properties": {
                 "show": {
-                    "displayName": "Show",
-                    "displayNameKey": "Visual_Show",
                     "type": {
                         "bool": true
                     }
                 },
                 "isDefaultStopWords": {
-                    "displayName": "Default Stop Words",
-                    "displayNameKey": "Visual_WordCloud_DefaultStopWords",
                     "type": {
                         "bool": true
                     }
                 },
                 "words": {
-                    "displayName": "Words",
-                    "displayNameKey": "Visual_WordCloud_Words",
                     "type": {
                         "text": true
                     }
@@ -184,33 +162,23 @@
             }
         },
         "rotateText": {
-            "displayName": "Rotate Text",
-            "displayNameKey": "Visual_RotateText",
             "properties": {
                 "show": {
-                    "displayName": "Show",
-                    "displayNameKey": "Visual_Show",
                     "type": {
                         "bool": true
                     }
                 },
                 "minAngle": {
-                    "displayName": "Min Angle",
-                    "displayNameKey": "Visual_MinAngle",
                     "type": {
                         "numeric": true
                     }
                 },
                 "maxAngle": {
-                    "displayName": "Max Angle",
-                    "displayNameKey": "Visual_MaxAngle",
                     "type": {
                         "numeric": true
                     }
                 },
                 "maxNumberOfOrientations": {
-                    "displayName": "Max number of orientations",
-                    "displayNameKey": "Visual_WordCloud_MaxOrientationNumber",
                     "type": {
                         "numeric": true
                     }
@@ -218,21 +186,13 @@
             }
         },
         "performance": {
-            "displayName": "Performance",
-            "displayNameKey": "Visual_Performance",
             "properties": {
                 "preestimate": {
-                    "displayName": "Pre-estimate words count to draw",
-                    "displayNameKey": "Visual_PreestimateWordCount",
                     "type": {
                         "bool": true
                     }
                 },
                 "quality": {
-                    "displayName": "Quality",
-                    "displayNameKey": "Visual_Quality",
-                    "description": "The value determines the quality of the pre-estimation",
-                    "descriptionKey": "Visual_Description_Quality",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -242,5 +202,7 @@
             }
         }
     },
-    "supportsMultiVisualSelection": true
+    "supportsMultiVisualSelection": true,
+    "supportsKeyboardFocus": true,
+    "supportsHighlight": true
 }

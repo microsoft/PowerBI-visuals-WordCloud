@@ -1,3 +1,11 @@
+## 2.2.0
+* API v5.4.0
+* Fixed bug with instantiation of the SelectingManager class
+* Updated packages and got rid of vulnerabilities
+* Fixed lint errors
+* Migrated from enumerateObjectInstances to the new FormattingModel API
+* Removed JQuery and split lodash into subpackages
+
 ## 2.0.0
 * Webpack integration
 * Azure Pipelines integration

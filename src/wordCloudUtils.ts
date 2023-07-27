@@ -24,14 +24,12 @@
  *  THE SOFTWARE.
  */
 
-export module wordCloudUtils {
-    export function getRandomColor(): string {
-        const crypto = window.crypto || (<any>window).msCrypto;
-        const randomColorsArray = crypto.getRandomValues(new Uint8Array(3))
-        const red: number = randomColorsArray[0],
-            green: number = randomColorsArray[1],
-            blue: number = randomColorsArray[2];
+export function getRandomColor(): string {
+    const crypto = window.crypto || (<any>window).msCrypto;
+    const randomColorsArray = crypto.getRandomValues(new Uint8Array(3))
+    const red: number = randomColorsArray[0],
+        green: number = randomColorsArray[1],
+        blue: number = randomColorsArray[2];
 
-        return `rgb(${red},${green},${blue})`;
-    }
+    return `rgb(${red},${green},${blue})`;
 }

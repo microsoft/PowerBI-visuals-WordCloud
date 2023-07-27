@@ -26,7 +26,8 @@
 
 // powerbi
 import powerbiVisualsApi from "powerbi-visuals-api";
-import * as lodash from "lodash";
+import mapValues from "lodash.mapvalues";
+import toArray from "lodash.toarray";
 
 import DataView = powerbiVisualsApi.DataView;
 import DataViewValueColumns = powerbiVisualsApi.DataViewValueColumns;
@@ -37,15 +38,15 @@ import DataViewValueColumn = powerbiVisualsApi.DataViewValueColumn;
 import DataViewCategoricalColumn = powerbiVisualsApi.DataViewCategoricalColumn;
 
 export class WordCloudColumns<T> {
-    public static GET_CATEGORICAL_VALUES(dataView: DataView): WordCloudColumns<DataViewCategoryColumn[]> {
-        let categorical: DataViewCategorical = dataView && dataView.categorical,
+    public static getCategoricalValues(dataView: DataView): WordCloudColumns<DataViewCategoryColumn[]> {
+        const categorical: DataViewCategorical = dataView && dataView.categorical,
             categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
             values: DataViewValueColumns = <DataViewValueColumns>(categorical && categorical.values || []),
-            series: PrimitiveValue[] = categorical && values.source && this.GET_SERIES_VALUES(dataView);
+            series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
 
-        return categorical && lodash.mapValues(<any>new this<DataViewCategoryColumn[]>(), (n: any, key: string) => {
-            return (<any[]>lodash.toArray(categories))
-                .concat(<any[]>lodash.toArray(values))
+        return categorical && mapValues(<any>new this<DataViewCategoryColumn[]>(), (n: any, key: string) => {
+            return (<any[]>toArray(categories))
+                .concat(<any[]>toArray(values))
                 .filter((column: DataViewCategoryColumn) => column.source.roles && column.source.roles[key])
                 .map((column: DataViewCategoryColumn) => column.values)[0]
                 || values.source
@@ -55,7 +56,7 @@ export class WordCloudColumns<T> {
         });
     }
 
-    public static GET_SERIES_VALUES(dataView: DataView): PrimitiveValue[] {
+    public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
         return dataView
             && dataView.categorical
             && dataView.categorical.values
@@ -66,12 +67,12 @@ export class WordCloudColumns<T> {
             });
     }
 
-    public static GET_CATEGORICAL_COLUMNS(dataView: DataView): WordCloudColumns<DataViewCategoryColumn> {
-        let categorical: DataViewCategorical = dataView && dataView.categorical,
+    public static getCategoricalColumns(dataView: DataView): WordCloudColumns<DataViewCategoryColumn> {
+        const categorical: DataViewCategorical = dataView && dataView.categorical,
             categories: DataViewCategoryColumn[] = categorical && categorical.categories || [],
             values: DataViewValueColumns = <DataViewValueColumns>(categorical && categorical.values || []);
 
-        return categorical && lodash.mapValues(<any>(new this<DataViewCategoryColumn>()), (n: any, key: string) => {
+        return categorical && mapValues(<any>(new this<DataViewCategoryColumn>()), (n: any, key: string) => {
             return categories.filter((column: DataViewCategoryColumn) => column.source.roles && column.source.roles[key])[0]
                 || values.source
                 && values.source.roles
