@@ -25,7 +25,8 @@
  */
 
 import powerbiVisualsApi from "powerbi-visuals-api";
-import * as _ from "lodash";
+import clone from "lodash.clone";
+import keys from "lodash.keys";
 
 import IViewport = powerbiVisualsApi.IViewport;
 
@@ -52,8 +53,18 @@ export class VisualLayout {
         return this.viewportValue || (this.viewportValue = this.defaultViewport);
     }
 
+    public set viewport(value: IViewport) {
+        this.previousOriginalViewportValue = clone(this.originalViewportValue);
+        this.originalViewportValue = clone(value);
+
+        this.setUpdateObject(
+            value,
+            (viewport: IViewport) => this.viewportValue = viewport,
+            (viewport: IViewport) => VisualLayout.restrictToMinMax<IViewport>(viewport, this.minViewport));
+    }
+
     public get viewportCopy(): IViewport {
-        return _.clone(this.viewport);
+        return clone(this.viewport);
     }
 
     // Returns viewport without margin
@@ -65,10 +76,6 @@ export class VisualLayout {
         return this.minViewportValue || { width: 0, height: 0 };
     }
 
-    public get margin(): IMargin {
-        return this.marginValue || (this.marginValue = this.defaultMargin);
-    }
-
     public set minViewport(value: IViewport) {
         this.setUpdateObject(
             value,
@@ -76,14 +83,8 @@ export class VisualLayout {
             VisualLayout.restrictToMinMax);
     }
 
-    public set viewport(value: IViewport) {
-        this.previousOriginalViewportValue = _.clone(this.originalViewportValue);
-        this.originalViewportValue = _.clone(value);
-
-        this.setUpdateObject(
-            value,
-            (viewport: IViewport) => this.viewportValue = viewport,
-            (viewport: IViewport) => VisualLayout.restrictToMinMax<IViewport>(viewport, this.minViewport));
+    public get margin(): IMargin {
+        return this.marginValue || (this.marginValue = this.defaultMargin);
     }
 
     public set margin(value: IMargin) {
@@ -116,7 +117,7 @@ export class VisualLayout {
     }
 
     private setUpdateObject<T>(object: T, setObjectFn: (T) => void, beforeUpdateFn?: (T) => void): void {
-        object = _.clone(object);
+        object = clone(object);
 
         setObjectFn(VisualLayout.createNotifyChangedObject(object, () => {
             if (beforeUpdateFn) {
@@ -134,9 +135,9 @@ export class VisualLayout {
     }
 
     private static createNotifyChangedObject<T>(object: T, objectChanged: (obj?: T, key?: string) => void): T {
-        let result: T = <T>{};
+        const result: T = <T>{};
 
-        _.keys(object).forEach((key: string) => Object.defineProperty(result, key, {
+        keys(object).forEach((key: string) => Object.defineProperty(result, key, {
             get: () => object[key],
             set: (value) => {
                 object[key] = value;
@@ -150,7 +151,7 @@ export class VisualLayout {
     }
 
     private static restrictToMinMax<T>(value: T, minValue?: T): T {
-        _.keys(value).forEach((key: string) => value[key] = Math.max(minValue && minValue[key] || 0, value[key]));
+        keys(value).forEach((key: string) => value[key] = Math.max(minValue && minValue[key] || 0, value[key]));
 
         return value;
     }
