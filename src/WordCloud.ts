@@ -1426,7 +1426,6 @@ export class WordCloud implements IVisual {
     }
 
     private render(wordCloudDataView: WordCloudDataView): void {
-        const categorical : powerbi.DataViewCategorical = this.data.dataView.categorical;
         if (!wordCloudDataView || !wordCloudDataView.data) {
             return;
         }
@@ -1483,14 +1482,14 @@ export class WordCloud implements IVisual {
             .on("click", (event: MouseEvent, dataPoint: WordCloudDataPoint) => {
                 event.stopPropagation();
 
-                this.setSelection(dataPoint, event.ctrlKey, categorical);
+                this.setSelection(dataPoint, event.ctrlKey);
             })
             .on('contextmenu', (event : PointerEvent, datum : WordCloudDataPoint) =>
                 this.handleContextMenu(event, datum)
             );
 
         this.clearIncorrectSelection(this.data.dataView);
-        this.renderSelection(categorical);
+        this.renderSelection();
         this.renderTooltip(wordGroupSelectionMerged);
 
         this.isUpdating = false;
@@ -1539,7 +1538,7 @@ export class WordCloud implements IVisual {
         }
     }
 
-    private setSelection(dataPoint: WordCloudDataPoint, ctrlKey: boolean, categorical: powerbi.DataViewCategorical): void {
+    private setSelection(dataPoint: WordCloudDataPoint, ctrlKey: boolean): void {
         if (!dataPoint) {
             this.clearSelection();
 
@@ -1548,7 +1547,7 @@ export class WordCloud implements IVisual {
 
         this.valueSelectionManager
             .selectAndSendSelection(dataPoint.text, ctrlKey);
-        this.renderSelection(categorical);
+        this.renderSelection();
     }
 
     private clearSelection(): void {
@@ -1604,31 +1603,12 @@ export class WordCloud implements IVisual {
             .style("line-height", WordCloud.TheSecondLineHeight); // Note: This construction fixes bug #6343.
     }
 
-    private renderSelection(categorical: powerbi.DataViewCategorical = null): void {
+    private renderSelection(): void {
         if (!this.wordsTextUpdateSelection) {
             return;
         }
 
-        //SupportHighlight Logic
-        const highlightedTexts : PrimitiveValue[] = [];
-        if(categorical)
-        {
-            const values : powerbi.DataViewValueColumns = categorical.values;
-            if(values)
-            {
-                const categories : powerbi.DataViewCategoryColumn[] = categorical.categories;
-                for(let idx = 0; idx < values.length; idx ++) {
-                    if(!values[idx].highlights)
-                        continue;
-                    for(let innerIdx = 0; innerIdx < values[idx].highlights.length; innerIdx ++) {
-                        if(values[idx].highlights[innerIdx])
-                            highlightedTexts.push(categories[0].values[innerIdx]);
-                    }
-                }
-            }
-        }
-        
-        if (!this.valueSelectionManager.hasSelection && highlightedTexts.length == 0) {
+        if (!this.valueSelectionManager.hasSelection) {
             this.setOpacity(this.wordsTextUpdateSelection, WordCloud.MaxOpacity);
 
             return;
@@ -1636,7 +1616,7 @@ export class WordCloud implements IVisual {
 
         const selectedColumns: Selection<WordCloudDataPoint> = this.wordsTextUpdateSelection
             .filter((dataPoint: WordCloudDataPoint) => {
-                return this.valueSelectionManager.isSelected(dataPoint.text) || highlightedTexts.some(x => x == dataPoint.text);
+                return this.valueSelectionManager.isSelected(dataPoint.text);
             });
 
         this.setOpacity(this.wordsTextUpdateSelection, WordCloud.MinOpacity);
