@@ -119,23 +119,8 @@ export class WordCloudData extends TestDataViewBuilder {
         ["France", 966]
     ];
 
-    public generateHightLightedValues(valuesArray: number[], hightlightedElementNumber?: number): number[] {
-        let array: any[] = [];
-        const length: number = valuesArray.length;
-        for (let i: number = 0; i < length; i++) {
-            array[i] = null;
-        }
-        if (!hightlightedElementNumber)
-            return array;
-        if (hightlightedElementNumber >= length || hightlightedElementNumber < 0) {
-            array[0] = valuesArray[0];
-        } else {
-            array[hightlightedElementNumber] = valuesArray[hightlightedElementNumber];
-        }
-        return array;
-    }
 
-    public getDataView(columnNames?: string[], withHighlights: boolean = false, hightlightedElementNumber: number = 0): DataView {
+    public getDataView(columnNames?: string[]): DataView {
         const categoriesColumn: TestDataViewBuilderCategoryColumnOptions[] = [
             {
                 source: {
@@ -166,11 +151,7 @@ export class WordCloudData extends TestDataViewBuilder {
                 },
                 values: columnValues
             }
-        ];
-
-        if (withHighlights) {
-            columns[0].highlights = this.generateHightLightedValues(columnValues, hightlightedElementNumber);
-        }        
+        ];      
 
         return this.createCategoricalDataViewBuilder(categoriesColumn, [columns[0]], columnNames!).build();
     }
