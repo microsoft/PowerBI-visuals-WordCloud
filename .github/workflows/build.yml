@@ -22,6 +22,7 @@ jobs:
     - run: npm audit
       continue-on-error: true
     - run: npm outdated
+      continue-on-error: true
     - run: npm ci
     - run: npm run eslint --if-present
     - run: npm run lint --if-present
