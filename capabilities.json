@@ -203,6 +203,5 @@
         }
     },
     "supportsMultiVisualSelection": true,
-    "supportsKeyboardFocus": true,
-    "supportsHighlight": true
+    "supportsKeyboardFocus": true
 }

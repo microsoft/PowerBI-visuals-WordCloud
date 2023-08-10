@@ -713,27 +713,4 @@ describe("WordCloud", () => {
       }
     });
   });
-
-  describe("support highlight test", () => {
-    const elementCount: number = 74;
-    let dataViewWithHighLighted: DataView;
-    let hightlightedElementNumber: number;
-
-    beforeEach(() => {
-      hightlightedElementNumber = Math.round(getRandomNumber(0, elementCount - 1));
-
-      dataViewWithHighLighted = defaultDataViewBuilder.getDataView(undefined, true, hightlightedElementNumber);
-    });
-
-    it("support highlight test", (done) => {
-      visualBuilder.updateRenderTimeout(dataViewWithHighLighted, async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        let expectedHighlightedText = dataViewWithHighLighted.categorical?.categories![0].values[hightlightedElementNumber];
-        let actualHighlightedText = visualBuilder.selectedWords![0].innerHTML;
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        expect(expectedHighlightedText).toBe(actualHighlightedText)
-        done();
-      });
-    });
-  });
 });
