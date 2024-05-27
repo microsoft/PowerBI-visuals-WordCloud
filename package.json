@@ -88,7 +88,7 @@
     "karma-webpack": "^5.0.1",
     "less": "^4.2.0",
     "less-loader": "^11.1.4",
-    "playwright": "^1.44.1",
+    "playwright-chromium": "^1.44.1",
     "powerbi-visuals-api": "~5.9.0",
     "powerbi-visuals-tools": "^5.4.3",
     "powerbi-visuals-utils-testutils": "^6.1.1",
