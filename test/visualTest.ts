@@ -136,7 +136,7 @@ describe("WordCloud", () => {
         }
       };
         
-      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
+      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, dataView);
 
       const data = VisualClass.converter(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost);
       expect(data.dataPoints.length).toEqual(74);
@@ -624,7 +624,7 @@ describe("WordCloud", () => {
 
   describe("Selection", () => {
     it("Check index of the data-point after filtering", () => {
-      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
+      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, dataView);
 
       const item: WordCloudText | undefined = VisualClass.converter(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost)
         .texts

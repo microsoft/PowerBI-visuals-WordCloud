@@ -859,7 +859,7 @@ export class WordCloud implements IVisual {
         }
 
         this.eventService.renderingStarted(visualUpdateOptions);
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(WordCloudSettings, visualUpdateOptions.dataViews);
+        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(WordCloudSettings, visualUpdateOptions.dataViews[0]);
 
         if (visualUpdateOptions !== this.visualUpdateOptions) {
             this.incomingUpdateOptions = visualUpdateOptions;

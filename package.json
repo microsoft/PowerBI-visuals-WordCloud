@@ -47,7 +47,7 @@
     "lodash.toarray": "^4.4.0",
     "lodash.uniqby": "^4.7.0",
     "powerbi-visuals-utils-colorutils": "^6.0.4",
-    "powerbi-visuals-utils-formattingmodel": "^5.0.1",
+    "powerbi-visuals-utils-formattingmodel": "^6.0.2",
     "powerbi-visuals-utils-formattingutils": "^6.1.1",
     "powerbi-visuals-utils-svgutils": "^6.0.4",
     "powerbi-visuals-utils-tooltiputils": "^6.0.4",
