@@ -1448,9 +1448,12 @@ export class WordCloud implements IVisual {
 
         this.wordsTextUpdateSelection = wordGroupSelectionMerged
             .selectAll("text")
-            .data((dataPoint: WordCloudDataPoint) => [dataPoint]);
+            .data((dataPoint: WordCloudDataPoint) => [dataPoint])
+            .text((dataPoint: WordCloudDataPoint) => dataPoint.text);
 
-        this.wordsTextUpdateSelection.text((dataPoint: WordCloudDataPoint) => dataPoint.text);
+        this.wordsTextUpdateSelection
+            .exit()
+            .remove();
 
         this.animateSelection(this.wordsTextUpdateSelection, this.durationAnimations)
             .style("font-size", ((item: WordCloudDataPoint): string => PixelConverter.toString(item.size)))
@@ -1463,7 +1466,9 @@ export class WordCloud implements IVisual {
             .attr("width", (dataPoint: WordCloudDataPoint) => dataPoint.getWidthOfWord())
             .attr("y", (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition)
             .attr("height", (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition)
-            .attr("fill", () => WordCloud.TextFillColor);
+            .attr("fill", () => WordCloud.TextFillColor)
+            .exit()
+            .remove();
             
         this.bindSelectionHandler(wordGroupSelectionMerged);
         this.renderTooltip(wordGroupSelectionMerged);
