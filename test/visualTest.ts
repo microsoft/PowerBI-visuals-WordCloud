@@ -36,7 +36,7 @@ import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import IColorInfo = powerbiVisualsApi.IColorInfo;
 
 // powerbi.extensibility.utils.test
-import { createColorPalette, renderTimeout, MockISelectionManager, d3Click, getRandomNumber } from "powerbi-visuals-utils-testutils";
+import { createColorPalette, renderTimeout, MockISelectionManager, d3Click, ClickEventType } from "powerbi-visuals-utils-testutils";
 
 import { WordCloudData } from "./WordCloudData";
 import { WordCloudBuilder } from "./WordCloudBuilder";
@@ -370,24 +370,6 @@ describe("WordCloud", () => {
         }, 100);
     });
 
-    it("multiple selection test", (done) => {
-      visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-          visualBuilder.wordClick("Iran");
-
-          renderTimeout(() => {
-            expect(visualBuilder.selectedWords?.length).toBe(1);
-
-            visualBuilder.wordClick("Albania", true);
-
-            renderTimeout(() => {
-              expect(visualBuilder.selectedWords?.length).toBe(2);
-
-              done();
-            });
-          });
-        }, 300);
-    });
-
     it("max number of words test", (done) => {
       const maxNumberOfWords: number = 30;
 
@@ -649,6 +631,70 @@ describe("WordCloud", () => {
         .find((item: WordCloudText) => item.text === "Angola");
       expect(item?.index).toBe(5);
     });
+  });
+
+  describe("Selection tests", () => {
+    it("word can be selected", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        visualBuilder.wordClick("Iran");
+
+        renderTimeout(() => {
+          expect(visualBuilder.selectedWords?.length).toBe(1);
+          done();
+        });
+      }, 300);
+    });
+
+    it("word can be deselected", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        visualBuilder.wordClick("Iran");
+
+        renderTimeout(() => {
+          expect(visualBuilder.selectedWords?.length).toBe(1);
+          visualBuilder.wordClick("Iran");
+
+          renderTimeout(() => {
+            expect(visualBuilder.selectedWords?.length).toBe(visualBuilder.words.length);
+
+            done();
+          });
+        });
+      }, 300);
+    });
+
+    it("multi-selection should work with ctrlKey", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        checkMultiselection(ClickEventType.CtrlKey, done);
+      }, 500)
+    });
+
+    it("multi-selection should work with metaKey", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        checkMultiselection(ClickEventType.MetaKey, done);
+      }, 500)
+    });
+
+    it("multi-selection should work with shiftKey", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        checkMultiselection(ClickEventType.ShiftKey, done);
+      }, 500)
+    });
+
+    function checkMultiselection(eventType: number, done: DoneFn): void {
+      visualBuilder.wordClick("Iran");
+
+      renderTimeout(() => {
+        expect(visualBuilder.selectedWords?.length).toBe(1);
+
+        visualBuilder.wordClick("Albania", eventType);
+
+        renderTimeout(() => {
+          expect(visualBuilder.selectedWords?.length).toBe(2);
+
+          done();
+        });
+      });
+    }
   });
 
   describe("Capabilities tests", () => {
