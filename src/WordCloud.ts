@@ -73,7 +73,7 @@ import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-vis
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
 import { WordCloudText, WordCloudData, WordCloudDataPoint, WordCloudDataView, WordCloudGroup } from "./dataInterfaces";
-import { ValueSelectionManager } from "./valueSelectionManager";
+
 import { getRandomColor } from "./wordCloudUtils";
 import { GeneralSettings, RotateTextSettings, WordCloudSettings } from "./settings";
 import { VisualLayout } from "./VisualLayout";
@@ -390,11 +390,8 @@ export class WordCloud implements IVisual {
     private fontFamily: string;
     private layout: VisualLayout;
     private visualHost: IVisualHost;
-    private valueSelectionManager: ValueSelectionManager<string>;
     private visualUpdateOptions: VisualUpdateOptions;
-    private isUpdating: boolean = false;
     private incomingUpdateOptions: VisualUpdateOptions;
-    private oldIdentityKeys: string[];
     private static punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
     private static whiteSpaceRegExp: RegExp = /\s/;
 
@@ -1458,8 +1455,6 @@ export class WordCloud implements IVisual {
             
         this.bindSelectionHandler(wordGroupSelectionMerged);
         this.renderTooltip(wordGroupSelectionMerged);
-
-        this.isUpdating = false;
 
         if (this.incomingUpdateOptions !== this.visualUpdateOptions) {
             this.update(this.incomingUpdateOptions);
