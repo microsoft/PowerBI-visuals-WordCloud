@@ -102,7 +102,6 @@ export class WordCloud implements IVisual {
     private static ClassName: string = "wordCloud";
     private tooltipService: ITooltipServiceWrapper;
     private eventService: IVisualEventService;
-    private selectionManager: ISelectionManager;
     private behavior: WordCloudBehavior;
     private static Words: ClassAndSelector = createClassAndSelector("words");
     private static WordGroup: ClassAndSelector = createClassAndSelector("word");
@@ -781,19 +780,6 @@ export class WordCloud implements IVisual {
         return settings.rotateText.minAngle.value + angle;
     }
 
-    public handleContextMenu(event : PointerEvent, dataPoint : WordCloudDataPoint) {
-        this.selectionManager.showContextMenu(
-            (dataPoint && dataPoint.selectionIds && dataPoint.selectionIds[0]) 
-            ? dataPoint.selectionIds[0] 
-            : {},
-            {
-                x: event.clientX,
-                y: event.clientY
-            }
-        );
-        event.preventDefault();
-    }
-
     constructor(options: VisualConstructorOptions) {
         this.init(options);
     }
@@ -812,8 +798,8 @@ export class WordCloud implements IVisual {
 
         this.colorPalette = options.host.colorPalette;
         this.visualHost = options.host;
-        this.selectionManager = this.visualHost.createSelectionManager();
-        this.behavior = new WordCloudBehavior(this.selectionManager, 
+        const selectionManager: ISelectionManager = this.visualHost.createSelectionManager();
+        this.behavior = new WordCloudBehavior(selectionManager, 
             (text: string): ISelectionId[] => {
                 const dataPoints: WordCloudDataPoint[] = this.data
                     && this.data.dataPoints
@@ -1482,11 +1468,6 @@ export class WordCloud implements IVisual {
 
     private bindSelectionHandler(
         wordsSelection: Selection<WordCloudDataPoint>): void {
-
-        if (!this.selectionManager
-            || !this.data) {
-            return;
-        }
 
         const behaviorOptions: IWordCloudBehaviorOptions = {
             wordsSelection: wordsSelection,
