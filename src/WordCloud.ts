@@ -391,7 +391,6 @@ export class WordCloud implements IVisual {
     private layout: VisualLayout;
     private visualHost: IVisualHost;
     private visualUpdateOptions: VisualUpdateOptions;
-    private incomingUpdateOptions: VisualUpdateOptions;
     private static punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
     private static whiteSpaceRegExp: RegExp = /\s/;
 
@@ -844,11 +843,7 @@ export class WordCloud implements IVisual {
         this.eventService.renderingStarted(visualUpdateOptions);
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(WordCloudSettings, visualUpdateOptions.dataViews[0]);
 
-        if (visualUpdateOptions !== this.visualUpdateOptions) {
-            this.incomingUpdateOptions = visualUpdateOptions;
-        }
-
-        this.visualUpdateOptions = this.incomingUpdateOptions;
+        this.visualUpdateOptions = visualUpdateOptions;
         this.layout.viewport = this.visualUpdateOptions.viewport;
 
         const dataView: DataView = visualUpdateOptions.dataViews[0];
@@ -1455,10 +1450,6 @@ export class WordCloud implements IVisual {
             
         this.bindSelectionHandler(wordGroupSelectionMerged);
         this.renderTooltip(wordGroupSelectionMerged);
-
-        if (this.incomingUpdateOptions !== this.visualUpdateOptions) {
-            this.update(this.incomingUpdateOptions);
-        }
     }
 
     private bindSelectionHandler(
@@ -1538,7 +1529,7 @@ export class WordCloud implements IVisual {
     }
 
     private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
-        const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.getCategoricalColumns(this.incomingUpdateOptions.dataViews[0]);
+        const categorical: WordCloudColumns<DataViewCategoryColumn> = WordCloudColumns.getCategoricalColumns(this.visualUpdateOptions.dataViews[0]);
         let wordValueFormatter: IValueFormatter = null;
 
         if (categorical.Values && categorical.Values[0]) {
