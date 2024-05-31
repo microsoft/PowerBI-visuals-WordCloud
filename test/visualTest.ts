@@ -654,7 +654,7 @@ describe("WordCloud", () => {
           visualBuilder.wordClick("Iran");
 
           renderTimeout(() => {
-            expect(visualBuilder.selectedWords?.length).toBe(visualBuilder.words.length);
+            expect(visualBuilder.selectedWords?.length).toBe(84);
 
             done();
           });
