@@ -1,19 +1,14 @@
 import powerbi from "powerbi-visuals-api";
 import { Selection as d3Selection } from "d3-selection";
-import { Transition as d3Transition } from 'd3-transition';
 import isArray from "lodash.isarray";
 import flatten from "lodash.flatten";
 
 import { WordCloudDataPoint } from "./dataInterfaces";
-import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
-
 
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ISelectionId = powerbi.visuals.ISelectionId;
 
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
-type Transition<T1, T2 = T1> = d3Transition<any, T1, any, T2>;
-
 
 export interface IWordCloudBehaviorOptions{
     wordsSelection: Selection<WordCloudDataPoint>;
@@ -24,9 +19,6 @@ export interface IWordCloudBehaviorOptions{
 export class WordCloudBehavior {
     private behaviorOptions: IWordCloudBehaviorOptions;
     private selectionManager: ISelectionManager;
-    private durationAnimations: number = 50;
-    private static TheThirdLineHeight: string = PixelConverter.toString(14); // Note: This construction fixes bug #6343.
-    private static TheFourthLineHeight: string = PixelConverter.toString(15); // Note: This construction fixes bug #6343.
     private static MaxOpacity: number = 1;
     private static MinOpacity: number = 0.2;
 
@@ -154,23 +146,5 @@ export class WordCloudBehavior {
 
     private setOpacity(element: Selection<any>, opacityValue: number): void {
         element.style("fill-opacity", opacityValue);
-
-        if (this.behaviorOptions.main) { // Note: This construction fixes bug #6343.
-            this.behaviorOptions.main.style("line-height", WordCloudBehavior.TheThirdLineHeight);
-            this.animateSelection(this.behaviorOptions.main, 0, this.durationAnimations)
-                .style("line-height", WordCloudBehavior.TheFourthLineHeight);
-        }
-    }
-
-    private animateSelection<T extends Selection<any>>(
-        element: T,
-        duration: number = 0,
-        delay: number = 0,
-        callback?: (data: any, index: number) => void): Transition<any> {
-
-        return element.transition()
-            .delay(delay)
-            .duration(duration)
-            .on("end", callback);
     }
 }

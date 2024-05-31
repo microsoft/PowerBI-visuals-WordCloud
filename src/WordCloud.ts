@@ -27,8 +27,6 @@
 import "./../style/visual.less";
 
 import { select as d3Select, Selection as d3Selection } from 'd3-selection';
-import { Transition as d3Transition } from 'd3-transition';
-import 'd3-transition';
 
 import isEmpty from 'lodash.isempty';
 import isString from 'lodash.isstring';
@@ -80,7 +78,6 @@ import { VisualLayout } from "./VisualLayout";
 import { WordCloudColumns } from "./WordCloudColumns";
 import {IWordCloudBehaviorOptions, WordCloudBehavior} from "./behavior";
 
-type Transition<T1, T2 = T1> = d3Transition<any, T1, any, T2>;
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 type WordMap = { [word: string]: boolean };
@@ -368,7 +365,6 @@ export class WordCloud implements IVisual {
 
     private data: WordCloudData;
     private colorPalette: IColorPalette;
-    private durationAnimations: number = 50;
 
     private specialViewport: IViewport;
 
@@ -1400,17 +1396,17 @@ export class WordCloud implements IVisual {
             .selectAll("g")
             .data(wordCloudDataView.data);
 
-            const wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
+        const wordGroupSelectionMerged: Selection<WordCloudDataPoint> = this.wordsGroupSelection
             .enter()
-            .append("svg:g")
+            .append("g")
             .merge(this.wordsGroupSelection)
             .classed(WordCloud.WordGroup.className, true);
 
         wordGroupSelectionMerged
-            .append("svg:text")
+            .append("text")
             .style("font-size", WordCloud.DefaultTextFontSize);
         wordGroupSelectionMerged
-            .append("svg:rect");
+            .append("rect");
 
         this.wordsGroupSelection
             .exit()
@@ -1433,7 +1429,7 @@ export class WordCloud implements IVisual {
             .exit()
             .remove();
 
-        this.animateSelection(this.wordsTextUpdateSelection, this.durationAnimations)
+        this.wordsTextUpdateSelection
             .style("font-size", ((item: WordCloudDataPoint): string => PixelConverter.toString(item.size)))
             .style("fill", ((item: WordCloudDataPoint): string => item.color));
 
@@ -1514,18 +1510,6 @@ export class WordCloud implements IVisual {
     public getFormattingModel(): powerbi.visuals.FormattingModel {
         const formattingModel = this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
         return formattingModel;
-    }
-
-    private animateSelection<T extends Selection<any>>(
-        element: T,
-        duration: number = 0,
-        delay: number = 0,
-        callback?: (data: any, index: number) => void): Transition<any> {
-
-        return element.transition()
-            .delay(delay)
-            .duration(duration)
-            .on("end", callback);
     }
 
     private renderTooltip(selection: Selection<WordCloudDataPoint>): void {
