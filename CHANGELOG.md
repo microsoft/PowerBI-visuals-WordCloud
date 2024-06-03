@@ -1,3 +1,10 @@
+## 2.3.0.0
+* API v5.9.0
+* Use selectionManager for interactive behavior
+* Fix clear selection bug
+* Add bookmark support
+* Update dependencies and fix audit vulnerabilities
+
 ## 2.2.0
 * API v5.4.0
 * Fixed bug with instantiation of the SelectingManager class

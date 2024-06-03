@@ -27,6 +27,7 @@
 import powerbiVisualsApi from "powerbi-visuals-api";
 import DataView = powerbiVisualsApi.DataView;
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
+import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 
 // powerbi.extensibility.utils.svg
 import { shapesInterfaces } from "powerbi-visuals-utils-svgutils";
@@ -39,8 +40,8 @@ export interface WordCloudText {
     textGroup: string;
     count: number;
     index: number;
-    selectionId: ISelectionId;
     color: string;
+    category: DataViewCategoryColumn;
 }
 
 export interface WordCloudGroup {
