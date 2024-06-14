@@ -43,7 +43,7 @@ import PrimitiveValue = powerbiVisualsApi.PrimitiveValue;
 import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier; 
 
-import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
+import IColorPalette = powerbiVisualsApi.extensibility.ISandboxExtendedColorPalette;
 import IVisualEventService = powerbiVisualsApi.extensibility.IVisualEventService;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
@@ -350,6 +350,7 @@ export class WordCloud implements IVisual {
     private static YOffsetPosition: number = 0.75;
     private static HeightOffsetPosition: number = 0.85;
     private static TextFillColor: string = "rgba(63, 191, 191, 0.0)";
+    private static WordOutlineColor: string = "black";
 
     private static MinFontSize: number = 0;
     private static DefaultAngle: number = 0;
@@ -1441,6 +1442,8 @@ export class WordCloud implements IVisual {
             .attr("y", (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition)
             .attr("height", (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition)
             .attr("fill", () => WordCloud.TextFillColor)
+            .attr("tabindex", 0)
+            .attr("stroke", this.colorPalette.isHighContrast ? this.colorPalette.foreground.value : WordCloud.WordOutlineColor)
             .exit()
             .remove();
             

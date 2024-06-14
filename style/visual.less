@@ -35,6 +35,16 @@
 
         rect {
             cursor: pointer;
+            stroke-opacity: 0;
+
+            &:focus{
+                outline: none;
+            }
+    
+            &:focus-visible{
+                stroke-width: 3px;
+                stroke-opacity: 1;
+            }
         }
     }
 }
