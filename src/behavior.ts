@@ -144,6 +144,7 @@ export class WordCloudBehavior {
 
         if (!this.selectionManager.hasSelection()) {
             this.setOpacity(this.behaviorOptions.wordsSelection, WordCloudBehavior.MaxOpacity);
+            this.setAriaSelectedLabel(this.behaviorOptions.wordsSelection);
 
             return;
         }
@@ -156,9 +157,17 @@ export class WordCloudBehavior {
 
         this.setOpacity(this.behaviorOptions.wordsSelection, WordCloudBehavior.MinOpacity);
         this.setOpacity(selectedColumns, WordCloudBehavior.MaxOpacity);
+        this.setAriaSelectedLabel(this.behaviorOptions.wordsSelection);
     }
 
     private setOpacity(element: Selection<any>, opacityValue: number): void {
         element.style("fill-opacity", opacityValue);
+    }
+
+    private setAriaSelectedLabel(element: Selection<any>){
+        element.attr("aria-selected", (dataPoint: WordCloudDataPoint) => {
+            const wordKey: string = dataPoint.text.toLocaleLowerCase();
+            return this.selectedWords.has(wordKey);
+        });
     }
 }

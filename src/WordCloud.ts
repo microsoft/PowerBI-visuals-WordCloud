@@ -818,7 +818,10 @@ export class WordCloud implements IVisual {
         this.fontFamily = this.root.style("font-family");
 
         this.main = this.root.append("g");
-        this.main.append("g").classed(WordCloud.Words.className, true);
+        this.main.append("g")
+            .classed(WordCloud.Words.className, true)
+            .attr("role", "listbox")
+            .attr("aria-multiselectable", "true");
 
         // init canvas context for calculate label positions
         const canvas = document.createElement("canvas");
@@ -1444,6 +1447,10 @@ export class WordCloud implements IVisual {
             .attr("fill", () => WordCloud.TextFillColor)
             .attr("tabindex", 0)
             .attr("stroke", this.colorPalette.isHighContrast ? this.colorPalette.foreground.value : WordCloud.WordOutlineColor)
+            .attr("role", "option")
+            .attr("aria-label", (dataPoint: WordCloudDataPoint) => {
+                return dataPoint.text;
+            })
             .exit()
             .remove();
             
