@@ -1,3 +1,6 @@
+## 2.3.1.0
+* Added keyboard navigation
+
 ## 2.3.0.0
 * API v5.9.0
 * Use selectionManager for interactive behavior

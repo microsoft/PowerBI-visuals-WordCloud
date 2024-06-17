@@ -53,40 +53,15 @@ export class WordCloudBehavior {
 
         this.bindClickEventToWords();
         this.bindClickEventToClearCatcher();
+        this.bindKeyboardEventToWords();
         this.renderSelection();
     }
 
     private bindClickEventToWords(): void {
         this.behaviorOptions.wordsSelection.on("click", (event: PointerEvent, word: WordCloudDataPoint) => {
-            const isMultiSelection: boolean = event.ctrlKey || event.shiftKey || event.metaKey;
-            const wordKey = word.text.toLocaleLowerCase();
-            if (isMultiSelection){ 
-                if (!this.selectedWords.has(wordKey)){
-                    this.selectedWords.add(wordKey);
-                    this.selectionManager.select(word.selectionIds, true);
-                }
-                else {
-                    this.selectedWords.delete(wordKey);
-                    const idsToSelect: ISelectionId[] = this.getSelectionIds(Array.from(this.selectedWords));
-                    idsToSelect.length === 0 
-                        ? this.selectionManager.clear()
-                        : this.selectionManager.select(idsToSelect);
-                }
-            }
-            else {
-                if (this.selectedWords.has(wordKey) && this.selectedWords.size === 1){
-                    this.selectedWords.clear();
-                    this.selectionManager.clear();
-                }
-                else {
-                    this.selectedWords.clear();
-                    this.selectedWords.add(wordKey);
-                    this.selectionManager.select(word.selectionIds);
-                }
-            }
-
-            this.renderSelection();
+            this.selectWord(event, word);
             event.stopPropagation();
+            this.renderSelection();
         });
 
         this.behaviorOptions.wordsSelection.on("contextmenu", (event: PointerEvent, word: WordCloudDataPoint) => {
@@ -101,6 +76,35 @@ export class WordCloudBehavior {
                 event.stopPropagation();
             }
         });
+    }
+
+    private selectWord(event: PointerEvent | KeyboardEvent, word: WordCloudDataPoint):void{
+        const isMultiSelection: boolean = event.ctrlKey || event.shiftKey || event.metaKey;
+        const wordKey = word.text.toLocaleLowerCase();
+        if (isMultiSelection){ 
+            if (!this.selectedWords.has(wordKey)){
+                this.selectedWords.add(wordKey);
+                this.selectionManager.select(word.selectionIds, true);
+            }
+            else {
+                this.selectedWords.delete(wordKey);
+                const idsToSelect: ISelectionId[] = this.getSelectionIds(Array.from(this.selectedWords));
+                idsToSelect.length === 0 
+                    ? this.selectionManager.clear()
+                    : this.selectionManager.select(idsToSelect);
+            }
+        }
+        else {
+            if (this.selectedWords.has(wordKey) && this.selectedWords.size === 1){
+                this.selectedWords.clear();
+                this.selectionManager.clear();
+            }
+            else {
+                this.selectedWords.clear();
+                this.selectedWords.add(wordKey);
+                this.selectionManager.select(word.selectionIds);
+            }
+        }
     }
 
     private bindClickEventToClearCatcher(): void {
@@ -123,6 +127,16 @@ export class WordCloudBehavior {
         });
     }
 
+    private bindKeyboardEventToWords(): void {
+        this.behaviorOptions.wordsSelection.on("keydown", (event : KeyboardEvent, word: WordCloudDataPoint) => {
+            if(event?.code == "Enter" || event?.code == "Space") {
+                this.selectWord(event, word);
+                event.stopPropagation();
+                this.renderSelection();
+            }
+        });
+    }
+
     private renderSelection(): void {
         if (!this.behaviorOptions.wordsSelection) {
             return;
@@ -130,6 +144,7 @@ export class WordCloudBehavior {
 
         if (!this.selectionManager.hasSelection()) {
             this.setOpacity(this.behaviorOptions.wordsSelection, WordCloudBehavior.MaxOpacity);
+            this.setAriaSelectedLabel(this.behaviorOptions.wordsSelection);
 
             return;
         }
@@ -142,9 +157,17 @@ export class WordCloudBehavior {
 
         this.setOpacity(this.behaviorOptions.wordsSelection, WordCloudBehavior.MinOpacity);
         this.setOpacity(selectedColumns, WordCloudBehavior.MaxOpacity);
+        this.setAriaSelectedLabel(this.behaviorOptions.wordsSelection);
     }
 
     private setOpacity(element: Selection<any>, opacityValue: number): void {
         element.style("fill-opacity", opacityValue);
+    }
+
+    private setAriaSelectedLabel(element: Selection<any>){
+        element.attr("aria-selected", (dataPoint: WordCloudDataPoint) => {
+            const wordKey: string = dataPoint.text.toLocaleLowerCase();
+            return this.selectedWords.has(wordKey);
+        });
     }
 }

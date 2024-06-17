@@ -758,5 +758,105 @@ describe("WordCloud", () => {
         });
       }
     });
+
+    describe("Keyboard navigation and related aria-attributes tests:", () => {
+      it("should have role=listbox and aria-multiselectable attributes correctly set", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const wordsElement: SVGElement = visualBuilder.word;
+          
+          expect(wordsElement.getAttribute("role")).toBe("listbox");
+          expect(wordsElement.getAttribute("aria-multiselectable")).toBe("true");
+
+          done();
+        }, 500);
+      });
+
+      it("enter toggles the correct word", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEvent = new KeyboardEvent("keydown", { code: "Enter", bubbles: true });
+          checkKeyboardSingleSelection(enterEvent);
+          done();
+        }, 500);
+      });
+
+      it("space toggles the correct word", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const spaceEvent = new KeyboardEvent("keydown", { code: "Space", bubbles: true });
+          checkKeyboardSingleSelection(spaceEvent);
+          done();
+        }, 500);
+      });
+
+      it("multiselection should work with ctrlKey", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEventCtrlKey = new KeyboardEvent("keydown", { code: "Enter", bubbles: true, ctrlKey: true });
+          checkKeyboardMultiSelection(enterEventCtrlKey);
+          done();
+        }, 500);
+      });
+
+      it("multiselection should work with metaKey", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEventMetaKey = new KeyboardEvent("keydown", { code: "Enter", bubbles: true, metaKey: true });
+          checkKeyboardMultiSelection(enterEventMetaKey);
+          done();
+        }, 500);
+      });
+
+      it("multiselection should work with shiftKey", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEventShiftKey = new KeyboardEvent("keydown", { code: "Enter", bubbles: true, shiftKey: true });
+          checkKeyboardMultiSelection(enterEventShiftKey);
+          done();
+        }, 500);
+      });
+
+      it("word can be focused", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const words: SVGElement[] = Array.from(visualBuilder.words);
+          const firstWord: SVGElement = words[0].querySelector("rect");
+
+          words.forEach((word: SVGElement) => {
+            expect(word.matches(":focus-visible")).toBeFalse();
+          });
+
+          firstWord.focus();
+          expect(firstWord.matches(':focus-visible')).toBeTrue();
+
+          const otherWords: SVGElement[] = words.slice(1);
+          otherWords.forEach((word: SVGElement) => {
+            expect(word.matches(":focus-visible")).toBeFalse();
+          });
+          done();
+        }, 500);
+      });
+
+      function checkKeyboardSingleSelection(keyboardSingleSelectionEvent: KeyboardEvent): void {
+        visualBuilder.updateFlushAllD3Transitions(dataView);
+        const words: SVGElement[] = Array.from(visualBuilder.words);
+        const firstWord: SVGElement = words[0];
+
+        firstWord.dispatchEvent(keyboardSingleSelectionEvent);
+        expect(firstWord.getAttribute("aria-selected")).toBe("true");
+        expect(visualBuilder.selectedWords?.length).toBe(1);
+      }
+
+      function checkKeyboardMultiSelection(keyboardMultiselectionEvent: KeyboardEvent): void {
+        visualBuilder.updateFlushAllD3Transitions(dataView);
+        const enterEvent = new KeyboardEvent("keydown", { code: "Enter", bubbles: true });
+        const words: SVGElement[] = Array.from(visualBuilder.words);
+        const firstWord: SVGElement = words[0];
+        const secondWord: SVGElement = words[1];
+
+        // select first word
+        firstWord.dispatchEvent(enterEvent);
+        // multiselect second word
+        secondWord.dispatchEvent(keyboardMultiselectionEvent);
+
+        expect(firstWord.getAttribute("aria-selected")).toBe("true");
+        expect(secondWord.getAttribute("aria-selected")).toBe("true");
+        expect(visualBuilder.selectedWords?.length).toBe(2);
+      }
+    });
   });
 });

@@ -51,6 +51,10 @@ export class WordCloudBuilder extends VisualBuilderBase<VisualClass> {
         return this.element.querySelector("svg.wordCloud");
     }
 
+    public get word(): SVGElement {
+        return this.mainElement?.querySelector("g > g.words");
+    }
+
     public get words(): NodeListOf<SVGElement> {
         return this.mainElement?.querySelectorAll("g > g.words > g.word");
     }

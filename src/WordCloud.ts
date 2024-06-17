@@ -43,7 +43,7 @@ import PrimitiveValue = powerbiVisualsApi.PrimitiveValue;
 import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import DataViewObjectPropertyIdentifier = powerbiVisualsApi.DataViewObjectPropertyIdentifier; 
 
-import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
+import IColorPalette = powerbiVisualsApi.extensibility.ISandboxExtendedColorPalette;
 import IVisualEventService = powerbiVisualsApi.extensibility.IVisualEventService;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
@@ -350,6 +350,7 @@ export class WordCloud implements IVisual {
     private static YOffsetPosition: number = 0.75;
     private static HeightOffsetPosition: number = 0.85;
     private static TextFillColor: string = "rgba(63, 191, 191, 0.0)";
+    private static WordOutlineColor: string = "black";
 
     private static MinFontSize: number = 0;
     private static DefaultAngle: number = 0;
@@ -817,7 +818,10 @@ export class WordCloud implements IVisual {
         this.fontFamily = this.root.style("font-family");
 
         this.main = this.root.append("g");
-        this.main.append("g").classed(WordCloud.Words.className, true);
+        this.main.append("g")
+            .classed(WordCloud.Words.className, true)
+            .attr("role", "listbox")
+            .attr("aria-multiselectable", "true");
 
         // init canvas context for calculate label positions
         const canvas = document.createElement("canvas");
@@ -1441,6 +1445,12 @@ export class WordCloud implements IVisual {
             .attr("y", (dataPoint: WordCloudDataPoint) => -dataPoint.size * WordCloud.YOffsetPosition)
             .attr("height", (dataPoint: WordCloudDataPoint) => dataPoint.size * WordCloud.HeightOffsetPosition)
             .attr("fill", () => WordCloud.TextFillColor)
+            .attr("tabindex", 0)
+            .attr("stroke", this.colorPalette.isHighContrast ? this.colorPalette.foreground.value : WordCloud.WordOutlineColor)
+            .attr("role", "option")
+            .attr("aria-label", (dataPoint: WordCloudDataPoint) => {
+                return dataPoint.text;
+            })
             .exit()
             .remove();
             
