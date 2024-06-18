@@ -391,6 +391,8 @@ export class WordCloud implements IVisual {
     private static punctuationRegExp: RegExp = new RegExp(`[${WordCloud.Punctuation.join("\\")}]`, "gim");
     private static whiteSpaceRegExp: RegExp = /\s/;
 
+    private animationRequestId: number;
+
     public static converter(
         dataView: DataView,
         settings: WordCloudSettings,
@@ -839,6 +841,7 @@ export class WordCloud implements IVisual {
 
             return;
         }
+        cancelAnimationFrame(this.animationRequestId);
 
         this.eventService.renderingStarted(visualUpdateOptions);
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(WordCloudSettings, visualUpdateOptions.dataViews[0]);
@@ -849,6 +852,7 @@ export class WordCloud implements IVisual {
         const dataView: DataView = visualUpdateOptions.dataViews[0];
 
         if (this.layout.viewportInIsZero) {
+            this.eventService.renderingFinished(visualUpdateOptions);
             return;
         }
 
@@ -863,6 +867,7 @@ export class WordCloud implements IVisual {
 
         if (!data) {
             this.clear();
+            this.eventService.renderingFinished(visualUpdateOptions);
             return;
         }
 
@@ -913,7 +918,7 @@ export class WordCloud implements IVisual {
             return;
         }
 
-        requestAnimationFrame(() => {
+        this.animationRequestId = requestAnimationFrame(() => {
             const surface: number[] = range(
                 WordCloud.MinViewport.width,
                 (this.specialViewport.width >> WordCloud.WidthOffset) * this.specialViewport.height,
