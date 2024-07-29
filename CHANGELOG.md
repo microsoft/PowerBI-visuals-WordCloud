@@ -1,3 +1,7 @@
+## 2.3.2.0
+* Fix bug with data displaying
+* Api 5.11.0
+
 ## 2.3.1.0
 * Added keyboard navigation
 
