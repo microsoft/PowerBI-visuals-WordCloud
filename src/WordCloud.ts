@@ -434,7 +434,7 @@ export class WordCloud implements IVisual {
             let color: string;
 
             if (categorical.Category.objects && categorical.Category.objects[index]) {
-                color = colorHelper.getColorForMeasure(categorical.Category.objects[index], "", "foreground");
+                color = colorHelper.getColorForMeasure(categorical.Category.objects[index], index.toString(), "foreground");
             } else {
                 color = colorHelper.getHighContrastColor(
                     "foreground",
