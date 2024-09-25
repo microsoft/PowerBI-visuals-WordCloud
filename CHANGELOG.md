@@ -1,3 +1,7 @@
+## 2.3.3.0
+### Visual changes:
+* Fix bug with bookmarks
+
 ## 2.3.2.0
 ### Visual changes:
 * Fix color reassignment

@@ -40,7 +40,7 @@ export class WordCloudBehavior {
             ids.forEach((selection: ISelectionId) => {
                 getDataPoints().forEach((dataPoint: WordCloudDataPoint) => {
                     if (dataPoint.selectionIds.find((id: ISelectionId) => id.equals(selection))){
-                        this.selectedWords.add(dataPoint.text);
+                        this.selectedWords.add(dataPoint.text.toLocaleLowerCase());
                     }
                 });
             });
