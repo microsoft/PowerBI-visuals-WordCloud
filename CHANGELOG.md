@@ -1,3 +1,27 @@
+## 2.3.3.0
+### Visual changes:
+* Fix bug with bookmarks
+
+## 2.3.2.0
+### Visual changes:
+* Fix color reassignment
+* Fix bug with data displaying
+### Code improvements: 
+* Update dependencies
+* Api 5.11.0
+
+## 2.3.1.0
+* Added keyboard navigation
+
+## 2.3.0.0
+### Visual changes:
+* Use selectionManager for interactive behavior
+* Fix clear selection bug
+* Add bookmark support
+### Code improvements:
+* API v5.9.0
+* Update dependencies and fix audit vulnerabilities
+
 ## 2.2.0
 * API v5.4.0
 * Fixed bug with instantiation of the SelectingManager class

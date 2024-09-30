@@ -36,7 +36,7 @@ import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import IColorInfo = powerbiVisualsApi.IColorInfo;
 
 // powerbi.extensibility.utils.test
-import { createColorPalette, renderTimeout, MockISelectionManager, d3Click, getRandomNumber } from "powerbi-visuals-utils-testutils";
+import { createColorPalette, renderTimeout, MockISelectionManager, d3Click, ClickEventType } from "powerbi-visuals-utils-testutils";
 
 import { WordCloudData } from "./WordCloudData";
 import { WordCloudBuilder } from "./WordCloudBuilder";
@@ -136,7 +136,7 @@ describe("WordCloud", () => {
         }
       };
         
-      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
+      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, dataView);
 
       const data = VisualClass.converter(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost);
       expect(data.dataPoints.length).toEqual(74);
@@ -368,24 +368,6 @@ describe("WordCloud", () => {
 
           done();
         }, 100);
-    });
-
-    it("multiple selection test", (done) => {
-      visualBuilder.updateflushAllD3TransitionsRenderTimeout(dataView, () => {
-          visualBuilder.wordClick("Iran");
-
-          renderTimeout(() => {
-            expect(visualBuilder.selectedWords?.length).toBe(1);
-
-            visualBuilder.wordClick("Albania", true);
-
-            renderTimeout(() => {
-              expect(visualBuilder.selectedWords?.length).toBe(2);
-
-              done();
-            });
-          });
-        }, 300);
     });
 
     it("max number of words test", (done) => {
@@ -642,13 +624,77 @@ describe("WordCloud", () => {
 
   describe("Selection", () => {
     it("Check index of the data-point after filtering", () => {
-      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, [dataView]);
+      const formattingSettings = new FormattingSettingsService().populateFormattingSettingsModel(WordCloudSettings, dataView);
 
       const item: WordCloudText | undefined = VisualClass.converter(dataView, formattingSettings, createColorPalette(), visualBuilder.visualHost)
         .texts
         .find((item: WordCloudText) => item.text === "Angola");
       expect(item?.index).toBe(5);
     });
+  });
+
+  describe("Selection tests", () => {
+    it("word can be selected", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        visualBuilder.wordClick("Iran");
+
+        renderTimeout(() => {
+          expect(visualBuilder.selectedWords?.length).toBe(1);
+          done();
+        });
+      }, 300);
+    });
+
+    it("word can be deselected", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        visualBuilder.wordClick("Iran");
+
+        renderTimeout(() => {
+          expect(visualBuilder.selectedWords?.length).toBe(1);
+          visualBuilder.wordClick("Iran");
+
+          renderTimeout(() => {
+            expect(visualBuilder.selectedWords?.length).toBe(84);
+
+            done();
+          });
+        });
+      }, 300);
+    });
+
+    it("multi-selection should work with ctrlKey", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        checkMultiselection(ClickEventType.CtrlKey, done);
+      }, 500)
+    });
+
+    it("multi-selection should work with metaKey", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        checkMultiselection(ClickEventType.MetaKey, done);
+      }, 500)
+    });
+
+    it("multi-selection should work with shiftKey", (done) => {
+      visualBuilder.updateRenderTimeout(dataView, () => {
+        checkMultiselection(ClickEventType.ShiftKey, done);
+      }, 500)
+    });
+
+    function checkMultiselection(eventType: number, done: DoneFn): void {
+      visualBuilder.wordClick("Iran");
+
+      renderTimeout(() => {
+        expect(visualBuilder.selectedWords?.length).toBe(1);
+
+        visualBuilder.wordClick("Albania", eventType);
+
+        renderTimeout(() => {
+          expect(visualBuilder.selectedWords?.length).toBe(2);
+
+          done();
+        });
+      });
+    }
   });
 
   describe("Capabilities tests", () => {
@@ -710,6 +756,106 @@ describe("WordCloud", () => {
 
           return areColorsEqual(currentColor, color);
         });
+      }
+    });
+
+    describe("Keyboard navigation and related aria-attributes tests:", () => {
+      it("should have role=listbox and aria-multiselectable attributes correctly set", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const wordsElement: SVGElement = visualBuilder.word;
+          
+          expect(wordsElement.getAttribute("role")).toBe("listbox");
+          expect(wordsElement.getAttribute("aria-multiselectable")).toBe("true");
+
+          done();
+        }, 500);
+      });
+
+      it("enter toggles the correct word", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEvent = new KeyboardEvent("keydown", { code: "Enter", bubbles: true });
+          checkKeyboardSingleSelection(enterEvent);
+          done();
+        }, 500);
+      });
+
+      it("space toggles the correct word", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const spaceEvent = new KeyboardEvent("keydown", { code: "Space", bubbles: true });
+          checkKeyboardSingleSelection(spaceEvent);
+          done();
+        }, 500);
+      });
+
+      it("multiselection should work with ctrlKey", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEventCtrlKey = new KeyboardEvent("keydown", { code: "Enter", bubbles: true, ctrlKey: true });
+          checkKeyboardMultiSelection(enterEventCtrlKey);
+          done();
+        }, 500);
+      });
+
+      it("multiselection should work with metaKey", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEventMetaKey = new KeyboardEvent("keydown", { code: "Enter", bubbles: true, metaKey: true });
+          checkKeyboardMultiSelection(enterEventMetaKey);
+          done();
+        }, 500);
+      });
+
+      it("multiselection should work with shiftKey", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const enterEventShiftKey = new KeyboardEvent("keydown", { code: "Enter", bubbles: true, shiftKey: true });
+          checkKeyboardMultiSelection(enterEventShiftKey);
+          done();
+        }, 500);
+      });
+
+      it("word can be focused", (done) => {
+        visualBuilder.updateRenderTimeout(dataView, () => {
+          const words: SVGElement[] = Array.from(visualBuilder.words);
+          const firstWord: SVGElement = words[0].querySelector("rect");
+
+          words.forEach((word: SVGElement) => {
+            expect(word.matches(":focus-visible")).toBeFalse();
+          });
+
+          firstWord.focus();
+          expect(firstWord.matches(':focus-visible')).toBeTrue();
+
+          const otherWords: SVGElement[] = words.slice(1);
+          otherWords.forEach((word: SVGElement) => {
+            expect(word.matches(":focus-visible")).toBeFalse();
+          });
+          done();
+        }, 500);
+      });
+
+      function checkKeyboardSingleSelection(keyboardSingleSelectionEvent: KeyboardEvent): void {
+        visualBuilder.updateFlushAllD3Transitions(dataView);
+        const words: SVGElement[] = Array.from(visualBuilder.words);
+        const firstWord: SVGElement = words[0];
+
+        firstWord.dispatchEvent(keyboardSingleSelectionEvent);
+        expect(firstWord.getAttribute("aria-selected")).toBe("true");
+        expect(visualBuilder.selectedWords?.length).toBe(1);
+      }
+
+      function checkKeyboardMultiSelection(keyboardMultiselectionEvent: KeyboardEvent): void {
+        visualBuilder.updateFlushAllD3Transitions(dataView);
+        const enterEvent = new KeyboardEvent("keydown", { code: "Enter", bubbles: true });
+        const words: SVGElement[] = Array.from(visualBuilder.words);
+        const firstWord: SVGElement = words[0];
+        const secondWord: SVGElement = words[1];
+
+        // select first word
+        firstWord.dispatchEvent(enterEvent);
+        // multiselect second word
+        secondWord.dispatchEvent(keyboardMultiselectionEvent);
+
+        expect(firstWord.getAttribute("aria-selected")).toBe("true");
+        expect(secondWord.getAttribute("aria-selected")).toBe("true");
+        expect(visualBuilder.selectedWords?.length).toBe(2);
       }
     });
   });

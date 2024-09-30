@@ -26,7 +26,7 @@
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import FormattingSettingsCard = formattingSettings.Card;
+import FormattingSettingsCard = formattingSettings.SimpleCard;
 import FormattingSettingsModel = formattingSettings.Model;
 import FormattingSettingsSlice = formattingSettings.Slice;
 import { WordCloudDataPoint } from "./dataInterfaces";
@@ -172,8 +172,9 @@ export class StopWordsSettings extends FormattingSettingsCard {
         displayName : "Show",
         displayNameKey: "Visual_Show",
         value: true,
-        topLevelToggle: true,
     });
+
+    public topLevelSlice: formattingSettings.ToggleSwitch = this.show;
 
     public isDefaultStopWords = new formattingSettings.ToggleSwitch({
         name: "isDefaultStopWords",
@@ -190,7 +191,7 @@ export class StopWordsSettings extends FormattingSettingsCard {
         placeholder: "",
     });
 
-    public slices: FormattingSettingsSlice[] = [this.show, this.isDefaultStopWords, this.words];
+    public slices: FormattingSettingsSlice[] = [this.isDefaultStopWords, this.words];
 }
 
 export class RotateTextSettings extends FormattingSettingsCard {
@@ -209,8 +210,9 @@ export class RotateTextSettings extends FormattingSettingsCard {
         displayName : "Show",
         displayNameKey: "Visual_Show",
         value: true,
-        topLevelToggle: true,
     });
+
+    public topLevelSlice: formattingSettings.ToggleSwitch = this.show;
 
     public minAngle = new formattingSettings.NumUpDown({
         name: "minAngle",
@@ -253,7 +255,7 @@ export class RotateTextSettings extends FormattingSettingsCard {
         value: 2,
     });
 
-    public slices: FormattingSettingsSlice[] = [this.show, this.minAngle, this.maxAngle, this.maxNumberOfOrientations];
+    public slices: FormattingSettingsSlice[] = [this.minAngle, this.maxAngle, this.maxNumberOfOrientations];
 }
 
 export class PerformanceSettings extends FormattingSettingsCard {
