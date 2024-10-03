@@ -66,7 +66,19 @@ export class WordCloudBehavior {
         elements.on("click", (event: PointerEvent, dataPoint: WordCloudDataPoint | undefined) => {
             const isMultiSelection: boolean = event.ctrlKey || event.metaKey || event.shiftKey;
             if (dataPoint){
-                this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+                // code to support deselection(without ctr key) of a word with array of selectionIds
+                // since selectionManager.select(SelectionId[], false) always selects 
+                const selectedIds: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+                const selectionIds: ISelectionId[] = dataPoint.selectionIds
+                    .filter(selectionId => !selectedIds.some(selectedId => selectedId.equals(selectionId)))
+                    .concat(selectedIds.filter(selectedId => !dataPoint.selectionIds.some(selectionId => selectionId.equals(selectedId))));
+
+                if (!selectionIds.length){
+                    this.selectionManager.select(dataPoint.selectionIds, true);
+                }
+                else {
+                    this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+                }
                 event.stopPropagation();
             }
             else {
@@ -95,7 +107,19 @@ export class WordCloudBehavior {
                 return;
             }
             const isMultiSelection: boolean = event.ctrlKey || event.metaKey || event.shiftKey;
-            this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+            // code to support deselection(without ctr key) of a word with array of selectionIds
+            // since selectionManager.select(SelectionId[], false) always selects 
+            const selectedIds: ISelectionId[] = <ISelectionId[]>this.selectionManager.getSelectionIds();
+            const selectionIds: ISelectionId[] = dataPoint.selectionIds
+                .filter(selectionId => !selectedIds.some(selectedId => selectedId.equals(selectionId)))
+                .concat(selectedIds.filter(selectedId => !dataPoint.selectionIds.some(selectionId => selectionId.equals(selectedId))));
+
+            if (!selectionIds.length){
+                this.selectionManager.select(dataPoint.selectionIds, true);
+            }
+            else {
+                this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+            }
 
             event.stopPropagation();
             this.onSelectCallback();
