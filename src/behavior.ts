@@ -108,7 +108,8 @@ export class WordCloudBehavior {
             }
             const isMultiSelection: boolean = event.ctrlKey || event.metaKey || event.shiftKey;
             // code to support deselection(without ctr key) of a word with array of selectionIds
-            // since selectionManager.select(SelectionId[], false) always selects 
+            // since selectionManager.select(SelectionId[], false) does not deselect Ids
+            // we want to remove this when the selection manager is fixed.
             const selectedIds: ISelectionId[] = <ISelectionId[]>this.selectionManager.getSelectionIds();
             const selectionIds: ISelectionId[] = dataPoint.selectionIds
                 .filter(selectionId => !selectedIds.some(selectedId => selectedId.equals(selectionId)))
