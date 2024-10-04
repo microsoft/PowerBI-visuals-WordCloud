@@ -1,7 +1,5 @@
 import powerbi from "powerbi-visuals-api";
 import { Selection as d3Selection } from "d3-selection";
-import isArray from "lodash.isarray";
-import flatten from "lodash.flatten";
 
 import { WordCloudDataPoint } from "./dataInterfaces";
 
@@ -22,152 +20,128 @@ export class WordCloudBehavior {
     private static MaxOpacity: number = 1;
     private static MinOpacity: number = 0.2;
 
-    private selectedWords: Set<string> = new Set<string>();
-    private getSelectionIds: (value: string | string[]) => ISelectionId[];
+    private dataPoints: WordCloudDataPoint[];
 
-
-    constructor(selectionManager: ISelectionManager, getSelectionIds: (value: string) => ISelectionId[], getDataPoints?: () => WordCloudDataPoint[]) {
+    constructor(selectionManager: ISelectionManager) {
         this.selectionManager = selectionManager;
+        this.selectionManager.registerOnSelectCallback(this.onSelectCallback.bind(this));
+    }
 
-        this.getSelectionIds = (value: string | string[]) => isArray(value)
-            ? <ISelectionId[]>flatten((<string[]>value).map((valueElement: string) => {
-                return getSelectionIds(valueElement);
-            }))
-            : getSelectionIds(value);
+    private onSelectCallback(selectionIds?: ISelectionId[]){
+        this.applySelectionStateToData(selectionIds);
+        this.renderSelection();
+    }
 
-        this.selectionManager.registerOnSelectCallback((ids: ISelectionId[]) => {
-            this.selectedWords.clear();
-            ids.forEach((selection: ISelectionId) => {
-                getDataPoints().forEach((dataPoint: WordCloudDataPoint) => {
-                    if (dataPoint.selectionIds.find((id: ISelectionId) => id.equals(selection))){
-                        this.selectedWords.add(dataPoint.text.toLocaleLowerCase());
-                    }
-                });
+    private applySelectionStateToData(selectionIds?: ISelectionId[]): void {
+        const selectedIds: ISelectionId[] = <ISelectionId[]>this.selectionManager.getSelectionIds();
+        this.setSelectedToDataPoints(this.dataPoints, selectionIds || selectedIds);
+    }
+
+    private setSelectedToDataPoints(dataPoints: WordCloudDataPoint[], ids: ISelectionId[]): void{
+        dataPoints.forEach((dataPoint: WordCloudDataPoint) => {
+            dataPoint.selected = false;
+            ids.forEach((selectedId: ISelectionId) => {
+                if (dataPoint.selectionIds.some(selectionId=> selectedId.equals(selectionId))) {
+                    dataPoint.selected = true;
+                }
             });
-            this.renderSelection();
         });
     }
 
     public bindEvents(behaviorOptions: IWordCloudBehaviorOptions): void {
         this.behaviorOptions = behaviorOptions;
+        this.dataPoints = behaviorOptions.wordsSelection.data();
 
-        this.bindClickEventToWords();
-        this.bindClickEventToClearCatcher();
-        this.bindKeyboardEventToWords();
-        this.renderSelection();
+        this.bindClickEvent(this.behaviorOptions.wordsSelection);
+        this.bindClickEvent(this.behaviorOptions.root);
+
+        this.bindContextMenuEvent(this.behaviorOptions.wordsSelection);
+        this.bindContextMenuEvent(this.behaviorOptions.root);
+
+        this.bindKeyboardEvent(this.behaviorOptions.wordsSelection);
+        this.applySelectionStateToData();
     }
 
-    private bindClickEventToWords(): void {
-        this.behaviorOptions.wordsSelection.on("click", (event: PointerEvent, word: WordCloudDataPoint) => {
-            this.selectWord(event, word);
-            event.stopPropagation();
-            this.renderSelection();
-        });
+    private bindClickEvent(elements: Selection<any>): void {
+        elements.on("click", (event: PointerEvent, dataPoint: WordCloudDataPoint | undefined) => {
+            const isMultiSelection: boolean = event.ctrlKey || event.metaKey || event.shiftKey;
+            if (dataPoint){
+                // code to support deselection(without ctr key) of a word with array of selectionIds
+                // since selectionManager.select(SelectionId[], false) always selects 
+                const selectedIds: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+                const selectionIds: ISelectionId[] = dataPoint.selectionIds
+                    .filter(selectionId => !selectedIds.some(selectedId => selectedId.equals(selectionId)))
+                    .concat(selectedIds.filter(selectedId => !dataPoint.selectionIds.some(selectionId => selectionId.equals(selectedId))));
 
-        this.behaviorOptions.wordsSelection.on("contextmenu", (event: PointerEvent, word: WordCloudDataPoint) => {
-            if (event) {
-                this.selectionManager.showContextMenu(
-                    word.selectionIds,
-                    {
-                        x: event.clientX,
-                        y: event.clientY
-                    });
-                event.preventDefault();
+                if (!selectionIds.length){
+                    this.selectionManager.select(dataPoint.selectionIds, true);
+                }
+                else {
+                    this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+                }
                 event.stopPropagation();
             }
-        });
-    }
-
-    private selectWord(event: PointerEvent | KeyboardEvent, word: WordCloudDataPoint):void{
-        const isMultiSelection: boolean = event.ctrlKey || event.shiftKey || event.metaKey;
-        const wordKey = word.text.toLocaleLowerCase();
-        if (isMultiSelection){ 
-            if (!this.selectedWords.has(wordKey)){
-                this.selectedWords.add(wordKey);
-                this.selectionManager.select(word.selectionIds, true);
-            }
             else {
-                this.selectedWords.delete(wordKey);
-                const idsToSelect: ISelectionId[] = this.getSelectionIds(Array.from(this.selectedWords));
-                idsToSelect.length === 0 
-                    ? this.selectionManager.clear()
-                    : this.selectionManager.select(idsToSelect);
-            }
-        }
-        else {
-            if (this.selectedWords.has(wordKey) && this.selectedWords.size === 1){
-                this.selectedWords.clear();
                 this.selectionManager.clear();
             }
+            this.onSelectCallback();
+        });
+    }
+
+    private bindContextMenuEvent(elements: Selection<any>): void {
+        elements.on("contextmenu", (event: PointerEvent, dataPoint: WordCloudDataPoint | undefined) => {
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionIds : {},
+                {
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            );
+            event.preventDefault();
+            event.stopPropagation();
+        })
+    }
+
+    private bindKeyboardEvent(elements: Selection<any>): void {
+        elements.on("keydown", (event : KeyboardEvent, dataPoint: WordCloudDataPoint) => {
+            if (event.code !== "Enter" && event.code !== "Space") {
+                return;
+            }
+            const isMultiSelection: boolean = event.ctrlKey || event.metaKey || event.shiftKey;
+            // code to support deselection(without ctr key) of a word with array of selectionIds
+            // since selectionManager.select(SelectionId[], false) does not deselect Ids
+            // we want to remove this when the selection manager is fixed.
+            const selectedIds: ISelectionId[] = <ISelectionId[]>this.selectionManager.getSelectionIds();
+            const selectionIds: ISelectionId[] = dataPoint.selectionIds
+                .filter(selectionId => !selectedIds.some(selectedId => selectedId.equals(selectionId)))
+                .concat(selectedIds.filter(selectedId => !dataPoint.selectionIds.some(selectionId => selectionId.equals(selectedId))));
+
+            if (!selectionIds.length){
+                this.selectionManager.select(dataPoint.selectionIds, true);
+            }
             else {
-                this.selectedWords.clear();
-                this.selectedWords.add(wordKey);
-                this.selectionManager.select(word.selectionIds);
+                this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
             }
-        }
-    }
 
-    private bindClickEventToClearCatcher(): void {
-        this.behaviorOptions.root.on("click", () => {
-            this.selectedWords.clear();
-            this.selectionManager.clear();
-            this.renderSelection();
-        });
-
-        this.behaviorOptions.root.on("contextmenu", (event: PointerEvent) => {
-            if (event) {
-                this.selectionManager.showContextMenu(
-                    null,
-                    {
-                        x: event.clientX,
-                        y: event.clientY
-                    });
-                event.preventDefault();
-            }
+            event.stopPropagation();
+            this.onSelectCallback();
         });
     }
 
-    private bindKeyboardEventToWords(): void {
-        this.behaviorOptions.wordsSelection.on("keydown", (event : KeyboardEvent, word: WordCloudDataPoint) => {
-            if(event?.code == "Enter" || event?.code == "Space") {
-                this.selectWord(event, word);
-                event.stopPropagation();
-                this.renderSelection();
-            }
-        });
-    }
+    public renderSelection(): void {
+        const wordHasSelection: boolean = this.dataPoints.some((dataPoint: WordCloudDataPoint) => dataPoint.selected);
 
-    private renderSelection(): void {
         if (!this.behaviorOptions.wordsSelection) {
             return;
         }
 
-        if (!this.selectionManager.hasSelection()) {
-            this.setOpacity(this.behaviorOptions.wordsSelection, WordCloudBehavior.MaxOpacity);
-            this.setAriaSelectedLabel(this.behaviorOptions.wordsSelection);
+        this.behaviorOptions.wordsSelection.style("fill-opacity", (dataPoint: WordCloudDataPoint) => {
+            return (dataPoint.selected && wordHasSelection) || !wordHasSelection
+                ? WordCloudBehavior.MaxOpacity
+                : WordCloudBehavior.MinOpacity;
+        });
 
-            return;
-        }
-
-        const selectedColumns: Selection<WordCloudDataPoint> = this.behaviorOptions.wordsSelection
-            .filter((dataPoint: WordCloudDataPoint) => {
-                const wordKey = dataPoint.text.toLocaleLowerCase();
-                return this.selectedWords.has(wordKey);
-            });
-
-        this.setOpacity(this.behaviorOptions.wordsSelection, WordCloudBehavior.MinOpacity);
-        this.setOpacity(selectedColumns, WordCloudBehavior.MaxOpacity);
-        this.setAriaSelectedLabel(this.behaviorOptions.wordsSelection);
-    }
-
-    private setOpacity(element: Selection<any>, opacityValue: number): void {
-        element.style("fill-opacity", opacityValue);
-    }
-
-    private setAriaSelectedLabel(element: Selection<any>){
-        element.attr("aria-selected", (dataPoint: WordCloudDataPoint) => {
-            const wordKey: string = dataPoint.text.toLocaleLowerCase();
-            return this.selectedWords.has(wordKey);
+       this.behaviorOptions.wordsSelection.attr("aria-selected", (dataPoint: WordCloudDataPoint) => {
+            return (dataPoint.selected && wordHasSelection) || !wordHasSelection
         });
     }
 }

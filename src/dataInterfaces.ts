@@ -72,6 +72,7 @@ export interface WordCloudDataPoint extends IPoint {
     getWidthOfWord?: () => number;
     count: number;
     widthOfWord?: number;
+    selected: boolean;
 }
 
 export interface WordCloudData {
