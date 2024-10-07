@@ -67,17 +67,18 @@ export class WordCloudBehavior {
             const isMultiSelection: boolean = event.ctrlKey || event.metaKey || event.shiftKey;
             if (dataPoint){
                 // code to support deselection(without ctr key) of a word with array of selectionIds
-                // since selectionManager.select(SelectionId[], false) always selects 
+                // since selectionManager.select(SelectionId[], false) does not deselect Ids
+                // we want to remove this when the selection manager is fixed.
                 const selectedIds: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
                 const selectionIds: ISelectionId[] = dataPoint.selectionIds
                     .filter(selectionId => !selectedIds.some(selectedId => selectedId.equals(selectionId)))
                     .concat(selectedIds.filter(selectedId => !dataPoint.selectionIds.some(selectionId => selectionId.equals(selectedId))));
 
                 if (!selectionIds.length){
-                    this.selectionManager.select(dataPoint.selectionIds, true);
+                    this.selectionManager.select(Array.from(dataPoint.selectionIds), true);
                 }
                 else {
-                    this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+                    this.selectionManager.select(Array.from(dataPoint.selectionIds), isMultiSelection);
                 }
                 event.stopPropagation();
             }
@@ -116,10 +117,10 @@ export class WordCloudBehavior {
                 .concat(selectedIds.filter(selectedId => !dataPoint.selectionIds.some(selectionId => selectionId.equals(selectedId))));
 
             if (!selectionIds.length){
-                this.selectionManager.select(dataPoint.selectionIds, true);
+                this.selectionManager.select(Array.from(dataPoint.selectionIds), true);
             }
             else {
-                this.selectionManager.select(dataPoint.selectionIds, isMultiSelection);
+                this.selectionManager.select(Array.from(dataPoint.selectionIds), isMultiSelection);
             }
 
             event.stopPropagation();
