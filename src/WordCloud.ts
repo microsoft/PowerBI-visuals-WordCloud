@@ -794,24 +794,7 @@ export class WordCloud implements IVisual {
         this.colorPalette = options.host.colorPalette;
         this.visualHost = options.host;
         const selectionManager: ISelectionManager = this.visualHost.createSelectionManager();
-        this.behavior = new WordCloudBehavior(selectionManager, 
-            (text: string): ISelectionId[] => {
-                const dataPoints: WordCloudDataPoint[] = this.data
-                    && this.data.dataPoints
-                    && this.data.dataPoints.filter((dataPoint: WordCloudDataPoint) => {
-                        return dataPoint.text.toLocaleLowerCase() === text;
-                    });
-
-                return (
-                    dataPoints && dataPoints[0] && dataPoints[0].selectionIds
-                    ? dataPoints[0].selectionIds
-                    : []
-                );
-            },
-            () => {
-                return this.data.dataPoints;
-            }
-        );
+        this.behavior = new WordCloudBehavior(selectionManager);
 
         this.layout = new VisualLayout(null, WordCloud.DefaultMargin);
 
@@ -1473,6 +1456,7 @@ export class WordCloud implements IVisual {
         };
 
         this.behavior.bindEvents(behaviorOptions);
+        this.behavior.renderSelection();
     }
 
     private scaleMainView(wordCloudDataView: WordCloudDataView): void {
