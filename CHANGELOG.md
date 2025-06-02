@@ -1,3 +1,7 @@
+## 2.3.4.0
+### Visual changes:
+* Fix bug with resetting the selection
+
 ## 2.3.3.0
 ### Visual changes:
 * Fix bug with bookmarks
