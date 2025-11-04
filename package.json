@@ -1,7 +1,8 @@
 {
-  "name": "powerbi-visuals-wordcloud",
+  "name": "@microsoft/powerbi-visuals-wordcloud",
   "version": "2.3.4.0",
   "description": "Word Cloud is a visual representation of word frequency and value. Use it to get instant insight into the most important terms in a set.",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Microsoft/PowerBI-visuals-WordCloud.git"
